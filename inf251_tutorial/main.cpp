@@ -8,6 +8,7 @@
 
 #include "model_obj.h"
 #include "Vector3.h"
+#include "Matrix4.h"
 
 using namespace std;
 
@@ -36,6 +37,7 @@ GLuint IBO = 0;		///< An index buffer object
 GLuint ShaderProgram = 0;	///< A shader program
 
 // Vertex transformation
+Matrix4f RotationX, RotationY;		///< Rotation (along X and Y axis)
 Vector3f Translation;	///< Translation
 float Scaling;			///< Scaling
 
@@ -178,22 +180,26 @@ void mouse(int button, int state, int x, int y) {
 
 /// Called whenever the mouse is moving while a button is pressed
 void motion(int x, int y) {
-	if(MouseButton == GLUT_RIGHT_BUTTON) {
+	if (MouseButton == GLUT_RIGHT_BUTTON) {
 		Translation.x() += 0.003f * (x - MouseX); // Accumulate translation amount
 		Translation.y() += 0.003f * (MouseY - y);
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
-	if(MouseButton == GLUT_MIDDLE_BUTTON) {
+	if (MouseButton == GLUT_MIDDLE_BUTTON) {
 		Scaling += 0.003f * (MouseY - y); // Accumulate scaling amount
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
-	}	
-	if(MouseButton == GLUT_LEFT_BUTTON) {
-
-        // Rotations will be explained in the next lecture
-
-	}	
+	}
+	if (MouseButton == GLUT_LEFT_BUTTON) {
+		Matrix4f rx, ry;	// compute the rotation matrices
+		rx.rotate(-0.1f * (MouseY - y), Vector3f(1, 0, 0));
+		ry.rotate(0.1f * (x - MouseX), Vector3f(0, 1, 0));
+		RotationX *= rx;	// accumulate the rotation
+		RotationY *= ry;
+		MouseX = x; // Store the current mouse position
+		MouseY = y;
+	}
 
 	glutPostRedisplay(); // Specify that the scene needs to be updated
 }
