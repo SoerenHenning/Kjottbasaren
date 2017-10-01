@@ -35,6 +35,9 @@ GLuint IBO = 0;		///< An index buffer object
 
 // Shaders
 GLuint ShaderProgram = 0;	///< A shader program
+GLint TrLocation = -1;		///< Reference to the model-view matrix uniform variable
+GLint SamplerLocation = -1;	///< Reference to the texture sampler uniform variable
+GLint TimeLocation = -1;	///< Reference to the time uniform variable
 
 // Vertex transformation
 Matrix4f RotationX, RotationY;		///< Rotation (along X and Y axis)
@@ -83,6 +86,8 @@ int main(int argc, char **argv) {
     glPolygonMode(GL_FRONT, GL_LINE);   // draw polygons as wireframe
 		
 	// Transformation
+	RotationX.identity();
+	RotationY.identity();
 	Translation.set(0.0f, 0.0f, 0.0f);
 	Scaling = 1.0f;
 
@@ -108,23 +113,35 @@ void display() {
 	glUseProgram(ShaderProgram);
 
 	// Set translation and scaling
-    GLint trULocation = glGetUniformLocation(ShaderProgram, "translation");
-    GLint sULocation = glGetUniformLocation(ShaderProgram, "scaling");
-    assert(trULocation != -1 && sULocation != -1);  
-    glUniform3fv(trULocation, 1, Translation.get());
-    glUniform1f(sULocation, Scaling);
+    //GLint trULocation = glGetUniformLocation(ShaderProgram, "translation");
+    //GLint sULocation = glGetUniformLocation(ShaderProgram, "scaling");
+    //assert(trULocation != -1 && sULocation != -1);  
+    //glUniform3fv(trULocation, 1, Translation.get());
+    //glUniform1f(sULocation, Scaling);
+
+	// Set the uniform variable for the vertex transformation
+	Matrix4f transformation =
+		Matrix4f::createTranslation(Translation) *
+		RotationX * RotationY *
+		Matrix4f::createScaling(Scaling, Scaling, Scaling);
+	cout << "RotationX " << RotationX.get() << endl;
+	cout << "RotationY " << RotationY.get() << endl;
+	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, transformation.get());
    
+	// Set the uniform variable for the texture unit (texture unit 0)
+	glUniform1i(SamplerLocation, 0);
+
 	// Enable the vertex attributes and set their format
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3,	GL_FLOAT, GL_FALSE, 
 		sizeof(ModelOBJ::Vertex), 
 		reinterpret_cast<const GLvoid*>(0));
 
-	/*
+	
     glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2,	GL_FLOAT, GL_FALSE, 
 		sizeof(ModelOBJ::Vertex), 
-		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));*/
+		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));
 
 	// Bind the buffers
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -187,14 +204,20 @@ void motion(int x, int y) {
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_MIDDLE_BUTTON) {
+		cout << "(MouseY - y)" << (MouseY - y) << endl;
 		Scaling += 0.003f * (MouseY - y); // Accumulate scaling amount
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_LEFT_BUTTON) {
+		cout << "Left Button..." << endl; //TODO
 		Matrix4f rx, ry;	// compute the rotation matrices
-		rx.rotate(-0.1f * (MouseY - y), Vector3f(1, 0, 0));
-		ry.rotate(0.1f * (x - MouseX), Vector3f(0, 1, 0));
+		//cout << "rx " << rx.get() << endl; //TODO
+		//cout << "(MouseY - y)" << (MouseY - y) << endl;
+		//cout << "rx " << rx.get << endl; //TODO
+		rx.rotate(-2.0f * (MouseY - y), Vector3f(1, 0, 0));
+		ry.rotate(2.0f * (x - MouseX), Vector3f(0, 1, 0));
+		//cout << "rx " << rx << endl; //TODO
 		RotationX *= rx;	// accumulate the rotation
 		RotationY *= ry;
 		MouseX = x; // Store the current mouse position
@@ -316,6 +339,13 @@ bool initShaders() {
 		cerr << "Error: cannot validate shader program.\nError log:\n" << errorLog << endl;
 		return false;
 	}
+
+	// Get the location of the uniform variables
+	TrLocation = glGetUniformLocation(ShaderProgram, "transformation");
+	SamplerLocation = glGetUniformLocation(ShaderProgram, "sampler");
+	TimeLocation = glGetUniformLocation(ShaderProgram, "time");
+	assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);
+	//assert(TrLocation != -1 && SamplerLocation != -1);
 
 	// Shaders can be deleted now
 	glDeleteShader(vertShader);
