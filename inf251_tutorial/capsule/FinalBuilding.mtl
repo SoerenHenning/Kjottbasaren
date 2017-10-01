@@ -1,0 +1,56 @@
+# Blender MTL File: 'FinalBuilding.blend'
+# Material Count: 5
+
+newmtl Brick
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.230640 0.016910 0.016218
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\Soeren\Desktop\Full Folder From Zach Computer\Blender Files\33_32_12_web.jpg
+
+newmtl Cement
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.456382 0.361016 0.179761
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd -s 50.000000 50.000000 1.000000 textures\\lightstone.jpg
+
+newmtl CopperOxide
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.077962 0.336022 0.180441
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd -s 10.000000 10.000000 10.000000 textures\\copperdioxide.jpg
+
+newmtl Roof
+Ns 96.078431
+Ka 0.400000 0.400000 0.400000
+Kd 0.000149 0.000000 0.010729
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\Soeren\\Desktop\\Full Folder From Zach Computer\\Blender Files\\33_32_12_web.jpg
+
+newmtl Window
+Ns 96.078431
+Ka 0.500000 0.500000 0.500000
+Kd 0.004754 0.016536 0.040754
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 3
