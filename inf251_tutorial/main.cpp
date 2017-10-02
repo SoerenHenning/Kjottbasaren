@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     glFrontFace(GL_CCW);		        // vertex order for the front face
 	glCullFace(GL_BACK);		        // back-faces should be removed
 
-    glPolygonMode(GL_FRONT, GL_LINE);   // draw polygons as wireframe
+    //glPolygonMode(GL_FRONT, GL_LINE);   // draw polygons as wireframe
 		
 	// Transformation
 	RotationX.identity();
@@ -344,8 +344,8 @@ bool initShaders() {
 	TrLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	SamplerLocation = glGetUniformLocation(ShaderProgram, "sampler");
 	TimeLocation = glGetUniformLocation(ShaderProgram, "time");
-	assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);
-	//assert(TrLocation != -1 && SamplerLocation != -1);
+	//assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);
+	assert(TrLocation != -1);
 
 	// Shaders can be deleted now
 	glDeleteShader(vertShader);
