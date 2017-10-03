@@ -4,6 +4,10 @@
 uniform mat4 transformation;
 
 // Copied from tutorial 6 shader
+// Camera position
+uniform vec3 camera_position;
+
+// Copied from tutorial 6 shader
 // Directional light
 uniform vec3 d_light_direction;
 uniform vec3 d_light_a_color;
@@ -12,6 +16,15 @@ uniform vec3 d_light_d_color;
 uniform float d_light_d_intensity;
 uniform vec3 d_light_s_color;
 uniform float d_light_s_intensity;
+
+// Copied from tutorial 6 shader
+// Object material
+// Notice that all of this values may be also specified per-vertex or 
+//  through a texture.
+uniform vec3 material_a_color;
+uniform vec3 material_d_color;
+uniform vec3 material_s_color;
+uniform float material_shininess;
 
 // vertex position
 layout (location = 0) in vec3 position; 
@@ -56,22 +69,16 @@ void main() {
 	
 	vec3 normal_nn = normalize(normal);	
 	vec3 d_light_dir_nn = normalize(d_light_direction);
-	// OUT
-	// vec3 view_dir_nn = normalize(camera_position - position);
-
+	vec3 view_dir_nn = normalize(camera_position - position);
 	//d_light_dir_nn = view_dir_nn;
 	
 	
 	float dot_d_light_normal = dot(-d_light_dir_nn, normal);   // notice the minus!
 	vec3 d_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal;
-	
-
 	// should be already normalized, but we "need" to correct numerical errors
-	
 	d_reflected_dir_nn = normalize(d_reflected_dir_nn); 
 	
 	// compute the color contribution	
-	/* OUT
 	vec3 color;
 	vec3 amb_color = clamp(
 			material_a_color * d_light_a_color * d_light_a_intensity,
@@ -86,45 +93,47 @@ void main() {
 	color = clamp(
 			amb_color + diff_color + spec_color,
 			0.0, 1.0);
-	*/
+
+	//DEBUG
+	//color = material_a_color;
 
 	// TODO: do the same for the headlight!
 	// notice that for the headlight dot(view_dir, light_dir) = ...
 
+	/* OUT
+
 	//p_light_dir_nn = view_dir_nn;
 	
-	// OUT
-	//vec3 p_light_dir_nn = -view_dir_nn;
+	vec3 p_light_dir_nn = -view_dir_nn;
 	
-	//OUT
-	//float dot_p_light_normal = dot(-p_light_dir_nn, normal);   // notice the minus!
-	//vec3 p_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal;
+	float dot_p_light_normal = dot(-p_light_dir_nn, normal);   // notice the minus!
+	vec3 p_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal;
 	// should be already normalized, but we "need" to correct numerical errors
-	
-	//OUT
-	//d_reflected_dir_nn = normalize(d_reflected_dir_nn); 
+	d_reflected_dir_nn = normalize(d_reflected_dir_nn); 
 	
 	// compute the color contribution
-	/* OUT
 	amb_color = clamp(
 			material_a_color * d_light_a_color * d_light_a_intensity,
 			0.0, 1.0);
+	//amb_color = vec3(1.0,1.0,1.0);
 	diff_color = clamp(
 			material_d_color * dot_p_light_normal * d_light_d_intensity,
 			0.0, 1.0);
+	//diff_color = vec3(1.0,1.0,1.0);
 	spec_color = clamp(
 			material_s_color *  
 			pow(dot(d_reflected_dir_nn, view_dir_nn), material_shininess),
 			0.0, 1.0);
+	//spec_color = vec3(0.5,0.0,0.0);
 	color = clamp(
 			amb_color + diff_color + spec_color,
 			0.0, 1.0);
 
 	color = clamp(color, 0.0, 1.0);
-	*/	
+	*/
 		
 	// pass the reuslt to the fragment shader
-	//fcolor = vec4(color, 1.0);
+	fcolor = vec4(color, 1.0);
 
 
 	// Copied from tutorial 3 shader
@@ -132,8 +141,8 @@ void main() {
 	//color.g = clamp(gl_Position.y, 0., 1.);
 	//color.b = clamp(gl_Position.z, 0., 1.);
 	//color.r = clamp(gl_Position.z, 0., 1.);
-	fcolor.r = 1.;
-	fcolor.g = 1.;
-	fcolor.b = 1.;
-	fcolor.a = 1.;
+	//fcolor.r = 1.;
+	//fcolor.g = 1.;
+	//fcolor.b = 1.;
+	//fcolor.a = 1.;
 }

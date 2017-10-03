@@ -40,6 +40,7 @@ GLint SamplerLocation = -1;	///< Reference to the texture sampler uniform variab
 GLint TimeLocation = -1;	///< Reference to the time uniform variable
 
 // Colors, copied from Tutorial 6
+GLint CameraPositionLoc = -1;
 GLint DLightDirLoc = -1;
 GLint DLightAColorLoc = -1;
 GLint DLightDColorLoc = -1;
@@ -47,6 +48,10 @@ GLint DLightSColorLoc = -1;
 GLint DLightAIntensityLoc = -1;
 GLint DLightDIntensityLoc = -1;
 GLint DLightSIntensityLoc = -1;
+GLint MaterialAColorLoc = -1;
+GLint MaterialDColorLoc = -1;
+GLint MaterialSColorLoc = -1;
+GLint MaterialShineLoc = -1;
 
 // Vertex transformation
 Matrix4f RotationX, RotationY;		///< Rotation (along X and Y axis)
@@ -98,7 +103,7 @@ int main(int argc, char **argv) {
 	RotationX.identity();
 	RotationY.identity();
 	Translation.set(0.0f, 0.0f, 0.0f);
-	Scaling = 1.0f;
+	Scaling = 0.05f;
 
 	// Shaders & mesh
 	if(!initShaders() || !initMesh())
@@ -140,6 +145,11 @@ void display() {
 	// Set the uniform variable for the texture unit (texture unit 0)
 	glUniform1i(SamplerLocation, 0);
 
+	//Copied from Tutorial 6
+	Vector3f tempCamPosition;
+	tempCamPosition.set(0.f, 0.f, 0.f);
+	glUniform3fv(CameraPositionLoc, 1, tempCamPosition.get());
+
 	//Copied from Tutorial 6 
 	// Set the light parameters
 	glUniform3f(DLightDirLoc, 0.5f, -0.5f, -1.0f);
@@ -149,6 +159,13 @@ void display() {
 	glUniform1f(DLightAIntensityLoc, 1.0f);
 	glUniform1f(DLightDIntensityLoc, 1.0f);
 	glUniform1f(DLightSIntensityLoc, 1.0f);
+
+	//Copied from Tutorial 6 
+	// Set the material parameters for the pyramid
+	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f);
+	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f);
+	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f);
+	glUniform1f(MaterialShineLoc, 20.0f);
 
 	// Enable the vertex attributes and set their format
 	glEnableVertexAttribArray(0);
@@ -251,7 +268,7 @@ void motion(int x, int y) {
 /// Initialize buffer objects
 bool initMesh() {
 	// Load the OBJ model
-	if(!Model.import("capsule\\FinalBuilding.obj")) {
+	if(!Model.import("capsule\\FinalBuilding.obj")) { //FinalBuilding.obj // capsule.obj
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}
@@ -365,6 +382,19 @@ bool initShaders() {
 	TimeLocation = glGetUniformLocation(ShaderProgram, "time");
 	//assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);
 	assert(TrLocation != -1);
+
+	CameraPositionLoc = glGetUniformLocation(ShaderProgram, "camera_position");
+	DLightDirLoc = glGetUniformLocation(ShaderProgram, "d_light_direction");
+	DLightAColorLoc = glGetUniformLocation(ShaderProgram, "d_light_a_color");
+	DLightDColorLoc = glGetUniformLocation(ShaderProgram, "d_light_d_color");
+	DLightSColorLoc = glGetUniformLocation(ShaderProgram, "d_light_s_color");
+	DLightAIntensityLoc = glGetUniformLocation(ShaderProgram, "d_light_a_intensity");
+	DLightDIntensityLoc = glGetUniformLocation(ShaderProgram, "d_light_d_intensity");
+	DLightSIntensityLoc = glGetUniformLocation(ShaderProgram, "d_light_s_intensity");
+	MaterialAColorLoc = glGetUniformLocation(ShaderProgram, "material_a_color");
+	MaterialDColorLoc = glGetUniformLocation(ShaderProgram, "material_d_color");
+	MaterialSColorLoc = glGetUniformLocation(ShaderProgram, "material_s_color");
+	MaterialShineLoc = glGetUniformLocation(ShaderProgram, "material_shininess");
 
 	// Shaders can be deleted now
 	glDeleteShader(vertShader);
