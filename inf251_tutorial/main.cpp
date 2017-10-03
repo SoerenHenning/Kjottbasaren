@@ -39,6 +39,15 @@ GLint TrLocation = -1;		///< Reference to the model-view matrix uniform variable
 GLint SamplerLocation = -1;	///< Reference to the texture sampler uniform variable
 GLint TimeLocation = -1;	///< Reference to the time uniform variable
 
+// Colors, copied from Tutorial 6
+GLint DLightDirLoc = -1;
+GLint DLightAColorLoc = -1;
+GLint DLightDColorLoc = -1;
+GLint DLightSColorLoc = -1;
+GLint DLightAIntensityLoc = -1;
+GLint DLightDIntensityLoc = -1;
+GLint DLightSIntensityLoc = -1;
+
 // Vertex transformation
 Matrix4f RotationX, RotationY;		///< Rotation (along X and Y axis)
 Vector3f Translation;	///< Translation
@@ -130,6 +139,16 @@ void display() {
    
 	// Set the uniform variable for the texture unit (texture unit 0)
 	glUniform1i(SamplerLocation, 0);
+
+	//Copied from Tutorial 6 
+	// Set the light parameters
+	glUniform3f(DLightDirLoc, 0.5f, -0.5f, -1.0f);
+	glUniform3f(DLightAColorLoc, 0.05f, 0.03f, 0.0f);
+	glUniform3f(DLightDColorLoc, 0.5f, 0.4f, 0.3f);
+	glUniform3f(DLightSColorLoc, 0.6f, 0.6f, 0.7f);
+	glUniform1f(DLightAIntensityLoc, 1.0f);
+	glUniform1f(DLightDIntensityLoc, 1.0f);
+	glUniform1f(DLightSIntensityLoc, 1.0f);
 
 	// Enable the vertex attributes and set their format
 	glEnableVertexAttribArray(0);

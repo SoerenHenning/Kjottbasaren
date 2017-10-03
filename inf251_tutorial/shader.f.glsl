@@ -11,7 +11,7 @@ in vec2 cur_tex_coords;
 
 // Copied from tutorial 3 shader
 // Per-fragment color coming from the vertex shader
-in vec4 color;
+in vec4 fcolor;
 
 // Per-frgament output color
 out vec4 FragColor;
@@ -25,7 +25,7 @@ void main() {
 	
 	// Copied from tutorial 3 shader
 	// Set the output color according to the input
-    FragColor = color;
+    FragColor = fcolor;
 	//FragColor.r = 0.1;
 	//FragColor = vec3(1,0,0);
 	
