@@ -90,6 +90,8 @@ void main() {
 			material_s_color *  
 			pow(dot(d_reflected_dir_nn, view_dir_nn), material_shininess),
 			0.0, 1.0);
+	spec_color = vec3(0.0,0.0,0.0); // TODO
+
 	color = clamp(
 			amb_color + diff_color + spec_color,
 			0.0, 1.0);
@@ -100,8 +102,7 @@ void main() {
 	// TODO: do the same for the headlight!
 	// notice that for the headlight dot(view_dir, light_dir) = ...
 
-	/* OUT
-
+	
 	//p_light_dir_nn = view_dir_nn;
 	
 	vec3 p_light_dir_nn = -view_dir_nn;
@@ -124,13 +125,13 @@ void main() {
 			material_s_color *  
 			pow(dot(d_reflected_dir_nn, view_dir_nn), material_shininess),
 			0.0, 1.0);
-	//spec_color = vec3(0.5,0.0,0.0);
+	spec_color = vec3(0.0,0.0,0.0); // TODO
 	color = clamp(
 			amb_color + diff_color + spec_color,
 			0.0, 1.0);
 
 	color = clamp(color, 0.0, 1.0);
-	*/
+	
 		
 	// pass the reuslt to the fragment shader
 	fcolor = vec4(color, 1.0);

@@ -97,13 +97,17 @@ int main(int argc, char **argv) {
     glFrontFace(GL_CCW);		        // vertex order for the front face
 	glCullFace(GL_BACK);		        // back-faces should be removed
 
+	// Accept fragment if it closer to the camera than the former one
+	//glDepthFunc(GL_LESS);
+
     //glPolygonMode(GL_FRONT, GL_LINE);   // draw polygons as wireframe
+	glPolygonMode(GL_FRONT, GL_FILL); 
 		
 	// Transformation
 	RotationX.identity();
 	RotationY.identity();
 	Translation.set(0.0f, 0.0f, 0.0f);
-	Scaling = 0.05f;
+	Scaling = -1.0f; //TODO
 
 	// Shaders & mesh
 	if(!initShaders() || !initMesh())
@@ -268,10 +272,11 @@ void motion(int x, int y) {
 /// Initialize buffer objects
 bool initMesh() {
 	// Load the OBJ model
-	if(!Model.import("capsule\\FinalBuilding.obj")) { //FinalBuilding.obj // capsule.obj
+	if(!Model.import("capsule\\cube.obj")) { //FinalBuilding.obj // capsule.obj // cube.obj
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}
+	Model.normalize();
 	
     // Notice that normals may not be stored in the model
     // This issue will be dealt with in the next lecture
