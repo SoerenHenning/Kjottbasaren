@@ -36,7 +36,7 @@ GLuint IBO = 0;		///< An index buffer object
 // Shaders
 GLuint ShaderProgram = 0;	///< A shader program
 GLint TrLocation = -1;		///< Reference to the model-view matrix uniform variable
-GLint SamplerLocation = -1;	///< Reference to the texture sampler uniform variable
+//GLint SamplerLocation = -1;	///< Reference to the texture sampler uniform variable
 GLint TimeLocation = -1;	///< Reference to the time uniform variable
 
 // Colors, copied from Tutorial 6
@@ -110,9 +110,12 @@ int main(int argc, char **argv) {
 	Scaling = -1.0f; //TODO
 
 	// Shaders & mesh
-	if(!initShaders() || !initMesh())
+	if (!initShaders() || !initMesh()) {
+		cout << "Press Enter to exit..." << endl;
+		getchar();
 		return -1;
-	
+	}
+
 	// Start the main event loop
 	glutMainLoop();
 
@@ -147,7 +150,7 @@ void display() {
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, transformation.get());
    
 	// Set the uniform variable for the texture unit (texture unit 0)
-	glUniform1i(SamplerLocation, 0);
+	//glUniform1i(SamplerLocation, 0);
 
 	//Copied from Tutorial 6
 	Vector3f tempCamPosition;
@@ -156,20 +159,20 @@ void display() {
 
 	//Copied from Tutorial 6 
 	// Set the light parameters
-	glUniform3f(DLightDirLoc, 0.5f, -0.5f, -1.0f);
+	glUniform3f(DLightDirLoc, 0.5f, -0.5f, -1.0f); // u
 	glUniform3f(DLightAColorLoc, 0.05f, 0.03f, 0.0f);
 	glUniform3f(DLightDColorLoc, 0.5f, 0.4f, 0.3f);
 	glUniform3f(DLightSColorLoc, 0.6f, 0.6f, 0.7f);
-	glUniform1f(DLightAIntensityLoc, 1.0f);
-	glUniform1f(DLightDIntensityLoc, 1.0f);
-	glUniform1f(DLightSIntensityLoc, 1.0f);
+	glUniform1f(DLightAIntensityLoc, 1.0f); // u
+	glUniform1f(DLightDIntensityLoc, 1.0f); // u
+	glUniform1f(DLightSIntensityLoc, 1.0f); // uu
 
 	//Copied from Tutorial 6 
 	// Set the material parameters for the pyramid
-	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f);
-	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f);
-	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f);
-	glUniform1f(MaterialShineLoc, 20.0f);
+	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // u
+	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // u
+	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // u
+	glUniform1f(MaterialShineLoc, 20.0f); // u
 
 	// Enable the vertex attributes and set their format
 	glEnableVertexAttribArray(0);
@@ -182,6 +185,11 @@ void display() {
 	glVertexAttribPointer(1, 2,	GL_FLOAT, GL_FALSE, 
 		sizeof(ModelOBJ::Vertex), 
 		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));
+
+
+	cout << "VBO " << VBO << endl;
+
+
 
 	// Bind the buffers
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -272,11 +280,26 @@ void motion(int x, int y) {
 /// Initialize buffer objects
 bool initMesh() {
 	// Load the OBJ model
-	if(!Model.import("capsule\\cube.obj")) { //FinalBuilding.obj // capsule.obj // cube.obj
+	if(!Model.import("capsule\\FinalBuilding.obj")) { //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}
-	Model.normalize();
+	//Model.normalize();
+	if (Model.hasPositions()) {
+		cout << "Model has positions" << endl;
+	} else {
+		cout << "Model does not have positions" << endl;
+	}
+	if (Model.hasTextureCoords()) {
+		cout << "Model has texture coords" << endl;
+	} else {
+		cout << "Model does not have texture coords" << endl;
+	}
+	if (Model.hasNormals()) {
+		cout << "Model has normals" << endl;
+	} else {
+		cout << "Model does not have normals" << endl;
+	}
 	
     // Notice that normals may not be stored in the model
     // This issue will be dealt with in the next lecture
@@ -289,6 +312,22 @@ bool initMesh() {
 		Model.getVertexBuffer(),
 		GL_STATIC_DRAW);
 	
+	
+	const ModelOBJ::Vertex *vb = Model.getVertexBuffer();
+
+	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
+		cout << "vb[" << i << "].position: (" << vb[i].position[0] << "," << vb[i].position[1] << "," << vb[i].position[2] << ")" << endl;
+	}
+
+	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
+		cout << "vb[" << i << "].normal: (" << vb[i].normal[0] << "," << vb[i].normal[1] << "," << vb[i].normal[2] << ")" << endl;
+	}
+
+	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
+		cout << "vb[" << i << "].texCoord: (" << vb[i].texCoord[0] << "," << vb[i].texCoord[1] << ")" << endl;
+	}
+
+
 	// IBO
 	glGenBuffers(1, &IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
@@ -296,6 +335,8 @@ bool initMesh() {
 		3 * Model.getNumberOfTriangles() * sizeof(int),
 		Model.getIndexBuffer(),			
 		GL_STATIC_DRAW);
+
+
     	
 	
 	return true;
@@ -383,7 +424,7 @@ bool initShaders() {
 
 	// Get the location of the uniform variables
 	TrLocation = glGetUniformLocation(ShaderProgram, "transformation");
-	SamplerLocation = glGetUniformLocation(ShaderProgram, "sampler");
+	//SamplerLocation = glGetUniformLocation(ShaderProgram, "sampler");
 	TimeLocation = glGetUniformLocation(ShaderProgram, "time");
 	//assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);
 	assert(TrLocation != -1);

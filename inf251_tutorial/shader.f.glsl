@@ -7,7 +7,7 @@
 //uniform float time;
 
 // Per fragment texture coordinates
-in vec2 cur_tex_coords;
+//in vec2 cur_tex_coords;
 
 // Copied from tutorial 3 shader
 // Per-fragment color coming from the vertex shader
