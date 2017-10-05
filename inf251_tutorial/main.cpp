@@ -186,8 +186,12 @@ void display() {
 		sizeof(ModelOBJ::Vertex), 
 		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));
 
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
+		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
 
-	cout << "VBO " << VBO << endl;
+
+	cout << "sizeof(Vector3f):  " << sizeof(Vector3f) << endl;
 
 
 
@@ -280,7 +284,7 @@ void motion(int x, int y) {
 /// Initialize buffer objects
 bool initMesh() {
 	// Load the OBJ model
-	if(!Model.import("capsule\\FinalBuilding.obj")) { //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
+	if(!Model.import("capsule\\blendercube.obj")) { //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}

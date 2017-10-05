@@ -30,7 +30,7 @@ uniform float material_shininess;
 layout (location = 0) in vec3 position; 
 
 // vertex texture coordinates
-layout (location = 1) in vec2 tex_coords;
+//layout (location = 1) in vec2 tex_coords;
 
 layout (location = 2) in vec3 normal; 
 
@@ -76,7 +76,7 @@ void main() {
 	//vec3 view_dir_nn = normalize(camera_position - position); //OUT
 	//d_light_dir_nn = view_dir_nn;
 
-	debugColor.r = 0.0;
+	debugColor.r = 1.0;
 	debugColor.g = 0.0;
 	debugColor.b = 0.0;
 	//debugColor.b = normal_nn.x;
@@ -84,11 +84,13 @@ void main() {
 	if (position.x != 0.0 && position.y != 0.0 && position.z != 0.0) {
 		//debugColor.r = 1.0;
 	}
+	/*
 	if (tex_coords.x == 0.0 && tex_coords.y == 0.0) {
 		//debugColor.g = 1.0;
 	}
-	if (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0) {
-		debugColor.b = 1.0;
+	*/
+	if (normal.x == 0.0) {
+		//debugColor.b = 1.0;
 	}
 	//debugColor.b = normal_nn.z;
 	if (position.x < 0.5) {
