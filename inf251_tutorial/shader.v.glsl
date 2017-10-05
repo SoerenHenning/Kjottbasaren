@@ -45,13 +45,16 @@ out vec4 fcolor;
 
 void main() {
 
+	// transform the vertex
+    gl_Position = transformation * vec4(position, 1.);	
+
+
 	// DEBUG
 	vec3 debugColor;
 
 	
 
-	// transform the vertex
-    gl_Position = transformation * vec4(position, 1.);	
+	
 	
 	// pass the texture coordinates to the fragment shader
 	//cur_tex_coords = tex_coords;
@@ -73,10 +76,10 @@ void main() {
 	// notice that input variables cannot be modified, so copy them first
 	vec3 normal_nn = normalize(normal);	// TODO NaN's returned
 	vec3 d_light_dir_nn = normalize(d_light_direction);
-	//vec3 view_dir_nn = normalize(camera_position - position); //OUT
+	vec3 view_dir_nn = normalize(camera_position - position); //OUT
 	//d_light_dir_nn = view_dir_nn;
 
-	debugColor.r = 1.0;
+	debugColor.r = 0.0;
 	debugColor.g = 0.0;
 	debugColor.b = 0.0;
 	//debugColor.b = normal_nn.x;
@@ -93,33 +96,31 @@ void main() {
 		//debugColor.b = 1.0;
 	}
 	//debugColor.b = normal_nn.z;
-	if (position.x < 0.5) {
+	if (d_light_a_color.z == 0.0) {
 		//debugColor.r = 1.0;
 	}
 	
 	
 	float dot_d_light_normal = dot(-d_light_dir_nn, normal);   // notice the minus!
-	// vec3 d_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal; // OUT
+	vec3 d_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal; // OUT
 	// should be already normalized, but we "need" to correct numerical errors
-	// d_reflected_dir_nn = normalize(d_reflected_dir_nn);  // OUT
+	d_reflected_dir_nn = normalize(d_reflected_dir_nn);  // OUT
 	
 	// compute the color contribution	
 	vec3 color;
 	vec3 amb_color = clamp(
 			material_a_color * d_light_a_color * d_light_a_intensity,
 			0.0, 1.0);
-	amb_color = vec3(0.0,0.0,0.0); // TODO
+	//amb_color = vec3(0.5,0.0,0.0); // TODO
 	vec3 diff_color = clamp(
 			material_d_color * dot_d_light_normal * d_light_d_intensity,
 			0.0, 1.0);
-	//diff_color = vec3(0.0,0.0,0.0);
-	/* OUT
+	//diff_color = vec3(0.0,0.5,0.0);
 	vec3 spec_color = clamp(
 			material_s_color *  
 			pow(dot(d_reflected_dir_nn, view_dir_nn), material_shininess),
 			0.0, 1.0);
-	*/
-	vec3 spec_color = vec3(0.0,0.0,0.0); // TODO
+	spec_color = vec3(0.0,0.0,0.0); // TODO Camera not right
 
 	
 	color = clamp(

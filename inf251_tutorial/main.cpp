@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
 	RotationX.identity();
 	RotationY.identity();
 	Translation.set(0.0f, 0.0f, 0.0f);
-	Scaling = -1.0f; //TODO
+	Scaling = 1.0f; //TODO
 
 	// Shaders & mesh
 	if (!initShaders() || !initMesh()) {
@@ -145,8 +145,8 @@ void display() {
 		Matrix4f::createTranslation(Translation) *
 		RotationX * RotationY *
 		Matrix4f::createScaling(Scaling, Scaling, Scaling);
-	cout << "RotationX " << RotationX.get() << endl;
-	cout << "RotationY " << RotationY.get() << endl;
+	//cout << "RotationX " << RotationX.get() << endl;
+	//cout << "RotationY " << RotationY.get() << endl;
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, transformation.get());
    
 	// Set the uniform variable for the texture unit (texture unit 0)
@@ -159,8 +159,8 @@ void display() {
 
 	//Copied from Tutorial 6 
 	// Set the light parameters
-	glUniform3f(DLightDirLoc, 0.5f, -0.5f, -1.0f); // u
-	glUniform3f(DLightAColorLoc, 0.05f, 0.03f, 0.0f);
+	glUniform3f(DLightDirLoc, 0.5f, -1.5f, -1.0f); // u
+	glUniform3f(DLightAColorLoc, 0.5f, 0.3f, 0.0f); // u
 	glUniform3f(DLightDColorLoc, 0.5f, 0.4f, 0.3f);
 	glUniform3f(DLightSColorLoc, 0.6f, 0.6f, 0.7f);
 	glUniform1f(DLightAIntensityLoc, 1.0f); // u
@@ -189,9 +189,6 @@ void display() {
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
-
-
-	cout << "sizeof(Vector3f):  " << sizeof(Vector3f) << endl;
 
 
 
@@ -229,6 +226,14 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'q':  // terminate the application
 		exit(0);
+		break;
+	case 'p': // change to wireframe rendering
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glutPostRedisplay();
+		break;
+	case 'o': // change to polygon rendering
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glutPostRedisplay();
 		break;
 	case 'r':
 		cout << "Re-loading shaders..." << endl;
@@ -284,7 +289,7 @@ void motion(int x, int y) {
 /// Initialize buffer objects
 bool initMesh() {
 	// Load the OBJ model
-	if(!Model.import("capsule\\blendercube.obj")) { //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
+	if(!Model.import("capsule\\FinalBuilding.obj")) { //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}
@@ -316,7 +321,7 @@ bool initMesh() {
 		Model.getVertexBuffer(),
 		GL_STATIC_DRAW);
 	
-	
+	/*
 	const ModelOBJ::Vertex *vb = Model.getVertexBuffer();
 
 	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
@@ -330,6 +335,7 @@ bool initMesh() {
 	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
 		cout << "vb[" << i << "].texCoord: (" << vb[i].texCoord[0] << "," << vb[i].texCoord[1] << ")" << endl;
 	}
+	*/
 
 
 	// IBO
