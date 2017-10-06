@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <cmath>
 
 #include "model_obj.h"
 #include "Vector3.h"
@@ -292,6 +294,12 @@ void keyboard(unsigned char key, int x, int y) {
 	case ' ':
 		Cam.position += Cam.up * 0.1f;
 		break;
+	case 'n':	// Increase field of view
+		Cam.fov = min(Cam.fov + 1.f, 179.f);
+		break;
+	case 'm':	// Decrease field of view
+		Cam.fov = max(Cam.fov - 1.f, 1.f);
+		break;
 	case 'g': // show the current OpenGL version
 		cout << "OpenGL version " << glGetString(GL_VERSION) << endl;
 		break;
@@ -336,8 +344,7 @@ void motion(int x, int y) {
 	if (MouseButton == GLUT_MIDDLE_BUTTON) {
 		// Old way of scaling
 		//Scaling += 0.003f * (MouseY - y); // Accumulate scaling amount
-		//Cam.zoom = max(0.001f, Cam.zoom + 0.003f * (y - MouseY)); //TODO
-		Cam.zoom += 0.003f * (y - MouseY);
+		Cam.zoom = max(0.001f, Cam.zoom + 0.003f * (y - MouseY));		
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
