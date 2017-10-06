@@ -12,6 +12,21 @@
 
 using namespace std;
 
+// TODO Move to own class
+/// A simple structure to handle a moving camera (perspective projection)
+struct Camera {
+	Vector3f position;	///< the position of the camera
+	Vector3f target;	///< the direction the camera is looking at
+	Vector3f up;		///< the up vector of the camera
+
+	float fov;			///< camera field of view
+	float ar;			///< camera aspect ratio
+
+	float zNear, zFar;	///< depth of the near and far plane
+
+	float zoom;			///< an additional scaling parameter
+};
+
 
 // --- OpenGL callbacks ---------------------------------------------------------------------------
 void display();
@@ -23,6 +38,7 @@ void motion(int, int);
 // --- Other methods ------------------------------------------------------------------------------
 bool initMesh();
 bool initShaders();
+Matrix4f computeCameraTransform(const Camera&);
 string readTextFile(const string&);
 
 
@@ -62,6 +78,11 @@ float Scaling;			///< Scaling
 int MouseX, MouseY;		///< The last position of the mouse
 int MouseButton;		///< The last mouse button pressed or released
 
+
+
+
+// Camera
+Camera Cam;
 
 // --- main() -------------------------------------------------------------------------------------
 /// The entry point of the application
@@ -107,7 +128,18 @@ int main(int argc, char **argv) {
 	RotationX.identity();
 	RotationY.identity();
 	Translation.set(0.0f, 0.0f, 0.0f);
-	Scaling = 1.0f; //TODO
+	Scaling = 1.0f; 
+
+	// Initialize program variables
+	// Camera 
+	Cam.position.set(0.f, 0.f, 0.f);
+	Cam.target.set(0.f, 0.f, -1.f);
+	Cam.up.set(0.f, 1.f, 0.f);
+	Cam.fov = 30.f;
+	Cam.ar = 1.f; // will be correctly initialized in the "display()" method
+	Cam.zNear = 0.1f;
+	Cam.zFar = 100.f;
+	Cam.zoom = 1.f;
 
 	// Shaders & mesh
 	if (!initShaders() || !initMesh()) {
@@ -128,6 +160,9 @@ int main(int argc, char **argv) {
 void display() {
 	// Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	int width = glutGet(GLUT_WINDOW_WIDTH);
+	int height = glutGet(GLUT_WINDOW_HEIGHT);
+	glViewport(0, 0, width, height);
 
 	// Enable the shader program
 	assert(ShaderProgram != 0);
@@ -140,6 +175,9 @@ void display() {
     //glUniform3fv(trULocation, 1, Translation.get());
     //glUniform1f(sULocation, Scaling);
 
+	Cam.ar = (1.0f * width) / height;
+	Matrix4f camTransformation = computeCameraTransform(Cam);
+
 	// Set the uniform variable for the vertex transformation
 	Matrix4f transformation =
 		Matrix4f::createTranslation(Translation) *
@@ -147,14 +185,16 @@ void display() {
 		Matrix4f::createScaling(Scaling, Scaling, Scaling);
 	//cout << "RotationX " << RotationX.get() << endl;
 	//cout << "RotationY " << RotationY.get() << endl;
-	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, transformation.get());
+	//glUniformMatrix4fv(TrLocation, 1, GL_FALSE, transformation.get());
+	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, camTransformation.get());
    
 	// Set the uniform variable for the texture unit (texture unit 0)
 	//glUniform1i(SamplerLocation, 0);
 
 	//Copied from Tutorial 6
 	Vector3f tempCamPosition;
-	tempCamPosition.set(0.f, 0.f, 0.f);
+	//tempCamPosition.set(0.f, 0.f, 0.f);
+	tempCamPosition = Cam.position;
 	glUniform3fv(CameraPositionLoc, 1, tempCamPosition.get());
 
 	//Copied from Tutorial 6 
@@ -220,7 +260,38 @@ void idle() {
 
 /// Called whenever a keyboard button is pressed (only ASCII characters)
 void keyboard(unsigned char key, int x, int y) {
+	Vector3f right;
 	switch(tolower(key)) {
+	case 'r': // Reset camera status
+		Cam.position.set(0.f, 0.f, 0.f);
+		Cam.target.set(0.f, 0.f, -1.f);
+		Cam.up.set(0.f, 1.f, 0.f);
+		Cam.fov = 30.f;
+		Cam.ar = 1.f;
+		Cam.zNear = 0.1f;
+		Cam.zFar = 100.f;
+		Cam.zoom = 1.f;
+		break;
+	case 'w':
+		Cam.position += Cam.target * 0.1f;
+		break;
+	case 'a':
+		right = Cam.target.cross(Cam.up);
+		Cam.position -= right * 0.1f;
+		break;
+	case 's':
+		Cam.position -= Cam.target * 0.1f;
+		break;
+	case 'd':
+		right = Cam.target.cross(Cam.up);
+		Cam.position += right * 0.1f;
+		break;
+	case 'c':
+		Cam.position -= Cam.up * 0.1f;
+		break;
+	case ' ':
+		Cam.position += Cam.up * 0.1f;
+		break;
 	case 'g': // show the current OpenGL version
 		cout << "OpenGL version " << glGetString(GL_VERSION) << endl;
 		break;
@@ -229,19 +300,17 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'p': // change to wireframe rendering
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glutPostRedisplay();
 		break;
 	case 'o': // change to polygon rendering
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glutPostRedisplay();
 		break;
-	case 'r':
+	case 'l':
 		cout << "Re-loading shaders..." << endl;
 		if(initShaders()) {
 			cout << "> done." << endl;
-			glutPostRedisplay();
 		}		
 	}
+	glutPostRedisplay();
 }
 
 /// Called whenever a mouse event occur (press or release)
@@ -255,28 +324,47 @@ void mouse(int button, int state, int x, int y) {
 /// Called whenever the mouse is moving while a button is pressed
 void motion(int x, int y) {
 	if (MouseButton == GLUT_RIGHT_BUTTON) {
+		//Old way
 		Translation.x() += 0.003f * (x - MouseX); // Accumulate translation amount
 		Translation.y() += 0.003f * (MouseY - y);
+		Cam.position += Cam.target.cross(Cam.up) * 0.003f * (x - MouseX);
+		Cam.position += Cam.target * 0.003f * (MouseY - y);
+
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_MIDDLE_BUTTON) {
-		cout << "(MouseY - y)" << (MouseY - y) << endl;
-		Scaling += 0.003f * (MouseY - y); // Accumulate scaling amount
+		// Old way of scaling
+		//Scaling += 0.003f * (MouseY - y); // Accumulate scaling amount
+		//Cam.zoom = max(0.001f, Cam.zoom + 0.003f * (y - MouseY)); //TODO
+		Cam.zoom += 0.003f * (y - MouseY);
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_LEFT_BUTTON) {
-		cout << "Left Button..." << endl; //TODO
+
+		//Old way of rotation
+		
 		Matrix4f rx, ry;	// compute the rotation matrices
-		//cout << "rx " << rx.get() << endl; //TODO
-		//cout << "(MouseY - y)" << (MouseY - y) << endl;
-		//cout << "rx " << rx.get << endl; //TODO
 		rx.rotate(-2.0f * (MouseY - y), Vector3f(1, 0, 0));
 		ry.rotate(2.0f * (x - MouseX), Vector3f(0, 1, 0));
-		//cout << "rx " << rx << endl; //TODO
 		RotationX *= rx;	// accumulate the rotation
 		RotationY *= ry;
+		
+		
+
+		Matrix4f ry2, rr;
+
+		// "horizontal" rotation
+		ry2.rotate(0.1f * (MouseX - x), Vector3f(0, 1, 0));
+		Cam.target = ry2 * Cam.target;
+		Cam.up = ry2 * Cam.up;
+
+		// "vertical" rotation
+		rr.rotate(0.1f * (MouseY - y), Cam.target.cross(Cam.up));
+		Cam.up = rr * Cam.up;
+		Cam.target = rr * Cam.target;
+
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
@@ -459,6 +547,35 @@ bool initShaders() {
 	return true;
 } /* initShaders() */
 
+
+// TODO Move to own Camera class
+/// Return the transformation matrix corresponding to the specified camera
+Matrix4f computeCameraTransform(const Camera& cam) {
+	// camera rotation
+	Vector3f t = cam.target.getNormalized();
+	Vector3f u = cam.up.getNormalized();
+	Vector3f r = t.cross(u);
+	Matrix4f camR(r.x(), r.y(), r.z(), 0.f,
+		u.x(), u.y(), u.z(), 0.f,
+		-t.x(), -t.y(), -t.z(), 0.f,
+		0.f, 0.f, 0.f, 1.f);
+
+	// camera translation
+	Matrix4f camT = Matrix4f::createTranslation(-cam.position);
+
+	// perspective projection
+	Matrix4f prj = Matrix4f::createPerspectivePrj(cam.fov, cam.ar, cam.zNear, cam.zFar);
+
+	// scaling due to zooming
+	Matrix4f camZoom = Matrix4f::createScaling(cam.zoom, cam.zoom, 1.f);
+
+	// Final transformation. Notice the multiplication order
+	// First vertices are moved in camera space
+	// Then the perspective projection puts them in clip space
+	// And a final zooming factor is applied in clip space
+	return camZoom * prj * camR  * camT;
+
+} /* computeCameraTransform() */
 
 /// Read the specified file and return its content
 string readTextFile(const string& pathAndFileName) {

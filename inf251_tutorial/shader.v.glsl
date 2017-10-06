@@ -111,16 +111,16 @@ void main() {
 	vec3 amb_color = clamp(
 			material_a_color * d_light_a_color * d_light_a_intensity,
 			0.0, 1.0);
-	//amb_color = vec3(0.5,0.0,0.0); // TODO
+	//amb_color = vec3(0.0,0.0,0.0); // TODO
 	vec3 diff_color = clamp(
 			material_d_color * dot_d_light_normal * d_light_d_intensity,
 			0.0, 1.0);
-	//diff_color = vec3(0.0,0.5,0.0);
+	//diff_color = vec3(0.0,0.0,0.0);
 	vec3 spec_color = clamp(
 			material_s_color *  
 			pow(dot(d_reflected_dir_nn, view_dir_nn), material_shininess),
 			0.0, 1.0);
-	spec_color = vec3(0.0,0.0,0.0); // TODO Camera not right
+	//spec_color = vec3(0.0,0.0,0.0); // TODO Camera not right
 
 	
 	color = clamp(
