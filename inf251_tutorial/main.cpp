@@ -306,6 +306,17 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'q':  // terminate the application
 		exit(0);
 		break;
+	case 'i':  // print info about camera
+		cout << "Camera Info:" << endl;
+		cout << "Position: (" << Cam.position.x() << "," << Cam.position.y() << "," << Cam.position.z() << ")" << endl;
+		cout << "Target: (" << Cam.target.x() << "," << Cam.target.y() << "," << Cam.target.z() << ")" << endl;
+		cout << "Up: (" << Cam.up.x() << "," << Cam.up.y() << "," << Cam.up.z() << ")" << endl;
+		cout << "Field of view: " << Cam.fov << endl;
+		cout << "Aspect Ratio: " << Cam.ar << endl;
+		cout << "Depth of the near plane: " << Cam.zNear << endl;
+		cout << "Depth of the far plane: " << Cam.zFar << endl;
+		cout << "Zoom: " << Cam.zoom << endl;
+		break;
 	case 'p': // change to wireframe rendering
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		break;
@@ -388,7 +399,9 @@ bool initMesh() {
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}
-	//Model.normalize();
+	
+	Model.normalize();
+
 	if (Model.hasPositions()) {
 		cout << "Model has positions" << endl;
 	} else {
