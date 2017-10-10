@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "model_obj.h"
+#include "ModelObj.h"
 #include "Vector3.h"
 #include "Matrix4.h"
 
