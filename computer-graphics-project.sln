@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inf251_tutorial", "inf251_tutorial\inf251_tutorial.vcxproj", "{85E72E81-BAFB-4FA5-B4A8-31A50D9FB036}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "computer-graphics-project", "computer-graphics-project\computer-graphics-project.vcxproj", "{85E72E81-BAFB-4FA5-B4A8-31A50D9FB036}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
