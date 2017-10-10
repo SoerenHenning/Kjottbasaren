@@ -41,6 +41,7 @@ void motion(int, int);
 bool initMesh();
 bool initShaders();
 Matrix4f computeCameraTransform(const Camera&);
+void initCamera(Camera&);
 string readTextFile(const string&);
 
 
@@ -124,14 +125,7 @@ int main(int argc, char **argv) {
 
 	// Initialize program variables
 	// Camera 
-	Cam.position.set(0.f, 0.f, 0.f);
-	Cam.target.set(0.f, 0.f, -1.f);
-	Cam.up.set(0.f, 1.f, 0.f);
-	Cam.fov = 30.f;
-	Cam.ar = 1.f; // will be correctly initialized in the "display()" method
-	Cam.zNear = 0.1f;
-	Cam.zFar = 100.f;
-	Cam.zoom = 1.f;
+	initCamera(Cam);
 
 	// Shaders & mesh
 	if (!initShaders() || !initMesh()) {
@@ -241,14 +235,7 @@ void keyboard(unsigned char key, int x, int y) {
 	Vector3f right;
 	switch(tolower(key)) {
 	case 'r': // Reset camera status
-		Cam.position.set(0.f, 0.f, 0.f);
-		Cam.target.set(0.f, 0.f, -1.f);
-		Cam.up.set(0.f, 1.f, 0.f);
-		Cam.fov = 30.f;
-		Cam.ar = 1.f;
-		Cam.zNear = 0.1f;
-		Cam.zFar = 100.f;
-		Cam.zoom = 1.f;
+		initCamera(Cam);
 		break;
 	case 'w':
 		Cam.position += Cam.target * 0.1f;
@@ -556,6 +543,19 @@ Matrix4f computeCameraTransform(const Camera& cam) {
 	return camZoom * prj * camR  * camT;
 
 } /* computeCameraTransform() */
+
+
+// TODO Move to own Camera class
+void initCamera(Camera& cam) {
+	cam.position.set(-1.3f, 0.5f, 0.6f);
+	cam.target.set(0.8f, -0.4f, -0.4f);
+	cam.up.set(0.4f, 1.f, -0.2f);
+	cam.fov = 30.f;
+	cam.ar = 1.f; // will be correctly initialized in the "display()" method
+	cam.zNear = 0.1f;
+	cam.zFar = 100.f;
+	cam.zoom = 1.f;
+} /* initCamera() */
 
 /// Read the specified file and return its content
 string readTextFile(const string& pathAndFileName) {
