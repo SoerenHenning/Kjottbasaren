@@ -129,12 +129,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="model_obj.h" />
+    <ClInclude Include="ModelObj.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ModelObj.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="model_obj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.f.glsl" />
