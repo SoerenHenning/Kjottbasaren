@@ -71,11 +71,6 @@ GLint MaterialDColorLoc = -1;
 GLint MaterialSColorLoc = -1;
 GLint MaterialShineLoc = -1;
 
-// Vertex transformation
-Matrix4f RotationX, RotationY;		///< Rotation (along X and Y axis)
-Vector3f Translation;	///< Translation
-float Scaling;			///< Scaling
-
 // Mouse interaction
 int MouseX, MouseY;		///< The last position of the mouse
 int MouseButton;		///< The last mouse button pressed or released
@@ -95,7 +90,7 @@ int main(int argc, char **argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(800, 600);
 	glutInitWindowPosition(300, 50);
-	glutCreateWindow("OpenGL Tutorial");
+	glutCreateWindow("Computer Graphics Project");
 
 	// Initialize OpenGL callbacks
 	glutDisplayFunc(display);
@@ -126,11 +121,6 @@ int main(int argc, char **argv) {
     //glPolygonMode(GL_FRONT, GL_LINE);   // draw polygons as wireframe
 	glPolygonMode(GL_FRONT, GL_FILL); 
 		
-	// Transformation
-	RotationX.identity();
-	RotationY.identity();
-	Translation.set(0.0f, 0.0f, 0.0f);
-	Scaling = 1.0f; 
 
 	// Initialize program variables
 	// Camera 
@@ -180,41 +170,27 @@ void display() {
 	Cam.ar = (1.0f * width) / height;
 	Matrix4f camTransformation = computeCameraTransform(Cam);
 
-	// Set the uniform variable for the vertex transformation
-	Matrix4f transformation =
-		Matrix4f::createTranslation(Translation) *
-		RotationX * RotationY *
-		Matrix4f::createScaling(Scaling, Scaling, Scaling);
-	//cout << "RotationX " << RotationX.get() << endl;
-	//cout << "RotationY " << RotationY.get() << endl;
-	//glUniformMatrix4fv(TrLocation, 1, GL_FALSE, transformation.get());
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, camTransformation.get());
    
 	// Set the uniform variable for the texture unit (texture unit 0)
 	//glUniform1i(SamplerLocation, 0);
 
-	//Copied from Tutorial 6
-	Vector3f tempCamPosition;
-	//tempCamPosition.set(0.f, 0.f, 0.f);
-	tempCamPosition = Cam.position;
-	glUniform3fv(CameraPositionLoc, 1, tempCamPosition.get());
+	glUniform3fv(CameraPositionLoc, 1, Cam.position.get());
 
-	//Copied from Tutorial 6 
 	// Set the light parameters
-	glUniform3f(DLightDirLoc, 0.5f, -1.5f, -1.0f); // u
-	glUniform3f(DLightAColorLoc, 0.5f, 0.3f, 0.0f); // u
+	glUniform3f(DLightDirLoc, 0.5f, -1.5f, -1.0f); // used
+	glUniform3f(DLightAColorLoc, 0.5f, 0.3f, 0.0f); // used
 	glUniform3f(DLightDColorLoc, 0.5f, 0.4f, 0.3f);
 	glUniform3f(DLightSColorLoc, 0.6f, 0.6f, 0.7f);
-	glUniform1f(DLightAIntensityLoc, 1.0f); // u
-	glUniform1f(DLightDIntensityLoc, 1.0f); // u
-	glUniform1f(DLightSIntensityLoc, 1.0f); // uu
+	glUniform1f(DLightAIntensityLoc, 1.0f); // used
+	glUniform1f(DLightDIntensityLoc, 1.0f); // used
+	glUniform1f(DLightSIntensityLoc, 1.0f); // currently unused
 
-	//Copied from Tutorial 6 
 	// Set the material parameters for the pyramid
-	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // u
-	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // u
-	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // u
-	glUniform1f(MaterialShineLoc, 20.0f); // u
+	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // used
+	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // used
+	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
+	glUniform1f(MaterialShineLoc, 20.0f); // used
 
 	// Enable the vertex attributes and set their format
 	glEnableVertexAttribArray(0);
@@ -343,9 +319,6 @@ void mouse(int button, int state, int x, int y) {
 /// Called whenever the mouse is moving while a button is pressed
 void motion(int x, int y) {
 	if (MouseButton == GLUT_RIGHT_BUTTON) {
-		//Old way
-		Translation.x() += 0.003f * (x - MouseX); // Accumulate translation amount
-		Translation.y() += 0.003f * (MouseY - y);
 		Cam.position += Cam.target.cross(Cam.up) * 0.003f * (x - MouseX);
 		Cam.position += Cam.target * 0.003f * (MouseY - y);
 
@@ -353,24 +326,11 @@ void motion(int x, int y) {
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_MIDDLE_BUTTON) {
-		// Old way of scaling
-		//Scaling += 0.003f * (MouseY - y); // Accumulate scaling amount
 		Cam.zoom = max(0.001f, Cam.zoom + 0.003f * (y - MouseY));		
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_LEFT_BUTTON) {
-
-		//Old way of rotation
-		
-		Matrix4f rx, ry;	// compute the rotation matrices
-		rx.rotate(-2.0f * (MouseY - y), Vector3f(1, 0, 0));
-		ry.rotate(2.0f * (x - MouseX), Vector3f(0, 1, 0));
-		RotationX *= rx;	// accumulate the rotation
-		RotationY *= ry;
-		
-		
-
 		Matrix4f ry2, rr;
 
 		// "horizontal" rotation
