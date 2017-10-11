@@ -192,7 +192,7 @@ void display() {
 	glUniform1f(DLightSIntensityLoc, 1.0f); // currently unused
 
 	// Set the light parameters
-	glUniform3f(PLightDirLoc, 0.5f, -1.5f, -1.0f); // TODO is the camera position
+	glUniform3f(PLightDirLoc, Cam.position.x(), Cam.position.y(), Cam.position.z()); // TODO currently not used, should be called position
 	glUniform3f(PLightAColorLoc, 0.5f, 0.3f, 0.0f); //
 	glUniform3f(PLightDColorLoc, 0.5f, 0.4f, 0.3f);
 	glUniform3f(PLightSColorLoc, 0.6f, 0.6f, 0.7f);
@@ -203,7 +203,9 @@ void display() {
 	glUniform1f(PLightDIntensityKSquareLoc, 0.5f); // used
 	glUniform1f(PLightSIntensityLoc, 1.0f); // 
 
-	// Set the material parameters for the pyramid
+	// START Draw House -> move this to own function later
+
+	// Set the material parameters for the house
 	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // used
 	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // used
 	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
@@ -214,7 +216,6 @@ void display() {
 	glVertexAttribPointer(0, 3,	GL_FLOAT, GL_FALSE, 
 		sizeof(ModelOBJ::Vertex), 
 		reinterpret_cast<const GLvoid*>(0));
-
 	
     glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2,	GL_FLOAT, GL_FALSE, 
@@ -225,18 +226,14 @@ void display() {
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
 
-
-
 	// Bind the buffers
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 
 	// Draw the elements on the GPU
-	glDrawElements(
-		GL_TRIANGLES,
-		Model.getNumberOfIndices(), 
-		GL_UNSIGNED_INT,
-		0);
+	glDrawElements(GL_TRIANGLES, Model.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+
+	// END Draw House
 
 	// Disable the vertex attributes (not necessary but recommended)
 	glDisableVertexAttribArray(0);
@@ -406,6 +403,14 @@ bool initMesh() {
 		Model.getNumberOfVertices() * sizeof(ModelOBJ::Vertex), 
 		Model.getVertexBuffer(),
 		GL_STATIC_DRAW);
+
+	// IBO
+	glGenBuffers(1, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		3 * Model.getNumberOfTriangles() * sizeof(int),
+		Model.getIndexBuffer(),
+		GL_STATIC_DRAW);
 	
 	/*
 	const ModelOBJ::Vertex *vb = Model.getVertexBuffer();
@@ -424,13 +429,7 @@ bool initMesh() {
 	*/
 
 
-	// IBO
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		3 * Model.getNumberOfTriangles() * sizeof(int),
-		Model.getIndexBuffer(),			
-		GL_STATIC_DRAW);
+	
 
 
     	
