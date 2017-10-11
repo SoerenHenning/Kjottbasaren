@@ -38,7 +38,7 @@ void mouse(int, int, int, int);
 void motion(int, int);
 
 // --- Other methods ------------------------------------------------------------------------------
-bool initMesh();
+bool initMesh(ModelOBJ&, string, GLuint&, GLuint&);
 bool initShaders();
 Matrix4f computeCameraTransform(const Camera&);
 void initCamera(Camera&);
@@ -46,10 +46,17 @@ string readTextFile(const string&);
 
 
 // --- Global variables ---------------------------------------------------------------------------
-// 3D model
-ModelOBJ Model;		///< A 3D model
-GLuint VBO = 0;		///< A vertex buffer object
-GLuint IBO = 0;		///< An index buffer object
+// 3D models
+// House
+ModelOBJ houseModel;		///< A 3D model
+string houseModelFilename = "capsule\\FinalBuilding.obj";
+GLuint houseVBO = 0;		///< A vertex buffer object
+GLuint houseIBO = 0;		///< An index buffer object
+// Ground
+ModelOBJ groundModel;		///< A 3D model
+string groundModelFilename = "capsule\\plane.obj";
+GLuint groundVBO = 0;		///< A vertex buffer object
+GLuint groundIBO = 0;		///< An index buffer object
 
 
 // Shaders
@@ -85,8 +92,6 @@ GLint MaterialShineLoc = -1;
 // Mouse interaction
 int MouseX, MouseY;		///< The last position of the mouse
 int MouseButton;		///< The last mouse button pressed or released
-
-
 
 
 // Camera
@@ -138,8 +143,12 @@ int main(int argc, char **argv) {
 	// Camera 
 	initCamera(Cam);
 
-	// Shaders & mesh
-	if (!initShaders() || !initMesh()) {
+	// Mesh
+	initMesh(houseModel, houseModelFilename, houseVBO, houseIBO);
+	initMesh(groundModel, groundModelFilename, groundVBO, groundIBO);
+
+	// Shaders
+	if (!initShaders()) {
 		cout << "Press Enter to exit..." << endl;
 		getchar();
 		return -1;
@@ -204,12 +213,16 @@ void display() {
 	glUniform1f(PLightSIntensityLoc, 1.0f); // 
 
 	// START Draw House -> move this to own function later
-
+	
 	// Set the material parameters for the house
 	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // used
 	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // used
 	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
 	glUniform1f(MaterialShineLoc, 20.0f); // used
+
+	// Bind the buffers
+	glBindBuffer(GL_ARRAY_BUFFER, houseVBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, houseIBO);
 
 	// Enable the vertex attributes and set their format
 	glEnableVertexAttribArray(0);
@@ -226,18 +239,50 @@ void display() {
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
 
+	// Draw the elements on the GPU
+	glDrawElements(GL_TRIANGLES, houseModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+	
+	// END Draw House
+
+	// START Draw Ground -> move this to own function later
+	
+	// Set the material parameters for the ground
+	glUniform3f(MaterialAColorLoc, 0.2f, 0.2f, 0.2f); // used
+	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // used
+	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
+	glUniform1f(MaterialShineLoc, 10.0f); // used
+
 	// Bind the buffers
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBindBuffer(GL_ARRAY_BUFFER, groundVBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, groundIBO);
+
+	// Enable the vertex attributes and set their format
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+		sizeof(ModelOBJ::Vertex),
+		reinterpret_cast<const GLvoid*>(0));
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+		sizeof(ModelOBJ::Vertex),
+		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
+		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
 
 	// Draw the elements on the GPU
-	glDrawElements(GL_TRIANGLES, Model.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, groundModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+	
+	// END Draw Ground
 
-	// END Draw House
+	
+	
 
 	// Disable the vertex attributes (not necessary but recommended)
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 
 	// Disable the shader program (not necessary but recommended)
 	glUseProgram(0);
@@ -368,9 +413,9 @@ void motion(int x, int y) {
 // ************************************************************************************************
 // *** Other methods implementation ***************************************************************
 /// Initialize buffer objects
-bool initMesh() {
+bool initMesh(ModelOBJ& Model, string filename, GLuint& VBO, GLuint& IBO) {
 	// Load the OBJ model
-	if(!Model.import("capsule\\FinalBuilding.obj")) { //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
+	if(!Model.import(filename.c_str())) {  // "capsule\\FinalBuilding.obj" //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}
@@ -392,9 +437,6 @@ bool initMesh() {
 	} else {
 		cout << "Model does not have normals" << endl;
 	}
-	
-    // Notice that normals may not be stored in the model
-    // This issue will be dealt with in the next lecture
 
 	// VBO
 	glGenBuffers(1, &VBO);
