@@ -292,11 +292,10 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'q':  // terminate the application
 		exit(0);
 		break;
-	case ';':  // switch perspectiv to orth
+	case 'b':  // switch perspectiv to orth
 		if (prjType == 0) {
 			prjType = 1;
-		}
-		else {
+		} else {
 			prjType = 0;
 		}
 		display();
