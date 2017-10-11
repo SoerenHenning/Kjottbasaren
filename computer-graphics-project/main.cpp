@@ -67,6 +67,16 @@ GLint DLightSColorLoc = -1;
 GLint DLightAIntensityLoc = -1;
 GLint DLightDIntensityLoc = -1;
 GLint DLightSIntensityLoc = -1;
+GLint PLightDirLoc = -1;
+GLint PLightAColorLoc = -1;
+GLint PLightDColorLoc = -1;
+GLint PLightSColorLoc = -1;
+GLint PLightAIntensityLoc = -1;
+GLint PLightDIntensityKConstLoc = -1;
+GLint PLightDIntensityKLinearLoc = -1;
+GLint PLightDIntensityKSquareLoc = -1;
+GLint PLightDIntensityLoc = -1;
+GLint PLightSIntensityLoc = -1;
 GLint MaterialAColorLoc = -1;
 GLint MaterialDColorLoc = -1;
 GLint MaterialSColorLoc = -1;
@@ -179,6 +189,18 @@ void display() {
 	glUniform1f(DLightAIntensityLoc, 1.0f); // used
 	glUniform1f(DLightDIntensityLoc, 1.0f); // used
 	glUniform1f(DLightSIntensityLoc, 1.0f); // currently unused
+
+	// Set the light parameters
+	glUniform3f(PLightDirLoc, 0.5f, -1.5f, -1.0f); // TODO is the camera position
+	glUniform3f(PLightAColorLoc, 0.5f, 0.3f, 0.0f); //
+	glUniform3f(PLightDColorLoc, 0.5f, 0.4f, 0.3f);
+	glUniform3f(PLightSColorLoc, 0.6f, 0.6f, 0.7f);
+	glUniform1f(PLightAIntensityLoc, 1.0f); // 
+	glUniform1f(PLightDIntensityLoc, 1.0f); // 
+	glUniform1f(PLightDIntensityKConstLoc, 0.0f); // used
+	glUniform1f(PLightDIntensityKLinearLoc, 0.0f); // used
+	glUniform1f(PLightDIntensityKSquareLoc, 0.5f); // used
+	glUniform1f(PLightSIntensityLoc, 1.0f); // 
 
 	// Set the material parameters for the pyramid
 	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // used
@@ -495,6 +517,7 @@ bool initShaders() {
 	assert(TrLocation != -1);
 
 	CameraPositionLoc = glGetUniformLocation(ShaderProgram, "camera_position");
+
 	DLightDirLoc = glGetUniformLocation(ShaderProgram, "d_light_direction");
 	DLightAColorLoc = glGetUniformLocation(ShaderProgram, "d_light_a_color");
 	DLightDColorLoc = glGetUniformLocation(ShaderProgram, "d_light_d_color");
@@ -502,6 +525,18 @@ bool initShaders() {
 	DLightAIntensityLoc = glGetUniformLocation(ShaderProgram, "d_light_a_intensity");
 	DLightDIntensityLoc = glGetUniformLocation(ShaderProgram, "d_light_d_intensity");
 	DLightSIntensityLoc = glGetUniformLocation(ShaderProgram, "d_light_s_intensity");
+
+	PLightDirLoc = glGetUniformLocation(ShaderProgram, "p_light_direction");
+	PLightAColorLoc = glGetUniformLocation(ShaderProgram, "p_light_a_color");
+	PLightDColorLoc = glGetUniformLocation(ShaderProgram, "p_light_d_color");
+	PLightSColorLoc = glGetUniformLocation(ShaderProgram, "p_light_s_color");
+	PLightAIntensityLoc = glGetUniformLocation(ShaderProgram, "p_light_a_intensity");
+	PLightDIntensityLoc = glGetUniformLocation(ShaderProgram, "p_light_d_intensity");
+	PLightDIntensityKConstLoc = glGetUniformLocation(ShaderProgram, "p_light_d_intensity_k_const");
+	PLightDIntensityKLinearLoc = glGetUniformLocation(ShaderProgram, "p_light_d_intensity_k_linear");
+	PLightDIntensityKSquareLoc = glGetUniformLocation(ShaderProgram, "p_light_d_intensity_k_square");
+	PLightSIntensityLoc = glGetUniformLocation(ShaderProgram, "p_light_s_intensity");
+
 	MaterialAColorLoc = glGetUniformLocation(ShaderProgram, "material_a_color");
 	MaterialDColorLoc = glGetUniformLocation(ShaderProgram, "material_d_color");
 	MaterialSColorLoc = glGetUniformLocation(ShaderProgram, "material_s_color");
