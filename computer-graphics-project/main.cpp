@@ -91,6 +91,7 @@ int MouseButton;		///< The last mouse button pressed or released
 
 // Camera
 Camera Cam;
+int prjType = 0; // Projection type, 0 is perspective, 1 is orth
 
 // --- main() -------------------------------------------------------------------------------------
 /// The entry point of the application
@@ -130,7 +131,7 @@ int main(int argc, char **argv) {
 	//glDepthFunc(GL_LESS);
 
     //glPolygonMode(GL_FRONT, GL_LINE);   // draw polygons as wireframe
-	glPolygonMode(GL_FRONT, GL_FILL); 
+	glPolygonMode(GL_FRONT, GL_FILL);   // draw polygons as solid
 		
 
 	// Initialize program variables
@@ -290,6 +291,15 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'q':  // terminate the application
 		exit(0);
+		break;
+	case ';':  // switch perspectiv to orth
+		if (prjType == 0) {
+			prjType = 1;
+		}
+		else {
+			prjType = 0;
+		}
+		display();
 		break;
 	case 'i':  // print info about camera
 		cout << "Camera Info:" << endl;
@@ -564,9 +574,19 @@ Matrix4f computeCameraTransform(const Camera& cam) {
 
 	// camera translation
 	Matrix4f camT = Matrix4f::createTranslation(-cam.position);
+	Matrix4f prj;
 
-	// perspective projection
-	Matrix4f prj = Matrix4f::createPerspectivePrj(cam.fov, cam.ar, cam.zNear, cam.zFar);
+	if (prjType == 1) {
+		// orthographic projection
+		prj = Matrix4f::createOrthoPrj(-0.25f*cam.ar, 0.25f*cam.ar, -0.25f*cam.ar, 0.25f*cam.ar, cam.zNear, cam.zFar);
+	}
+	else {
+		// perspective projection
+		prj = Matrix4f::createPerspectivePrj(cam.fov, cam.ar, cam.zNear, cam.zFar);
+	}
+
+
+	
 
 	// scaling due to zooming
 	Matrix4f camZoom = Matrix4f::createScaling(cam.zoom, cam.zoom, 1.f);
