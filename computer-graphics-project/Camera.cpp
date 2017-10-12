@@ -8,10 +8,12 @@ Camera::Camera(Vector3f position, Vector3f target) {
 	this->up = target.cross(Vector3f(0.0, 1.0, 0.0)).cross(target);
 
 	this->fieldOfView = 30.f;
-	this->aspectRatio = 1.f; // has to be correctly initialized in the "display()" method //TODO
+	this->aspectRatio = 1.f;
 	this->nearPlane = 0.1f;
 	this->farPlane = 100.f;
 	this->zoom = 1.f;
+
+	this->projectionType = Camera::Projection::PERSPECTIVE;
 }
 
 
@@ -89,7 +91,23 @@ void Camera::zoomIn(float value) {
 	this->zoom = max(0.001f, this->zoom + value);
 }
 
-Matrix4f Camera::getTransformationMatrix(Camera::Projection projectionType) {
+Camera::Projection Camera::getProjection() {
+	return this->projectionType;
+}
+
+void Camera::setProjection(Camera::Projection projection) {
+	this->projectionType = projection;
+}
+
+void Camera::toggleProjection() {
+	if (projectionType == Camera::Projection::PERSPECTIVE) {
+		projectionType = Camera::Projection::ORTHOGRAPHIC;
+	} else {
+		projectionType = Camera::Projection::PERSPECTIVE;
+	}
+}
+
+Matrix4f Camera::getTransformationMatrix() {
 	// Camera Rotation
 	Vector3f target = this->target.getNormalized();
 	Vector3f up = this->up.getNormalized();
@@ -105,7 +123,7 @@ Matrix4f Camera::getTransformationMatrix(Camera::Projection projectionType) {
 	// Projection
 	Matrix4f projection;
 	if (projectionType == Projection::ORTHOGRAPHIC) {
-		float height = 0.5f;
+		float height = 0.5f * 2;
 		float width = height * this->aspectRatio;
 		projection = Matrix4f::createOrthoPrj(-width / 2.f, width / 2.f, -height / 2.f, height / 2.f, this->nearPlane, this->farPlane);
 	} else {

@@ -80,7 +80,6 @@ int MouseButton;		///< The last mouse button pressed or released
 
 // Camera
 Camera* camera;
-Camera::Projection cameraProjection = Camera::Projection::PERSPECTIVE;
 
 // --- main() -------------------------------------------------------------------------------------
 /// The entry point of the application
@@ -160,7 +159,7 @@ void display() {
 	glUseProgram(ShaderProgram);
 
 	camera->setAspectRatio((1.0f * width) / height);
-	Matrix4f cameraTransformation = camera->getTransformationMatrix(cameraProjection);
+	Matrix4f cameraTransformation = camera->getTransformationMatrix();
 
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
    
@@ -313,11 +312,7 @@ void keyboard(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	case 'b':  // switch perspectiv to orth
-		if (cameraProjection == Camera::Projection::PERSPECTIVE) {
-			cameraProjection = Camera::Projection::ORTHOGRAPHIC;
-		} else {
-			cameraProjection = Camera::Projection::PERSPECTIVE;
-		}
+		camera->toggleProjection();
 		break;
 	case 'i':  // print info about camera
 		camera->printStatus();
