@@ -147,22 +147,6 @@ int main(int argc, char **argv) {
 	// Mesh
 	initMesh(houseModel, houseModelFilename, true, houseVBO, houseIBO);
 	initMesh(groundModel, groundModelFilename, false, groundVBO, groundIBO);
-	
-	// TODO Temp
-	const ModelOBJ::Vertex *vb = groundModel.getVertexBuffer();
-
-	for (int i = 0; i < groundModel.getNumberOfVertices(); i++) {
-	cout << "vb[" << i << "].position: (" << vb[i].position[0] << "," << vb[i].position[1] << "," << vb[i].position[2] << ")" << endl;
-	}
-
-	for (int i = 0; i < groundModel.getNumberOfVertices(); i++) {
-	cout << "vb[" << i << "].normal: (" << vb[i].normal[0] << "," << vb[i].normal[1] << "," << vb[i].normal[2] << ")" << endl;
-	}
-
-	for (int i = 0; i < groundModel.getNumberOfVertices(); i++) {
-	cout << "vb[" << i << "].texCoord: (" << vb[i].texCoord[0] << "," << vb[i].texCoord[1] << ")" << endl;
-	}
-	
 
 	// Shaders
 	if (!initShaders()) {
@@ -190,13 +174,6 @@ void display() {
 	// Enable the shader program
 	assert(ShaderProgram != 0);
 	glUseProgram(ShaderProgram);
-
-	// Set translation and scaling
-    //GLint trULocation = glGetUniformLocation(ShaderProgram, "translation");
-    //GLint sULocation = glGetUniformLocation(ShaderProgram, "scaling");
-    //assert(trULocation != -1 && sULocation != -1);  
-    //glUniform3fv(trULocation, 1, Translation.get());
-    //glUniform1f(sULocation, Scaling);
 
 	Cam.ar = (1.0f * width) / height;
 	Matrix4f camTransformation = computeCameraTransform(Cam);
@@ -441,22 +418,6 @@ bool initMesh(ModelOBJ& Model, string filename, bool normalize, GLuint& VBO, GLu
 	
 	if (normalize) {
 		Model.normalize();
-	}
-
-	if (Model.hasPositions()) {
-		cout << "Model has positions" << endl;
-	} else {
-		cout << "Model does not have positions" << endl;
-	}
-	if (Model.hasTextureCoords()) {
-		cout << "Model has texture coords" << endl;
-	} else {
-		cout << "Model does not have texture coords" << endl;
-	}
-	if (Model.hasNormals()) {
-		cout << "Model has normals" << endl;
-	} else {
-		cout << "Model does not have normals" << endl;
 	}
 
 	// VBO
