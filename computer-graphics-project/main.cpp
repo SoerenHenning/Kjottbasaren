@@ -11,6 +11,7 @@
 #include "Vector3.h"
 #include "Matrix4.h"
 #include "ModelObj.h"
+#include "Camera2.h"
 
 using namespace std;
 
@@ -96,6 +97,7 @@ int MouseButton;		///< The last mouse button pressed or released
 
 // Camera
 Camera Cam;
+Camera2* camera;
 int prjType = 0; // Projection type, 0 is perspective, 1 is orth
 
 // --- main() -------------------------------------------------------------------------------------
@@ -143,6 +145,7 @@ int main(int argc, char **argv) {
 	// Initialize program variables
 	// Camera 
 	initCamera(Cam);
+	camera = new Camera2(Cam.position, Cam.target);
 
 	// Mesh
 	initMesh(houseModel, houseModelFilename, true, houseVBO, houseIBO);
@@ -175,15 +178,18 @@ void display() {
 	assert(ShaderProgram != 0);
 	glUseProgram(ShaderProgram);
 
-	Cam.ar = (1.0f * width) / height;
-	Matrix4f camTransformation = computeCameraTransform(Cam);
+	Cam.ar = (1.0f * width) / height; //TODO remove
+	camera->setAspectRatio((1.0f * width) / height);
+	Matrix4f camTransformation = computeCameraTransform(Cam);  //TODO remove
+	Matrix4f cameraTransformation = camera->getTransformationMatrix();
 
-	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, camTransformation.get());
+	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
    
 	// Set the uniform variable for the texture unit (texture unit 0)
 	//glUniform1i(SamplerLocation, 0);
 
-	glUniform3fv(CameraPositionLoc, 1, Cam.position.get());
+	//glUniform3fv(CameraPositionLoc, 1, Cam.position.get()); //TODO remove
+	glUniform3fv(CameraPositionLoc, 1, camera->getPosition().get());
 
 	// Set the light parameters
 	glUniform3f(DLightDirLoc, 0.5f, -1.5f, -1.0f); // used
@@ -195,7 +201,7 @@ void display() {
 	glUniform1f(DLightSIntensityLoc, 1.0f); // currently unused
 
 	// Set the light parameters
-	glUniform3f(PLightDirLoc, Cam.position.x(), Cam.position.y(), Cam.position.z()); // TODO currently not used, should be called position
+	glUniform3f(PLightDirLoc, camera->getPosition().x(), camera->getPosition().y(), camera->getPosition().z()); // TODO currently not used, should be called position
 	glUniform3f(PLightAColorLoc, 0.5f, 0.3f, 0.0f); //
 	glUniform3f(PLightDColorLoc, 0.5f, 0.4f, 0.3f);
 	glUniform3f(PLightSColorLoc, 0.6f, 0.6f, 0.7f);
@@ -296,33 +302,42 @@ void keyboard(unsigned char key, int x, int y) {
 	Vector3f right;
 	switch(tolower(key)) {
 	case 'r': // Reset camera status
+		//TODO
 		initCamera(Cam);
 		break;
 	case 'w':
-		Cam.position += Cam.target * 0.1f;
+		Cam.position += Cam.target * 0.1f; //TODO remove
+		camera->moveForward(0.1f);
 		break;
 	case 'a':
-		right = Cam.target.cross(Cam.up);
-		Cam.position -= right * 0.1f;
+		right = Cam.target.cross(Cam.up); //TODO remove
+		Cam.position -= right * 0.1f; //TODO remove
+		camera->moveRight(-0.1f);
 		break;
 	case 's':
-		Cam.position -= Cam.target * 0.1f;
+		Cam.position -= Cam.target * 0.1f;  //TODO remove
+		camera->moveForward(-0.1f);
 		break;
 	case 'd':
-		right = Cam.target.cross(Cam.up);
-		Cam.position += right * 0.1f;
+		right = Cam.target.cross(Cam.up); //TODO remove
+		Cam.position += right * 0.1f; //TODO remove
+		camera->moveRight(0.1f);
 		break;
 	case 'c':
-		Cam.position -= Cam.up * 0.1f;
+		Cam.position -= Cam.up * 0.1f; //TODO remove
+		camera->moveUp(-0.1f);
 		break;
 	case ' ':
-		Cam.position += Cam.up * 0.1f;
+		Cam.position += Cam.up * 0.1f; //TODO remove
+		camera->moveUp(0.1f);
 		break;
 	case 'n':	// Increase field of view
-		Cam.fov = min(Cam.fov + 1.f, 179.f);
+		Cam.fov = min(Cam.fov + 1.f, 179.f); //TODO remove
+		camera->increaseFieldOfView(1.f);
 		break;
 	case 'm':	// Decrease field of view
-		Cam.fov = max(Cam.fov - 1.f, 1.f);
+		Cam.fov = max(Cam.fov - 1.f, 1.f);//TODO remove
+		camera->increaseFieldOfView(-1.f);
 		break;
 	case 'g': // show the current OpenGL version
 		cout << "OpenGL version " << glGetString(GL_VERSION) << endl;
@@ -339,6 +354,8 @@ void keyboard(unsigned char key, int x, int y) {
 		display();
 		break;
 	case 'i':  // print info about camera
+		camera->printStatus();
+		//TODO remove later
 		cout << "Camera Info:" << endl;
 		cout << "Position: (" << Cam.position.x() << "," << Cam.position.y() << "," << Cam.position.z() << ")" << endl;
 		cout << "Target: (" << Cam.target.x() << "," << Cam.target.y() << "," << Cam.target.z() << ")" << endl;
@@ -375,29 +392,35 @@ void mouse(int button, int state, int x, int y) {
 /// Called whenever the mouse is moving while a button is pressed
 void motion(int x, int y) {
 	if (MouseButton == GLUT_RIGHT_BUTTON) {
-		Cam.position += Cam.target.cross(Cam.up) * 0.003f * (x - MouseX);
-		Cam.position += Cam.target * 0.003f * (MouseY - y);
+		Cam.position += Cam.target.cross(Cam.up) * 0.003f * (x - MouseX); //TODO remove
+		Cam.position += Cam.target * 0.003f * (MouseY - y); //TODO remove
+		camera->moveRight(0.005f * (MouseX - x));
+		camera->moveForward(0.005f * (y - MouseY));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_MIDDLE_BUTTON) {
-		Cam.zoom = max(0.001f, Cam.zoom + 0.003f * (y - MouseY));		
+		Cam.zoom = max(0.001f, Cam.zoom + 0.003f * (y - MouseY));  //TODO remove
+		camera->zoomIn(0.003f * (y - MouseY));
+
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_LEFT_BUTTON) {
-		Matrix4f ry2, rr;
+		Matrix4f ry2, rr; //TODO remove
 
-		// "horizontal" rotation
-		ry2.rotate(0.1f * (MouseX - x), Vector3f(0, 1, 0));
-		Cam.target = ry2 * Cam.target;
-		Cam.up = ry2 * Cam.up;
+		// "horizontal" rotation //TODO remove
+		ry2.rotate(0.1f * (MouseX - x), Vector3f(0, 1, 0)); //TODO remove
+		Cam.target = ry2 * Cam.target; //TODO remove
+		Cam.up = ry2 * Cam.up; //TODO remove
+		camera->rotateHorizontal(0.2f * (MouseX - x));
 
-		// "vertical" rotation
-		rr.rotate(0.1f * (MouseY - y), Cam.target.cross(Cam.up));
-		Cam.up = rr * Cam.up;
-		Cam.target = rr * Cam.target;
+		// "vertical" rotation //TODO remove
+		rr.rotate(0.1f * (MouseY - y), Cam.target.cross(Cam.up)); //TODO remove
+		Cam.up = rr * Cam.up; //TODO remove
+		Cam.target = rr * Cam.target; //TODO remove
+		camera->rotateVertical(0.2f * (MouseY - y));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
@@ -606,9 +629,6 @@ Matrix4f computeCameraTransform(const Camera& cam) {
 		// perspective projection
 		prj = Matrix4f::createPerspectivePrj(cam.fov, cam.ar, cam.zNear, cam.zFar);
 	}
-
-
-	
 
 	// scaling due to zooming
 	Matrix4f camZoom = Matrix4f::createScaling(cam.zoom, cam.zoom, 1.f);

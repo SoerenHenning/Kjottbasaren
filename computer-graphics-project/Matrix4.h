@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include "Vector3.h"
 
 namespace __hidden__ {

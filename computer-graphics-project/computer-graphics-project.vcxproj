@@ -129,10 +129,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera2.h" />
+    <ClInclude Include="Matrix4.h" />
     <ClInclude Include="ModelObj.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera2.cpp" />
     <ClCompile Include="ModelObj.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
