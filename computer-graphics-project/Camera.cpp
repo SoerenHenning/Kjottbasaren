@@ -1,8 +1,8 @@
-#include "Camera2.h"
+#include "Camera.h"
 #include <algorithm>
 #include <cmath>
 
-Camera2::Camera2(Vector3f position, Vector3f target) {
+Camera::Camera(Vector3f position, Vector3f target) {
 	this->position = position;
 	this->target = target;
 	this->up = target.cross(Vector3f(0.0, 1.0, 0.0)).cross(target);
@@ -15,83 +15,81 @@ Camera2::Camera2(Vector3f position, Vector3f target) {
 }
 
 
-Camera2::~Camera2() {
+Camera::~Camera() {
 }
 
-Vector3f Camera2::getPosition() {
+Vector3f Camera::getPosition() {
 	return position;
 }
 
-void Camera2::moveForward(float value) {
+void Camera::moveForward(float value) {
 	this->position += this->target * value;
 }
 
-void Camera2::moveRight(float value) {
+void Camera::moveRight(float value) {
 	Vector3f right = this->target.cross(this->up);
 	this->position += right * value;
 }
 
-void Camera2::moveUp(float value) {
+void Camera::moveUp(float value) {
 	this->position += this->up * value;
 }
 
-Vector3f Camera2::getTarget() {
+Vector3f Camera::getTarget() {
 	return target;
 }
 
-Vector3f Camera2::getUp() {
+Vector3f Camera::getUp() {
 	return up;
 }
 
-void Camera2::rotateHorizontal(float value) {
+void Camera::rotateHorizontal(float value) {
 	Matrix4f rotationMatrix;
 	rotationMatrix.rotate(value, Vector3f(0, 1, 0));
 	this->target = rotationMatrix * this->target;
 	this->up = rotationMatrix * this->up;
 }
 
-void Camera2::rotateVertical(float value) {
+void Camera::rotateVertical(float value) {
 	Matrix4f rotationMatrix;
 	rotationMatrix.rotate(value, this->target.cross(this->up));
 	this->up = rotationMatrix * this->up;
 	this->target = rotationMatrix * this->target;
 }
 
-float Camera2::getFieldOfView() {
+float Camera::getFieldOfView() {
 	return this->fov;
 }
 
-void Camera2::increaseFieldOfView(float value) {
+void Camera::increaseFieldOfView(float value) {
 	this->fov = min(max(this->fov + value, 1.f), 179.f);
 }
 
-float Camera2::getAspectRatio() {
+float Camera::getAspectRatio() {
 	return this->ar;
 }
 
-void Camera2::setAspectRatio(float aspectRatio) {
+void Camera::setAspectRatio(float aspectRatio) {
 	this->ar = aspectRatio;
 }
 
-float Camera2::getNearPlane() {
+float Camera::getNearPlane() {
 	return this->zNear;
 }
 
-float Camera2::getFarPlane() {
+float Camera::getFarPlane() {
 	return this->zFar;
 }
 
-float Camera2::getZoom() {
+float Camera::getZoom() {
 	return this->zoom;
 }
 
-void Camera2::zoomIn(float value) {
+void Camera::zoomIn(float value) {
 	this->zoom = max(0.001f, this->zoom + value);
 }
 
-Matrix4f Camera2::getTransformationMatrix() {
-	bool prjType = 0; //TODO temp
-
+Matrix4f Camera::getTransformationMatrix(Camera::Projection projection) {
 	// camera rotation
 	Vector3f t = this->target.getNormalized();
 	Vector3f u = this->up.getNormalized();
@@ -105,12 +103,13 @@ Matrix4f Camera2::getTransformationMatrix() {
 	Matrix4f camT = Matrix4f::createTranslation(-this->position);
 	Matrix4f prj;
 
-	if (prjType == 1) {
-		// orthographic projection
+	switch (projection) {
+	case Projection::ORTHOGRAPHIC:
 		prj = Matrix4f::createOrthoPrj(-0.25f*this->ar, 0.25f*this->ar, -0.25f*this->ar, 0.25f*this->ar, this->zNear, this->zFar);
-	} else {
-		// perspective projection
+		break;
+	default:
 		prj = Matrix4f::createPerspectivePrj(this->fov, this->ar, this->zNear, this->zFar);
+		break;
 	}
 
 	// scaling due to zooming
@@ -123,7 +122,7 @@ Matrix4f Camera2::getTransformationMatrix() {
 	return camZoom * prj * camR  * camT;
 }
 
-void Camera2::printStatus() {
+void Camera::printStatus() {
 	cout << "Camera Info:" << endl;
 	cout << "Position: (" << this->position.x() << "," << this->position.y() << "," << this->position.z() << ")" << endl;
 	cout << "Target: (" << this->target.x() << "," << this->target.y() << "," << this->target.z() << ")" << endl;

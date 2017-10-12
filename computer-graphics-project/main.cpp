@@ -11,25 +11,9 @@
 #include "Vector3.h"
 #include "Matrix4.h"
 #include "ModelObj.h"
-#include "Camera2.h"
+#include "Camera.h"
 
 using namespace std;
-
-// TODO Move to own class
-/// A simple structure to handle a moving camera (perspective projection)
-struct Camera {
-	Vector3f position;	///< the position of the camera
-	Vector3f target;	///< the direction the camera is looking at
-	Vector3f up;		///< the up vector of the camera
-
-	float fov;			///< camera field of view
-	float ar;			///< camera aspect ratio
-
-	float zNear, zFar;	///< depth of the near and far plane
-
-	float zoom;			///< an additional scaling parameter
-};
-
 
 // --- OpenGL callbacks ---------------------------------------------------------------------------
 void display();
@@ -41,8 +25,7 @@ void motion(int, int);
 // --- Other methods ------------------------------------------------------------------------------
 bool initMesh(ModelOBJ&, string, bool, GLuint&, GLuint&);
 bool initShaders();
-Matrix4f computeCameraTransform(const Camera&);
-void initCamera(Camera&);
+void initCamera();
 string readTextFile(const string&);
 
 
@@ -96,9 +79,8 @@ int MouseButton;		///< The last mouse button pressed or released
 
 
 // Camera
-Camera Cam;
-Camera2* camera;
-int prjType = 0; // Projection type, 0 is perspective, 1 is orth
+Camera* camera;
+Camera::Projection cameraProjection = Camera::Projection::PERSPECTIVE;
 
 // --- main() -------------------------------------------------------------------------------------
 /// The entry point of the application
@@ -144,8 +126,7 @@ int main(int argc, char **argv) {
 
 	// Initialize program variables
 	// Camera 
-	initCamera(Cam);
-	camera = new Camera2(Cam.position, Cam.target);
+	initCamera();
 
 	// Mesh
 	initMesh(houseModel, houseModelFilename, true, houseVBO, houseIBO);
@@ -178,17 +159,14 @@ void display() {
 	assert(ShaderProgram != 0);
 	glUseProgram(ShaderProgram);
 
-	Cam.ar = (1.0f * width) / height; //TODO remove
 	camera->setAspectRatio((1.0f * width) / height);
-	Matrix4f camTransformation = computeCameraTransform(Cam);  //TODO remove
-	Matrix4f cameraTransformation = camera->getTransformationMatrix();
+	Matrix4f cameraTransformation = camera->getTransformationMatrix(cameraProjection);
 
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
    
 	// Set the uniform variable for the texture unit (texture unit 0)
 	//glUniform1i(SamplerLocation, 0);
 
-	//glUniform3fv(CameraPositionLoc, 1, Cam.position.get()); //TODO remove
 	glUniform3fv(CameraPositionLoc, 1, camera->getPosition().get());
 
 	// Set the light parameters
@@ -302,41 +280,30 @@ void keyboard(unsigned char key, int x, int y) {
 	Vector3f right;
 	switch(tolower(key)) {
 	case 'r': // Reset camera status
-		//TODO
-		initCamera(Cam);
+		initCamera();
 		break;
 	case 'w':
-		Cam.position += Cam.target * 0.1f; //TODO remove
 		camera->moveForward(0.1f);
 		break;
 	case 'a':
-		right = Cam.target.cross(Cam.up); //TODO remove
-		Cam.position -= right * 0.1f; //TODO remove
 		camera->moveRight(-0.1f);
 		break;
 	case 's':
-		Cam.position -= Cam.target * 0.1f;  //TODO remove
 		camera->moveForward(-0.1f);
 		break;
 	case 'd':
-		right = Cam.target.cross(Cam.up); //TODO remove
-		Cam.position += right * 0.1f; //TODO remove
 		camera->moveRight(0.1f);
 		break;
 	case 'c':
-		Cam.position -= Cam.up * 0.1f; //TODO remove
 		camera->moveUp(-0.1f);
 		break;
 	case ' ':
-		Cam.position += Cam.up * 0.1f; //TODO remove
 		camera->moveUp(0.1f);
 		break;
 	case 'n':	// Increase field of view
-		Cam.fov = min(Cam.fov + 1.f, 179.f); //TODO remove
 		camera->increaseFieldOfView(1.f);
 		break;
 	case 'm':	// Decrease field of view
-		Cam.fov = max(Cam.fov - 1.f, 1.f);//TODO remove
 		camera->increaseFieldOfView(-1.f);
 		break;
 	case 'g': // show the current OpenGL version
@@ -346,25 +313,14 @@ void keyboard(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	case 'b':  // switch perspectiv to orth
-		if (prjType == 0) {
-			prjType = 1;
+		if (cameraProjection == Camera::Projection::PERSPECTIVE) {
+			cameraProjection = Camera::Projection::ORTHOGRAPHIC;
 		} else {
-			prjType = 0;
+			cameraProjection = Camera::Projection::PERSPECTIVE;
 		}
-		display();
 		break;
 	case 'i':  // print info about camera
 		camera->printStatus();
-		//TODO remove later
-		cout << "Camera Info:" << endl;
-		cout << "Position: (" << Cam.position.x() << "," << Cam.position.y() << "," << Cam.position.z() << ")" << endl;
-		cout << "Target: (" << Cam.target.x() << "," << Cam.target.y() << "," << Cam.target.z() << ")" << endl;
-		cout << "Up: (" << Cam.up.x() << "," << Cam.up.y() << "," << Cam.up.z() << ")" << endl;
-		cout << "Field of view: " << Cam.fov << endl;
-		cout << "Aspect Ratio: " << Cam.ar << endl;
-		cout << "Depth of the near plane: " << Cam.zNear << endl;
-		cout << "Depth of the far plane: " << Cam.zFar << endl;
-		cout << "Zoom: " << Cam.zoom << endl;
 		break;
 	case 'p': // change to wireframe rendering
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -392,8 +348,6 @@ void mouse(int button, int state, int x, int y) {
 /// Called whenever the mouse is moving while a button is pressed
 void motion(int x, int y) {
 	if (MouseButton == GLUT_RIGHT_BUTTON) {
-		Cam.position += Cam.target.cross(Cam.up) * 0.003f * (x - MouseX); //TODO remove
-		Cam.position += Cam.target * 0.003f * (MouseY - y); //TODO remove
 		camera->moveRight(0.005f * (MouseX - x));
 		camera->moveForward(0.005f * (y - MouseY));
 
@@ -401,25 +355,13 @@ void motion(int x, int y) {
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_MIDDLE_BUTTON) {
-		Cam.zoom = max(0.001f, Cam.zoom + 0.003f * (y - MouseY));  //TODO remove
 		camera->zoomIn(0.003f * (y - MouseY));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_LEFT_BUTTON) {
-		Matrix4f ry2, rr; //TODO remove
-
-		// "horizontal" rotation //TODO remove
-		ry2.rotate(0.1f * (MouseX - x), Vector3f(0, 1, 0)); //TODO remove
-		Cam.target = ry2 * Cam.target; //TODO remove
-		Cam.up = ry2 * Cam.up; //TODO remove
 		camera->rotateHorizontal(0.2f * (MouseX - x));
-
-		// "vertical" rotation //TODO remove
-		rr.rotate(0.1f * (MouseY - y), Cam.target.cross(Cam.up)); //TODO remove
-		Cam.up = rr * Cam.up; //TODO remove
-		Cam.target = rr * Cam.target; //TODO remove
 		camera->rotateVertical(0.2f * (MouseY - y));
 
 		MouseX = x; // Store the current mouse position
@@ -604,55 +546,12 @@ bool initShaders() {
 	return true;
 } /* initShaders() */
 
-
-// TODO Move to own Camera class
-/// Return the transformation matrix corresponding to the specified camera
-Matrix4f computeCameraTransform(const Camera& cam) {
-	// camera rotation
-	Vector3f t = cam.target.getNormalized();
-	Vector3f u = cam.up.getNormalized();
-	Vector3f r = t.cross(u);
-	Matrix4f camR(r.x(), r.y(), r.z(), 0.f,
-		u.x(), u.y(), u.z(), 0.f,
-		-t.x(), -t.y(), -t.z(), 0.f,
-		0.f, 0.f, 0.f, 1.f);
-
-	// camera translation
-	Matrix4f camT = Matrix4f::createTranslation(-cam.position);
-	Matrix4f prj;
-
-	if (prjType == 1) {
-		// orthographic projection
-		prj = Matrix4f::createOrthoPrj(-0.25f*cam.ar, 0.25f*cam.ar, -0.25f*cam.ar, 0.25f*cam.ar, cam.zNear, cam.zFar);
-	}
-	else {
-		// perspective projection
-		prj = Matrix4f::createPerspectivePrj(cam.fov, cam.ar, cam.zNear, cam.zFar);
-	}
-
-	// scaling due to zooming
-	Matrix4f camZoom = Matrix4f::createScaling(cam.zoom, cam.zoom, 1.f);
-
-	// Final transformation. Notice the multiplication order
-	// First vertices are moved in camera space
-	// Then the perspective projection puts them in clip space
-	// And a final zooming factor is applied in clip space
-	return camZoom * prj * camR  * camT;
-
-} /* computeCameraTransform() */
-
-
-// TODO Move to own Camera class
-void initCamera(Camera& cam) {
-	cam.position.set(-1.3f, 0.5f, 0.6f);
-	cam.target.set(0.8f, -0.4f, -0.4f);
-	cam.up.set(0.4f, 1.f, -0.2f);
-	cam.fov = 30.f;
-	cam.ar = 1.f; // will be correctly initialized in the "display()" method
-	cam.zNear = 0.1f;
-	cam.zFar = 100.f;
-	cam.zoom = 1.f;
-} /* initCamera() */
+void initCamera() {
+	delete camera;
+	Vector3f position = Vector3f(-1.3f, 0.5f, 0.6f);
+	Vector3f target = Vector3f(0.8f, -0.4f, -0.4f);
+	camera = new Camera(position, target);
+}
 
 /// Read the specified file and return its content
 string readTextFile(const string& pathAndFileName) {

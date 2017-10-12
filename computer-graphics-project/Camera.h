@@ -3,21 +3,21 @@
 
 using namespace std;
 
-class Camera2 {
+class Camera {
+
 	Vector3f position;	// position of the camera
 	Vector3f target;	// the direction the camera is looking at
 	Vector3f up;		//  the up vector of the camera
-
 	float fov;			// camera field of view
 	float ar;			// camera aspect ratio
-
 	float zNear, zFar;	// depth of the near and far plane
-
 	float zoom;			// an additional scaling parameter
 
 	public:
-		Camera2(Vector3f, Vector3f);
-		~Camera2();
+		enum class Projection { ORTHOGRAPHIC, PERSPECTIVE };
+
+		Camera(Vector3f, Vector3f);
+		~Camera();
 		Vector3f getPosition();
 		void moveForward(float);
 		void moveRight(float);
@@ -34,7 +34,7 @@ class Camera2 {
 		float getFarPlane();
 		float getZoom();
 		void zoomIn(float);
-		Matrix4f getTransformationMatrix();
+		Matrix4f getTransformationMatrix(Camera::Projection);
 		void printStatus();
 };
 
