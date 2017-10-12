@@ -38,7 +38,7 @@ void mouse(int, int, int, int);
 void motion(int, int);
 
 // --- Other methods ------------------------------------------------------------------------------
-bool initMesh(ModelOBJ&, string, GLuint&, GLuint&);
+bool initMesh(ModelOBJ&, string, bool, GLuint&, GLuint&);
 bool initShaders();
 Matrix4f computeCameraTransform(const Camera&);
 void initCamera(Camera&);
@@ -126,16 +126,17 @@ int main(int argc, char **argv) {
 
 	// Initialize program variables
 	// OpenGL
-	glClearColor(0.1f, 0.3f, 0.1f, 0.0f); // background color
+	glClearColor(0.0f, 0.8f, 1.0f, 0.0f); // background color
 	glEnable(GL_DEPTH_TEST);	        // enable depth ordering
-    glEnable(GL_CULL_FACE);		        // enable back-face culling
+    //glEnable(GL_CULL_FACE);		        // enable back-face culling //TODO disabled temp
     glFrontFace(GL_CCW);		        // vertex order for the front face
 	glCullFace(GL_BACK);		        // back-faces should be removed
 
 	// Accept fragment if it closer to the camera than the former one
 	//glDepthFunc(GL_LESS);
 
-    //glPolygonMode(GL_FRONT, GL_LINE);   // draw polygons as wireframe
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   // draw polygons as wireframe
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glPolygonMode(GL_FRONT, GL_FILL);   // draw polygons as solid
 		
 
@@ -144,8 +145,24 @@ int main(int argc, char **argv) {
 	initCamera(Cam);
 
 	// Mesh
-	initMesh(houseModel, houseModelFilename, houseVBO, houseIBO);
-	initMesh(groundModel, groundModelFilename, groundVBO, groundIBO);
+	initMesh(houseModel, houseModelFilename, true, houseVBO, houseIBO);
+	initMesh(groundModel, groundModelFilename, false, groundVBO, groundIBO);
+	
+	// TODO Temp
+	const ModelOBJ::Vertex *vb = groundModel.getVertexBuffer();
+
+	for (int i = 0; i < groundModel.getNumberOfVertices(); i++) {
+	cout << "vb[" << i << "].position: (" << vb[i].position[0] << "," << vb[i].position[1] << "," << vb[i].position[2] << ")" << endl;
+	}
+
+	for (int i = 0; i < groundModel.getNumberOfVertices(); i++) {
+	cout << "vb[" << i << "].normal: (" << vb[i].normal[0] << "," << vb[i].normal[1] << "," << vb[i].normal[2] << ")" << endl;
+	}
+
+	for (int i = 0; i < groundModel.getNumberOfVertices(); i++) {
+	cout << "vb[" << i << "].texCoord: (" << vb[i].texCoord[0] << "," << vb[i].texCoord[1] << ")" << endl;
+	}
+	
 
 	// Shaders
 	if (!initShaders()) {
@@ -212,44 +229,14 @@ void display() {
 	glUniform1f(PLightDIntensityKSquareLoc, 0.5f); // used
 	glUniform1f(PLightSIntensityLoc, 1.0f); // 
 
-	// START Draw House -> move this to own function later
 	
-	// Set the material parameters for the house
-	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // used
-	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // used
-	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
-	glUniform1f(MaterialShineLoc, 20.0f); // used
-
-	// Bind the buffers
-	glBindBuffer(GL_ARRAY_BUFFER, houseVBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, houseIBO);
-
-	// Enable the vertex attributes and set their format
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3,	GL_FLOAT, GL_FALSE, 
-		sizeof(ModelOBJ::Vertex), 
-		reinterpret_cast<const GLvoid*>(0));
-	
-    glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2,	GL_FLOAT, GL_FALSE, 
-		sizeof(ModelOBJ::Vertex), 
-		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
-
-	// Draw the elements on the GPU
-	glDrawElements(GL_TRIANGLES, houseModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
-	
-	// END Draw House
 
 	// START Draw Ground -> move this to own function later
 	
 	// Set the material parameters for the ground
 	glUniform3f(MaterialAColorLoc, 0.2f, 0.2f, 0.2f); // used
-	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // used
-	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
+	glUniform3f(MaterialDColorLoc, 0.5f, 0.5f, 0.5f); // used
+	glUniform3f(MaterialSColorLoc, 0.3f, 0.3f, 0.3f); // used
 	glUniform1f(MaterialShineLoc, 10.0f); // used
 
 	// Bind the buffers
@@ -277,6 +264,38 @@ void display() {
 	// END Draw Ground
 
 	
+
+	// START Draw House -> move this to own function later
+
+	// Set the material parameters for the house
+	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // used
+	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // used
+	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
+	glUniform1f(MaterialShineLoc, 20.0f); // used
+
+										  // Bind the buffers
+	glBindBuffer(GL_ARRAY_BUFFER, houseVBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, houseIBO);
+
+	// Enable the vertex attributes and set their format
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+		sizeof(ModelOBJ::Vertex),
+		reinterpret_cast<const GLvoid*>(0));
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+		sizeof(ModelOBJ::Vertex),
+		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
+		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
+
+																		// Draw the elements on the GPU
+	glDrawElements(GL_TRIANGLES, houseModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+
+	// END Draw House
 	
 
 	// Disable the vertex attributes (not necessary but recommended)
@@ -413,14 +432,16 @@ void motion(int x, int y) {
 // ************************************************************************************************
 // *** Other methods implementation ***************************************************************
 /// Initialize buffer objects
-bool initMesh(ModelOBJ& Model, string filename, GLuint& VBO, GLuint& IBO) {
+bool initMesh(ModelOBJ& Model, string filename, bool normalize, GLuint& VBO, GLuint& IBO) {
 	// Load the OBJ model
 	if(!Model.import(filename.c_str())) {  // "capsule\\FinalBuilding.obj" //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}
 	
-	Model.normalize();
+	if (normalize) {
+		Model.normalize();
+	}
 
 	if (Model.hasPositions()) {
 		cout << "Model has positions" << endl;
