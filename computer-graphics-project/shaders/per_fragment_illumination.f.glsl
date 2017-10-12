@@ -1,10 +1,11 @@
 #version 330	// GLSL version
 
-// model-view transformation
-uniform mat4 transformation;
+// Sampler to access the texture
+//uniform sampler2D sampler;
 
-// Camera position
-uniform vec3 camera_position;
+// Time
+//uniform float time;
+
 
 // Directional light
 uniform vec3 d_light_direction;
@@ -32,50 +33,46 @@ uniform vec3 material_d_color;
 uniform vec3 material_s_color;
 uniform float material_shininess;
 
-// vertex position
-layout (location = 0) in vec3 position; 
 
-// vertex texture coordinates
-layout (location = 1) in vec2 tex_coords;
+// Per fragment texture coordinates
+//in vec2 cur_tex_coords;
 
-layout (location = 2) in vec3 normal; 
+// Per-fragment color coming from the vertex shader
+in vec4 fcolor;
 
-// pass the texture coordinates to the fragment shader
-//out vec2 cur_tex_coords;
+in vec3 cur_normal;
 
-// Output vertex color (per-vertex, interpolated and passed to frag shader)
-out vec4 fcolor;
+in vec3 view_dir;
 
+in vec3 view_dir_nn;
 
-vec3 computeHeadlight(vec3);
-vec3 computeDirectionalLight(vec3);
+// Per-frgament output color
+out vec4 FragColor;
 
 
-void main() {
-
-	// transform the vertex
-    gl_Position = transformation * vec4(position, 1.);	
-
-	// pass the texture coordinates to the fragment shader
-	//cur_tex_coords = tex_coords;
-
-	vec3 view_dir_nn = normalize(camera_position - position);
+vec3 computeHeadlight();
+vec3 computeDirectionalLight();
 
 
-	vec3 directionalLight = computeDirectionalLight(view_dir_nn);
+void main() { 
+    //FragColor = fcolor;
 
-	vec3 headlight = computeHeadlight(view_dir_nn);
+	//view_dir = camera_position - position;
+	//view_dir_nn = normalize(camera_position - position);
+
+	vec3 directionalLight = computeDirectionalLight();
+	//directionalLight = vec3(0.0,0.0,0.0);
+
+	vec3 headlight = computeHeadlight();
 	//headlight = vec3(0.0,0.0,0.0);
 
 	vec3 color = directionalLight + headlight;
-
-
-
-	// pass the result to the fragment shader
-	fcolor = vec4(color, 1.0); //TODO
+	//color = normalize(cur_normal) * -1.0;
+	FragColor = vec4(color, 1.0); //TODO
 }
 
-vec3 computeDirectionalLight(vec3 view_dir_nn) {
+
+vec3 computeDirectionalLight() {
 	// Compute the vertex color according to the phong lighting model
 	// For each light compute the sum of:
 	// ambient component = m_ambient * l_ambient
@@ -91,15 +88,13 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 	// --- directional light ----
 	// compute the required values and vectors
 	// notice that input variables cannot be modified, so copy them first
-	vec3 normal_nn = normalize(normal);	// TODO NaN's returned
+	vec3 normal_nn = normalize(cur_normal);
 	vec3 d_light_dir_nn = normalize(d_light_direction);
-	//d_light_dir_nn = view_dir_nn;
 
-
-	float dot_d_light_normal = dot(-d_light_dir_nn, normal);   // notice the minus!
-	vec3 d_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal; // OUT
+	float dot_d_light_normal = dot(-d_light_dir_nn, normal_nn);   // notice the minus!
+	vec3 d_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal_nn;
 	// should be already normalized, but we "need" to correct numerical errors
-	d_reflected_dir_nn = normalize(d_reflected_dir_nn);  // OUT
+	d_reflected_dir_nn = normalize(d_reflected_dir_nn);
 	
 	// compute the color contribution	
 	vec3 amb_color = clamp(
@@ -119,7 +114,9 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 	return clamp(amb_color + diff_color + spec_color, 0.0, 1.0);
 }
 
-vec3 computeHeadlight(vec3 view_dir_nn) {
+
+
+vec3 computeHeadlight() {
 
 	//TODO remove p light dir nn from passing
 	// TODO: do the same for the headlight!
@@ -131,17 +128,19 @@ vec3 computeHeadlight(vec3 view_dir_nn) {
 
 	//TODO style
 	// position mins cam position
-	vec3 p_light_dir = position - camera_position;
-	vec3 p_light_dir_nn = normalize(p_light_dir);
+	vec3 p_light_dir = view_dir;
+	vec3 p_light_dir_nn = view_dir_nn;
 	
+	vec3 normal_nn = normalize(cur_normal);
 
-	float dot_p_light_normal = dot(-p_light_dir_nn, normal);   // notice the minus!
-	vec3 p_reflected_dir_nn = p_light_dir_nn + 2. * dot_p_light_normal * normal;
+	float dot_p_light_normal = dot(-p_light_dir_nn, cur_normal);   // notice the minus!
+	vec3 p_reflected_dir_nn = p_light_dir_nn + 2. * dot_p_light_normal * cur_normal;
 	// should be already normalized, but we "need" to correct numerical errors
 	p_reflected_dir_nn = normalize(p_reflected_dir_nn); 
 
 	float distance = length(p_light_dir);
 	float distance_intensity = p_light_d_intensity_k_const + (p_light_d_intensity_k_linear * distance) + (p_light_d_intensity_k_square * distance * distance);
+	distance_intensity = 1.0; //TODO
 
 	// compute the color contribution
 	vec3 amb_color = clamp(
@@ -154,7 +153,7 @@ vec3 computeHeadlight(vec3 view_dir_nn) {
 	//diff_color = vec3(0.0,0.0,0.0); // TODO
 	vec3 spec_color = clamp(
 			material_s_color *
-			pow(dot(p_reflected_dir_nn, view_dir_nn), material_shininess) *
+			pow(dot(p_reflected_dir_nn, -view_dir_nn), material_shininess) *
 			(p_light_s_intensity / distance_intensity),
 			0.0, 1.0);
 	//spec_color = vec3(0.0,0.0,0.0); // TODO

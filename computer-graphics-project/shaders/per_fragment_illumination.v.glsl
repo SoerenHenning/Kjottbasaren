@@ -44,7 +44,13 @@ layout (location = 2) in vec3 normal;
 //out vec2 cur_tex_coords;
 
 // Output vertex color (per-vertex, interpolated and passed to frag shader)
-out vec4 fcolor;
+out vec4 fcolor; //TODO remove
+
+out vec3 cur_normal;
+
+out vec3 view_dir;
+
+out vec3 view_dir_nn;
 
 
 vec3 computeHeadlight(vec3);
@@ -56,23 +62,13 @@ void main() {
 	// transform the vertex
     gl_Position = transformation * vec4(position, 1.);	
 
-	// pass the texture coordinates to the fragment shader
-	//cur_tex_coords = tex_coords;
+	view_dir = position - camera_position;
+	view_dir_nn = normalize(view_dir);
 
-	vec3 view_dir_nn = normalize(camera_position - position);
-
-
-	vec3 directionalLight = computeDirectionalLight(view_dir_nn);
-
-	vec3 headlight = computeHeadlight(view_dir_nn);
-	//headlight = vec3(0.0,0.0,0.0);
-
-	vec3 color = directionalLight + headlight;
-
-
+	cur_normal = normal;
 
 	// pass the result to the fragment shader
-	fcolor = vec4(color, 1.0); //TODO
+	fcolor = vec4(0.0, 0.0, 0.0, 1.0); //TODO
 }
 
 vec3 computeDirectionalLight(vec3 view_dir_nn) {

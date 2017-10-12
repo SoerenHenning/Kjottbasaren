@@ -237,7 +237,7 @@ void display() {
 	glUniform3f(MaterialAColorLoc, 0.2f, 0.2f, 0.2f); // used
 	glUniform3f(MaterialDColorLoc, 0.5f, 0.5f, 0.5f); // used
 	glUniform3f(MaterialSColorLoc, 0.3f, 0.3f, 0.3f); // used
-	glUniform1f(MaterialShineLoc, 10.0f); // used
+	glUniform1f(MaterialShineLoc, 100.0f); // used
 
 	// Bind the buffers
 	glBindBuffer(GL_ARRAY_BUFFER, groundVBO);
