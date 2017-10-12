@@ -123,7 +123,7 @@ Matrix4f Camera::getTransformationMatrix() {
 	// Projection
 	Matrix4f projection;
 	if (projectionType == Projection::ORTHOGRAPHIC) {
-		float height = 0.5f * 2;
+		float height = 0.5f;
 		float width = height * this->aspectRatio;
 		projection = Matrix4f::createOrthoPrj(-width / 2.f, width / 2.f, -height / 2.f, height / 2.f, this->nearPlane, this->farPlane);
 	} else {
