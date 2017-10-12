@@ -5,13 +5,13 @@ using namespace std;
 
 class Camera {
 
-	Vector3f position;	// position of the camera
-	Vector3f target;	// the direction the camera is looking at
-	Vector3f up;		//  the up vector of the camera
-	float fov;			// camera field of view
-	float ar;			// camera aspect ratio
-	float zNear, zFar;	// depth of the near and far plane
-	float zoom;			// an additional scaling parameter
+	Vector3f position;			// position of the camera
+	Vector3f target;			// the direction the camera is looking at
+	Vector3f up;				//  the up vector of the camera
+	float fieldOfView;			// camera field of view
+	float aspectRatio;			// camera aspect ratio
+	float nearPlane, farPlane;	// depth of the near and far plane
+	float zoom;					// an additional scaling parameter
 
 	public:
 		enum class Projection { ORTHOGRAPHIC, PERSPECTIVE };
