@@ -212,11 +212,11 @@ void display() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));
+		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
 
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
+		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
 
 	// Draw the elements on the GPU
 	glDrawElements(GL_TRIANGLES, groundModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
@@ -246,11 +246,11 @@ void display() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(sizeof(Vector3f)));
+		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
 
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>(20)); //TODO
+		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
 
 																		// Draw the elements on the GPU
 	glDrawElements(GL_TRIANGLES, houseModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
