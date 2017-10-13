@@ -42,4 +42,8 @@ struct Scene {
 	Vector3f backgroundColor;
 	DirectionalLight sunlight;
 	PointLight headlight;
+	public:
+		Scene();
+		~Scene();
+		void resetCamera();
 };

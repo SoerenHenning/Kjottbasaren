@@ -26,7 +26,6 @@ void motion(int, int);
 // --- Other methods ------------------------------------------------------------------------------
 void initMesh();
 bool initShaders();
-void initCamera();
 string readTextFile(const string&);
 
 
@@ -68,14 +67,14 @@ GLint MaterialShineLoc = -1;
 int MouseX, MouseY;		///< The last position of the mouse
 int MouseButton;		///< The last mouse button pressed or released
 
-//Scene
+// Scene
 Scene scene;
 
 // --- main() -------------------------------------------------------------------------------------
 /// The entry point of the application
 int main(int argc, char **argv) {
 
-	// Create our scene;
+	// Create our scene
 	scene.backgroundColor = Vector3f(0.0f, 0.8f, 1.0f);
 
 	scene.sunlight.direction = Vector3f(0.5f, -1.5f, -1.0f);
@@ -109,8 +108,6 @@ int main(int argc, char **argv) {
 	ground->materialSpecularColor = Vector3f(0.3f, 0.3f, 0.3f);
 	ground->materialShininess = 10.f;
 	scene.models.push_back(ground);
-
-	initCamera();
 
 	// Initialize glut and create a simple window
 	glutInit(&argc, argv);
@@ -146,7 +143,6 @@ int main(int argc, char **argv) {
 	//glDepthFunc(GL_LESS);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   // draw polygons as wireframe
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glPolygonMode(GL_FRONT, GL_FILL);   // draw polygons as solid
 		
 
@@ -264,7 +260,7 @@ void idle() {
 void keyboard(unsigned char key, int x, int y) {
 	switch(tolower(key)) {
 		case 'r': // Reset camera status
-			initCamera();
+			scene.resetCamera();
 			break;
 		case 'w':
 			scene.camera->moveForward(0.1f);
@@ -508,13 +504,6 @@ bool initShaders() {
 	return true;
 } /* initShaders() */
 
-void initCamera() {
-	delete scene.camera;
-	Vector3f position = Vector3f(-1.3f, 0.5f, 0.6f);
-	Vector3f target = Vector3f(0.8f, -0.4f, -0.4f);
-	scene.camera = new Camera(position, target);
-}
-
 /// Read the specified file and return its content
 string readTextFile(const string& pathAndFileName) {
     // Try to open the file
@@ -545,5 +534,3 @@ string readTextFile(const string& pathAndFileName) {
 
     return text;
 } /* readTextFile() */
-
-/* --- eof main.cpp --- */
