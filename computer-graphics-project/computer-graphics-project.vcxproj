@@ -148,6 +148,7 @@
     <None Include="shaders\per_vertex_illumination.v.glsl" />
     <None Include="shaders\per_fragment_illumination.f.glsl" />
     <None Include="shaders\per_fragment_illumination.v.glsl" />
+	<None Include="shaders\per_vertex_illumination_bw.f.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
