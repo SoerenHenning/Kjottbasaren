@@ -65,11 +65,8 @@ void main() {
 	vec3 directionalLight = computeDirectionalLight(view_dir_nn);
 
 	vec3 headlight = computeHeadlight(view_dir_nn);
-	//headlight = vec3(0.0,0.0,0.0);
 
 	vec3 color = directionalLight + headlight;
-
-
 
 	// pass the result to the fragment shader
 	fcolor = vec4(color, 1.0); //TODO
@@ -120,10 +117,6 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 }
 
 vec3 computeHeadlight(vec3 view_dir_nn) {
-
-	//TODO remove p light dir nn from passing
-	// TODO: do the same for the headlight!
-	// notice that for the headlight dot(view_dir, light_dir) = ...
 	
 	//p_light_dir_nn = view_dir_nn;
 	

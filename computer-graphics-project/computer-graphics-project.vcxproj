@@ -144,8 +144,8 @@
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.f.glsl" />
-    <None Include="shader.v.glsl" />
+    <None Include="per_vertex_illumination.f.glsl" />
+    <None Include="per_vertex_illumination.v.glsl" />
     <None Include="shaders\per_fragment_illumination.f.glsl" />
     <None Include="shaders\per_fragment_illumination.v.glsl" />
   </ItemGroup>
