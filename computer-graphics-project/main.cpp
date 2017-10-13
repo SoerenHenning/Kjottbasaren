@@ -39,7 +39,7 @@ struct Shader {
 };
 
 // Shaders
-Shader shader = { "per_vertex_illumination.v.glsl", "per_vertex_illumination.f.glsl" };
+Shader shader = { "shaders/per_fragment_illumination.v.glsl", "shaders/per_fragment_illumination.f.glsl" };
 
 // Shaders
 GLuint ShaderProgram = 0;	// Shader program
