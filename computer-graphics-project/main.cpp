@@ -33,6 +33,14 @@ string readTextFile(const string&);
 unordered_map<Model*, GLuint> vertexBufferObjects;
 unordered_map<Model*, GLuint> indexBufferObjects;
 
+struct Shader {
+	string vertex;
+	string fragment;
+};
+
+// Shaders
+Shader shader = { "shader.v.glsl", "shader.f.glsl" };
+
 // Shaders
 GLuint ShaderProgram = 0;	// Shader program
 GLint TrLocation = -1;		// Reference to the model-view matrix uniform variable
@@ -301,6 +309,16 @@ void keyboard(unsigned char key, int x, int y) {
 		case 'o': // change to polygon rendering
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			break;
+		case 'y': // Toggle Sunlight
+			scene.sunlight.ambientIntensity = (scene.sunlight.ambientIntensity == 0.f) ? 1.f : 0.f;
+			scene.sunlight.diffuseIntensity = (scene.sunlight.diffuseIntensity == 0.f) ? 1.f : 0.f;
+			scene.sunlight.specularIntensity = (scene.sunlight.specularIntensity == 0.f) ? 1.f : 0.f;
+			break;
+		case 'x': // Toggle Headlight
+			scene.headlight.ambientIntensity = (scene.headlight.ambientIntensity == 0.f) ? 1.f : 0.f;
+			scene.headlight.diffuseIntensity = (scene.headlight.diffuseIntensity == 0.f) ? 1.f : 0.f;
+			scene.headlight.specularIntensity = (scene.headlight.specularIntensity == 0.f) ? 1.f : 0.f;
+			break;
 		case 'l':
 			cout << "Re-loading shaders..." << endl;
 			if(initShaders()) {
@@ -394,52 +412,52 @@ bool initShaders() {
 	}
 
 	// Create the shader objects and check for errors
-	GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	if(vertShader == 0 || fragShader == 0) {
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	if(vertexShader == 0 || fragmentShader == 0) {
 		cerr << "Error: cannot create shader objects." << endl;
 		return false;
 	}
 
 	// Read and set the source code for the vertex shader
-	string text = readTextFile("shader.v.glsl");
-	const char* code = text.c_str();
-	int length = static_cast<int>(text.length());
-	if(length == 0)
+	string vertexShaderText = readTextFile(shader.vertex);
+	const char* vertexShaderCode = vertexShaderText.c_str();
+	int vertexShaderLength = static_cast<int>(vertexShaderText.length());
+	if(vertexShaderLength == 0)
 		return false;
-	glShaderSource(vertShader, 1, &code, &length);
+	glShaderSource(vertexShader, 1, &vertexShaderCode, &vertexShaderLength);
 
 	// Read and set the source code for the fragment shader
-	string text2 = readTextFile("shader.f.glsl");
-	const char *code2 = text2.c_str();
-	length = static_cast<int>(text2.length());
-	if(length == 0)
+	string fragmentShaderText = readTextFile(shader.fragment);
+	const char *fragmentShaderCode = fragmentShaderText.c_str();
+	int fragmentShaderLength = static_cast<int>(fragmentShaderText.length());
+	if(fragmentShaderLength == 0)
 		return false;
-	glShaderSource(fragShader, 1, &code2, &length);
+	glShaderSource(fragmentShader, 1, &fragmentShaderCode, &fragmentShaderLength);
 
 	// Compile the shaders
-	glCompileShader(vertShader);
-	glCompileShader(fragShader);
+	glCompileShader(vertexShader);
+	glCompileShader(fragmentShader);
 
 	// Check for compilation error
 	GLint success;
 	GLchar errorLog[1024];
-	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &success);
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if(!success) {
-		glGetShaderInfoLog(vertShader, 1024, nullptr, errorLog);
+		glGetShaderInfoLog(vertexShader, 1024, nullptr, errorLog);
 		cerr << "Error: cannot compile vertex shader.\nError log:\n" << errorLog << endl;
 		return false;
 	}
-	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if(!success) {
-		glGetShaderInfoLog(fragShader, 1024, nullptr, errorLog);
+		glGetShaderInfoLog(fragmentShader, 1024, nullptr, errorLog);
 		cerr << "Error: cannot compile fragment shader.\nError log:\n" << errorLog << endl;
 		return false;
 	}
 
 	// Attach the shader to the program and link it
-	glAttachShader(ShaderProgram, vertShader);
-	glAttachShader(ShaderProgram, fragShader);
+	glAttachShader(ShaderProgram, vertexShader);
+	glAttachShader(ShaderProgram, fragmentShader);
 	glLinkProgram(ShaderProgram);
 
 	// Check for linking error
@@ -495,8 +513,8 @@ bool initShaders() {
 	MaterialShineLoc = glGetUniformLocation(ShaderProgram, "material_shininess");
 
 	// Shaders can be deleted now
-	glDeleteShader(vertShader);
-	glDeleteShader(fragShader);
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
 
 	return true;
 } /* initShaders() */
