@@ -2,13 +2,26 @@
 
 Developed by Sören Henning and Zach Litzinger
 
+## Features
+
+* Moving in x, y and z direction
+* Horizontal and vertical rotation
+* Direction sunlight
+* Headlight on top of the camera, modelled as a point light source with decreasing intensity
+* Perspective and orthographic projection (no depth information in orthographic projection due to fact how orthographic projection is)
+* Per fragment, per vertex and black and white shading
+
 ## Navigation
+
+### Mouse
 
 Dragging with left mouse button: Rotating
 
 Dragging with middle mouse button: Zooming in and out
 
 Dragging with right mouse button: Move forward, right, left and backwards
+
+### Keyboard
 
 `w`, `s`: Move forward and backwards (in viewing direction)
 
