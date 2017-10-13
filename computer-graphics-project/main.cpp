@@ -34,10 +34,10 @@ unordered_map<Model*, GLuint> vertexBufferObjects;
 unordered_map<Model*, GLuint> indexBufferObjects;
 
 // Shaders
-GLuint ShaderProgram = 0;	///< A shader program
-GLint TrLocation = -1;		///< Reference to the model-view matrix uniform variable
-//GLint SamplerLocation = -1;	///< Reference to the texture sampler uniform variable
-GLint TimeLocation = -1;	///< Reference to the time uniform variable
+GLuint ShaderProgram = 0;	// Shader program
+GLint TrLocation = -1;		// Reference to the model-view matrix uniform variable
+//GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
+GLint TimeLocation = -1;	// Reference to the time uniform variable
 
 // Locations for shader variables
 GLint CameraPositionLoc = -1;
@@ -64,8 +64,8 @@ GLint MaterialSColorLoc = -1;
 GLint MaterialShineLoc = -1;
 
 // Mouse interaction
-int MouseX, MouseY;		///< The last position of the mouse
-int MouseButton;		///< The last mouse button pressed or released
+int MouseX, MouseY;		// The last position of the mouse
+int MouseButton;		// The last mouse button pressed or released
 
 // Scene
 Scene scene;
