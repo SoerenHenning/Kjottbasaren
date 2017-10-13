@@ -103,14 +103,14 @@ int main(int argc, char **argv) {
 	scene.headlight.intensityKLinear = 0.f;
 	scene.headlight.intensitySquare = 0.5f;
 
-	Model* house = new Model("capsule\\FinalBuilding.obj", true, false);
+	Model* house = new Model("models\\FinalBuilding.obj", true, false);
 	house->materialAmbientColor = Vector3f(0.5f, 0.5f, 0.5f);
 	house->materialDiffuseColor = Vector3f(1.0f, 0.8f, 0.8f);
 	house->materialSpecularColor = Vector3f(0.5f, 0.5f, 0.5f);
 	house->materialShininess = 20.f;
 	scene.models.push_back(house);
 
-	Model* ground = new Model("capsule\\plane.obj", false, true);
+	Model* ground = new Model("models\\plane.obj", false, true);
 	ground->materialAmbientColor = Vector3f(0.4f, 0.4f, 0.4f);
 	ground->materialDiffuseColor = Vector3f(0.5f, 0.5f, 0.5f);
 	ground->materialSpecularColor = Vector3f(0.3f, 0.3f, 0.3f);
