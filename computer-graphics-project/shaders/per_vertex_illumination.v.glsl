@@ -85,18 +85,14 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 	// This computation has to be repeated for every light in the scene.
 	// The final color is given by the sum of contributions from every light.
 	
-	// --- directional light ----
-	// compute the required values and vectors
-	// notice that input variables cannot be modified, so copy them first
 	vec3 normal_nn = normalize(normal);	// TODO NaN's returned
 	vec3 d_light_dir_nn = normalize(d_light_direction);
 	//d_light_dir_nn = view_dir_nn;
 
-
-	float dot_d_light_normal = dot(-d_light_dir_nn, normal);   // notice the minus!
-	vec3 d_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal; // OUT
+	float dot_d_light_normal = dot(-d_light_dir_nn, normal);
+	vec3 d_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal;
 	// should be already normalized, but we "need" to correct numerical errors
-	d_reflected_dir_nn = normalize(d_reflected_dir_nn);  // OUT
+	d_reflected_dir_nn = normalize(d_reflected_dir_nn); 
 	
 	// compute the color contribution	
 	vec3 amb_color = clamp(
@@ -119,18 +115,12 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 }
 
 vec3 computeHeadlight(vec3 view_dir_nn) {
-	
-	//p_light_dir_nn = view_dir_nn;
-	
-	//vec3 p_light_dir_nn = -view_dir_nn;
 
-	//TODO style
-	// position mins cam position
+	// position minus cam position
 	vec3 p_light_dir = position - camera_position;
 	vec3 p_light_dir_nn = normalize(p_light_dir);
-	
 
-	float dot_p_light_normal = dot(-p_light_dir_nn, normal);   // notice the minus!
+	float dot_p_light_normal = dot(-p_light_dir_nn, normal); 
 	vec3 p_reflected_dir_nn = p_light_dir_nn + 2. * dot_p_light_normal * normal;
 	// should be already normalized, but we "need" to correct numerical errors
 	p_reflected_dir_nn = normalize(p_reflected_dir_nn); 
@@ -150,7 +140,7 @@ vec3 computeHeadlight(vec3 view_dir_nn) {
 	vec3 spec_color = clamp(
 			material_s_color *
 			p_light_s_color * 
-			pow(dot(p_reflected_dir_nn, view_dir_nn), material_shininess) *
+			pow(dot(p_reflected_dir_nn, -view_dir_nn), material_shininess) *
 			(p_light_s_intensity / distance_intensity),
 			0.0, 1.0);
 	//spec_color = vec3(0.0,0.0,0.0); // TODO

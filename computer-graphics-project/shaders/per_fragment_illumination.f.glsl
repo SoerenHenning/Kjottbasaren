@@ -142,7 +142,6 @@ vec3 computeHeadlight() {
 
 	float distance = length(p_light_dir);
 	float distance_intensity = p_light_d_intensity_k_const + (p_light_d_intensity_k_linear * distance) + (p_light_d_intensity_k_square * distance * distance);
-	distance_intensity = 1.0; //TODO
 
 	// compute the color contribution
 	vec3 amb_color = clamp(

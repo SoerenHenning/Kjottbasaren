@@ -89,15 +89,15 @@ int main(int argc, char **argv) {
 	scene.backgroundColor = Vector3f(0.0f, 0.8f, 1.0f);
 
 	scene.sunlight.direction = Vector3f(0.5f, -1.5f, -1.0f);
-	scene.sunlight.ambientColor = Vector3f(0.5f, 0.3f, 0.0f);
+	scene.sunlight.ambientColor = Vector3f(0.4f, 0.3f, 0.2f);
 	scene.sunlight.diffuseColor = Vector3f(0.5f, 0.4f, 0.3f);
-	scene.sunlight.specularColor = Vector3f(0.6f, 0.6f, 0.7f);
+	scene.sunlight.specularColor = Vector3f(0.4f, 0.4f, 0.4f);
 	scene.sunlight.ambientIntensity = 1.f;
 	scene.sunlight.diffuseIntensity = 1.f;
 	scene.sunlight.specularIntensity = 1.f;
 
-	scene.headlight.ambientColor = Vector3f(0.5f, 0.3f, 0.0f);
-	scene.headlight.diffuseColor = Vector3f(0.5f, 0.4f, 0.3f);
+	scene.headlight.ambientColor = Vector3f(0.2f, 0.1f, 0.0f);
+	scene.headlight.diffuseColor = Vector3f(0.5f, 0.4f, 0.2f);
 	scene.headlight.specularColor = Vector3f(0.6f, 0.6f, 0.7f);
 	scene.headlight.ambientIntensity = 1.f;
 	scene.headlight.diffuseIntensity = 1.f;
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 	scene.models.push_back(house);
 
 	Model* ground = new Model("models\\plane.obj", false, true);
-	ground->materialAmbientColor = Vector3f(0.4f, 0.4f, 0.4f);
+	ground->materialAmbientColor = Vector3f(0.8f, 0.8f, 0.8f);
 	ground->materialDiffuseColor = Vector3f(0.5f, 0.5f, 0.5f);
 	ground->materialSpecularColor = Vector3f(0.3f, 0.3f, 0.3f);
 	ground->materialShininess = 10.f;
@@ -337,7 +337,7 @@ void keyboard(unsigned char key, int x, int y) {
 			}
 			break;
 		case '3':
-			cout << "Switch to per black and white vertex illumination shaders..." << endl;
+			cout << "Switch to black and white per vertex illumination shaders..." << endl;
 			shader = perVertexIlluminationBWShader;
 			if (initShaders()) {
 				cout << "> done." << endl;

@@ -43,9 +43,6 @@ layout (location = 2) in vec3 normal;
 // pass the texture coordinates to the fragment shader
 //out vec2 cur_tex_coords;
 
-// Output vertex color (per-vertex, interpolated and passed to frag shader)
-out vec4 fcolor; //TODO remove
-
 out vec3 cur_normal;
 
 out vec3 view_dir;
@@ -67,8 +64,6 @@ void main() {
 
 	cur_normal = normal;
 
-	// pass the result to the fragment shader
-	fcolor = vec4(0.0, 0.0, 0.0, 1.0); //TODO
 }
 
 vec3 computeDirectionalLight(vec3 view_dir_nn) {
@@ -83,15 +78,10 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 	// -> the Blinn-phong version can be used here
 	// This computation has to be repeated for every light in the scene.
 	// The final color is given by the sum of contributions from every light.
-	
-	// --- directional light ----
-	// compute the required values and vectors
-	// notice that input variables cannot be modified, so copy them first
-	vec3 normal_nn = normalize(normal);	// TODO NaN's returned
+
+	vec3 normal_nn = normalize(normal);
 	vec3 d_light_dir_nn = normalize(d_light_direction);
-	//d_light_dir_nn = view_dir_nn;
-
-
+	
 	float dot_d_light_normal = dot(-d_light_dir_nn, normal);   // notice the minus!
 	vec3 d_reflected_dir_nn = d_light_dir_nn + 2. * dot_d_light_normal * normal; // OUT
 	// should be already normalized, but we "need" to correct numerical errors
@@ -117,21 +107,11 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 
 vec3 computeHeadlight(vec3 view_dir_nn) {
 
-	//TODO remove p light dir nn from passing
-	// TODO: do the same for the headlight!
-	// notice that for the headlight dot(view_dir, light_dir) = ...
-	
-	//p_light_dir_nn = view_dir_nn;
-	
-	//vec3 p_light_dir_nn = -view_dir_nn;
-
-	//TODO style
-	// position mins cam position
+	// position minus cam position
 	vec3 p_light_dir = position - camera_position;
 	vec3 p_light_dir_nn = normalize(p_light_dir);
-	
 
-	float dot_p_light_normal = dot(-p_light_dir_nn, normal);   // notice the minus!
+	float dot_p_light_normal = dot(-p_light_dir_nn, normal);
 	vec3 p_reflected_dir_nn = p_light_dir_nn + 2. * dot_p_light_normal * normal;
 	// should be already normalized, but we "need" to correct numerical errors
 	p_reflected_dir_nn = normalize(p_reflected_dir_nn); 
