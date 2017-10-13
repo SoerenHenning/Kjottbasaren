@@ -322,6 +322,27 @@ void keyboard(unsigned char key, int x, int y) {
 			scene.headlight.diffuseIntensity = (scene.headlight.diffuseIntensity == 0.f) ? 1.f : 0.f;
 			scene.headlight.specularIntensity = (scene.headlight.specularIntensity == 0.f) ? 1.f : 0.f;
 			break;
+		case '1': 
+			cout << "Switch to per vertex illumination shaders..." << endl;
+			shader = perVertexIlluminationShader;
+			if (initShaders()) {
+				cout << "> done." << endl;
+			}
+			break;
+		case '2':
+			cout << "Switch to per fragment illumination shaders..." << endl;
+			shader = perFragmentIlluminationShader;
+			if (initShaders()) {
+				cout << "> done." << endl;
+			}
+			break;
+		case '3':
+			cout << "Switch to per black and white vertex illumination shaders..." << endl;
+			shader = perVertexIlluminationBWShader;
+			if (initShaders()) {
+				cout << "> done." << endl;
+			}
+			break;
 		case 'l':
 			cout << "Re-loading shaders..." << endl;
 			if(initShaders()) {
