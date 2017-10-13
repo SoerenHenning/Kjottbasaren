@@ -69,7 +69,7 @@ void main() {
 	vec3 color = directionalLight + headlight;
 
 	// pass the result to the fragment shader
-	fcolor = vec4(color, 1.0); //TODO
+	fcolor = vec4(color, 1.0);
 }
 
 vec3 computeDirectionalLight(vec3 view_dir_nn) {
@@ -104,12 +104,14 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 			0.0, 1.0);
 	//amb_color = vec3(0.0,0.0,0.0); // TODO
 	vec3 diff_color = clamp(
-			material_d_color * dot_d_light_normal * d_light_d_intensity,
+			material_d_color * d_light_d_color * dot_d_light_normal * d_light_d_intensity,
 			0.0, 1.0);
 	//diff_color = vec3(0.0,0.0,0.0);  // TODO
 	vec3 spec_color = clamp(
-			material_s_color *  
-			pow(dot(d_reflected_dir_nn, view_dir_nn), material_shininess),
+			material_s_color *
+			d_light_s_color * 
+			pow(dot(d_reflected_dir_nn, view_dir_nn), material_shininess) *
+			d_light_s_intensity,
 			0.0, 1.0);
 	//spec_color = vec3(0.0,0.0,0.0); //TODO
 
@@ -142,11 +144,12 @@ vec3 computeHeadlight(vec3 view_dir_nn) {
 			0.0, 1.0);
 	//amb_color = vec3(0.0,0.0,0.0); // TODO
 	vec3 diff_color = clamp(
-			material_d_color * dot_p_light_normal * (p_light_d_intensity / distance_intensity),
+			material_d_color * p_light_d_color * dot_p_light_normal * (p_light_d_intensity / distance_intensity),
 			0.0, 1.0);
 	//diff_color = vec3(0.0,0.0,0.0); // TODO
 	vec3 spec_color = clamp(
 			material_s_color *
+			p_light_s_color * 
 			pow(dot(p_reflected_dir_nn, view_dir_nn), material_shininess) *
 			(p_light_s_intensity / distance_intensity),
 			0.0, 1.0);

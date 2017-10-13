@@ -193,19 +193,19 @@ void display() {
 	// Set the sunlight's parameters
 	glUniform3f(DLightDirLoc, scene.sunlight.direction.x(), scene.sunlight.direction.y(), scene.sunlight.direction.z());
 	glUniform3f(DLightAColorLoc, scene.sunlight.ambientColor.x(), scene.sunlight.ambientColor.y(), scene.sunlight.ambientColor.z());
-	glUniform3f(DLightDColorLoc, scene.sunlight.diffuseColor.x(), scene.sunlight.diffuseColor.y(), scene.sunlight.diffuseColor.z()); // used? TODO
-	glUniform3f(DLightSColorLoc, scene.sunlight.specularColor.x(), scene.sunlight.specularColor.y(), scene.sunlight.specularColor.z()); // used? TODO
+	glUniform3f(DLightDColorLoc, scene.sunlight.diffuseColor.x(), scene.sunlight.diffuseColor.y(), scene.sunlight.diffuseColor.z()); 
+	glUniform3f(DLightSColorLoc, scene.sunlight.specularColor.x(), scene.sunlight.specularColor.y(), scene.sunlight.specularColor.z()); 
 	glUniform1f(DLightAIntensityLoc, scene.sunlight.ambientIntensity);
 	glUniform1f(DLightDIntensityLoc, scene.sunlight.diffuseIntensity); 
-	glUniform1f(DLightSIntensityLoc, scene.sunlight.specularIntensity); // TODO unused
+	glUniform1f(DLightSIntensityLoc, scene.sunlight.specularIntensity);
 
 	// Set the headlight's parameters
-	glUniform3f(PLightAColorLoc, scene.headlight.ambientColor.x(), scene.headlight.ambientColor.y(), scene.headlight.ambientColor.z());// TODO used?
-	glUniform3f(PLightDColorLoc, scene.headlight.diffuseColor.x(), scene.headlight.diffuseColor.y(), scene.headlight.diffuseColor.z()); // TODO used?
-	glUniform3f(PLightSColorLoc, scene.headlight.specularColor.x(), scene.headlight.specularColor.y(), scene.headlight.specularColor.z()); // TODO used?
-	glUniform1f(PLightAIntensityLoc, scene.headlight.ambientIntensity);// TODO used?
-	glUniform1f(PLightDIntensityLoc, scene.headlight.diffuseIntensity); // TODO used?
-	glUniform1f(PLightSIntensityLoc, scene.headlight.specularIntensity); // TODO used?
+	glUniform3f(PLightAColorLoc, scene.headlight.ambientColor.x(), scene.headlight.ambientColor.y(), scene.headlight.ambientColor.z());
+	glUniform3f(PLightDColorLoc, scene.headlight.diffuseColor.x(), scene.headlight.diffuseColor.y(), scene.headlight.diffuseColor.z());
+	glUniform3f(PLightSColorLoc, scene.headlight.specularColor.x(), scene.headlight.specularColor.y(), scene.headlight.specularColor.z());
+	glUniform1f(PLightAIntensityLoc, scene.headlight.ambientIntensity);
+	glUniform1f(PLightDIntensityLoc, scene.headlight.diffuseIntensity); 
+	glUniform1f(PLightSIntensityLoc, scene.headlight.specularIntensity);
 	glUniform1f(PLightDIntensityKConstLoc, scene.headlight.intensityKConst);
 	glUniform1f(PLightDIntensityKLinearLoc, scene.headlight.intensityKLinear);
 	glUniform1f(PLightDIntensityKSquareLoc, scene.headlight.intensitySquare);
