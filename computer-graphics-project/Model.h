@@ -11,6 +11,6 @@ struct Model {
 	Vector3f materialSpecularColor;
 	float materialShininess;
 public:
-	Model(std::string, bool);
+	Model(std::string, bool, bool);
 	~Model();
 };

@@ -95,15 +95,15 @@ int main(int argc, char **argv) {
 	scene.headlight.intensityKLinear = 0.f;
 	scene.headlight.intensitySquare = 0.5f;
 
-	Model* house = new Model("capsule\\FinalBuilding.obj", true);
+	Model* house = new Model("capsule\\FinalBuilding.obj", true, false);
 	house->materialAmbientColor = Vector3f(0.5f, 0.5f, 0.5f);
 	house->materialDiffuseColor = Vector3f(1.0f, 0.8f, 0.8f);
 	house->materialSpecularColor = Vector3f(0.5f, 0.5f, 0.5f);
 	house->materialShininess = 20.f;
 	scene.models.push_back(house);
 
-	Model* ground = new Model("capsule\\plane.obj", false);
-	ground->materialAmbientColor = Vector3f(0.2f, 0.2f, 0.2f);
+	Model* ground = new Model("capsule\\plane.obj", false, true);
+	ground->materialAmbientColor = Vector3f(0.4f, 0.4f, 0.4f);
 	ground->materialDiffuseColor = Vector3f(0.5f, 0.5f, 0.5f);
 	ground->materialSpecularColor = Vector3f(0.3f, 0.3f, 0.3f);
 	ground->materialShininess = 10.f;
@@ -135,12 +135,9 @@ int main(int argc, char **argv) {
 	// OpenGL
 	glClearColor(scene.backgroundColor.x(), scene.backgroundColor.y(), scene.backgroundColor.z(), 0.0f); // background color
 	glEnable(GL_DEPTH_TEST);	        // enable depth ordering
-    //glEnable(GL_CULL_FACE);		        // enable back-face culling //TODO disabled temp
+    glEnable(GL_CULL_FACE);		        // enable back-face culling //TODO disabled temp
     glFrontFace(GL_CCW);		        // vertex order for the front face
 	glCullFace(GL_BACK);		        // back-faces should be removed
-
-	// Accept fragment if it closer to the camera than the former one
-	//glDepthFunc(GL_LESS);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   // draw polygons as wireframe
 	glPolygonMode(GL_FRONT, GL_FILL);   // draw polygons as solid
