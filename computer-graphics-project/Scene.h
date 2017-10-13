@@ -2,20 +2,15 @@
 #include "Vector3.h"
 #include "Camera.h"
 
-struct Scene {
-	Camera* camera;
-	std::vector<Model> models;
-	Vector3f backgroundColor;
-	DirectionalLight sunlight;
-	PointLight headlight;
-};
-
 struct Model {
 	ModelOBJ modelObj;
 	Vector3f materialAmbientColor;
 	Vector3f materialDiffuseColor;
 	Vector3f materialSpecularColor;
-	Vector3f materialShininess;
+	float materialShininess;
+	public:
+		Model(string, bool);
+		~Model();
 };
 
 struct DirectionalLight {
@@ -39,4 +34,12 @@ struct PointLight {
 	float intensityKConst;
 	float intensityKLinear;
 	float intensitySquare;
+};
+
+struct Scene {
+	Camera* camera;
+	std::vector<Model*> models;
+	Vector3f backgroundColor;
+	DirectionalLight sunlight;
+	PointLight headlight;
 };

@@ -7,11 +7,12 @@
 #include <string>
 #include <algorithm>
 #include <cmath>
+#include <unordered_map>
 
 #include "Vector3.h"
 #include "Matrix4.h"
 #include "ModelObj.h"
-#include "Camera.h"
+#include "Scene.h"
 
 using namespace std;
 
@@ -23,25 +24,15 @@ void mouse(int, int, int, int);
 void motion(int, int);
 
 // --- Other methods ------------------------------------------------------------------------------
-bool initMesh(ModelOBJ&, string, bool, GLuint&, GLuint&);
+void initMesh();
 bool initShaders();
 void initCamera();
 string readTextFile(const string&);
 
 
 // --- Global variables ---------------------------------------------------------------------------
-// 3D models
-// House
-ModelOBJ houseModel;		///< A 3D model
-string houseModelFilename = "capsule\\FinalBuilding.obj";
-GLuint houseVBO = 0;		///< A vertex buffer object
-GLuint houseIBO = 0;		///< An index buffer object
-// Ground
-ModelOBJ groundModel;		///< A 3D model
-string groundModelFilename = "capsule\\plane.obj";
-GLuint groundVBO = 0;		///< A vertex buffer object
-GLuint groundIBO = 0;		///< An index buffer object
-
+unordered_map<Model*, GLuint> vertexBufferObjects;
+unordered_map<Model*, GLuint> indexBufferObjects;
 
 // Shaders
 GLuint ShaderProgram = 0;	///< A shader program
@@ -77,13 +68,49 @@ GLint MaterialShineLoc = -1;
 int MouseX, MouseY;		///< The last position of the mouse
 int MouseButton;		///< The last mouse button pressed or released
 
-
-// Camera
-Camera* camera;
+//Scene
+Scene scene;
 
 // --- main() -------------------------------------------------------------------------------------
 /// The entry point of the application
 int main(int argc, char **argv) {
+
+	// Create our scene;
+	scene.backgroundColor = Vector3f(0.0f, 0.8f, 1.0f);
+
+	scene.sunlight.direction = Vector3f(0.5f, -1.5f, -1.0f);
+	scene.sunlight.ambientColor = Vector3f(0.5f, 0.3f, 0.0f);
+	scene.sunlight.diffuseColor = Vector3f(0.5f, 0.4f, 0.3f);
+	scene.sunlight.specularColor = Vector3f(0.6f, 0.6f, 0.7f);
+	scene.sunlight.ambientIntensity = 1.f;
+	scene.sunlight.diffuseIntensity = 1.f;
+	scene.sunlight.specularIntensity = 1.f;
+
+	scene.headlight.ambientColor = Vector3f(0.5f, 0.3f, 0.0f);
+	scene.headlight.diffuseColor = Vector3f(0.5f, 0.4f, 0.3f);
+	scene.headlight.specularColor = Vector3f(0.6f, 0.6f, 0.7f);
+	scene.headlight.ambientIntensity = 1.f;
+	scene.headlight.diffuseIntensity = 1.f;
+	scene.headlight.specularIntensity = 1.f;
+	scene.headlight.intensityKConst = 0.f;
+	scene.headlight.intensityKLinear = 0.f;
+	scene.headlight.intensitySquare = 0.5f;
+
+	Model* house = new Model("capsule\\FinalBuilding.obj", true);
+	house->materialAmbientColor = Vector3f(0.5f, 0.5f, 0.5f);
+	house->materialDiffuseColor = Vector3f(1.0f, 0.8f, 0.8f);
+	house->materialSpecularColor = Vector3f(0.5f, 0.5f, 0.5f);
+	house->materialShininess = 20.f;
+	scene.models.push_back(house);
+
+	Model* ground = new Model("capsule\\plane.obj", false);
+	ground->materialAmbientColor = Vector3f(0.2f, 0.2f, 0.2f);
+	ground->materialDiffuseColor = Vector3f(0.5f, 0.5f, 0.5f);
+	ground->materialSpecularColor = Vector3f(0.3f, 0.3f, 0.3f);
+	ground->materialShininess = 10.f;
+	scene.models.push_back(ground);
+
+	initCamera();
 
 	// Initialize glut and create a simple window
 	glutInit(&argc, argv);
@@ -109,7 +136,7 @@ int main(int argc, char **argv) {
 
 	// Initialize program variables
 	// OpenGL
-	glClearColor(0.0f, 0.8f, 1.0f, 0.0f); // background color
+	glClearColor(scene.backgroundColor.x(), scene.backgroundColor.y(), scene.backgroundColor.z(), 0.0f); // background color
 	glEnable(GL_DEPTH_TEST);	        // enable depth ordering
     //glEnable(GL_CULL_FACE);		        // enable back-face culling //TODO disabled temp
     glFrontFace(GL_CCW);		        // vertex order for the front face
@@ -124,12 +151,9 @@ int main(int argc, char **argv) {
 		
 
 	// Initialize program variables
-	// Camera 
-	initCamera();
 
 	// Mesh
-	initMesh(houseModel, houseModelFilename, true, houseVBO, houseIBO);
-	initMesh(groundModel, groundModelFilename, false, groundVBO, groundIBO);
+	initMesh();
 
 	// Shaders
 	if (!initShaders()) {
@@ -158,95 +182,67 @@ void display() {
 	assert(ShaderProgram != 0);
 	glUseProgram(ShaderProgram);
 
-	camera->setAspectRatio((1.0f * width) / height);
-	Matrix4f cameraTransformation = camera->getTransformationMatrix();
+	scene.camera->setAspectRatio((1.0f * width) / height);
+	Matrix4f cameraTransformation = scene.camera->getTransformationMatrix();
 
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
 
-	glUniform3fv(CameraPositionLoc, 1, camera->getPosition().get());
+	glUniform3fv(CameraPositionLoc, 1, scene.camera->getPosition().get());
 
-	// Set the light parameters
-	glUniform3f(DLightDirLoc, 0.5f, -1.5f, -1.0f); // used
-	glUniform3f(DLightAColorLoc, 0.5f, 0.3f, 0.0f); // used
-	glUniform3f(DLightDColorLoc, 0.5f, 0.4f, 0.3f);
-	glUniform3f(DLightSColorLoc, 0.6f, 0.6f, 0.7f);
-	glUniform1f(DLightAIntensityLoc, 1.0f); // used
-	glUniform1f(DLightDIntensityLoc, 1.0f); // used
-	glUniform1f(DLightSIntensityLoc, 1.0f); // currently unused
+	// Set the sunlight's parameters
+	glUniform3f(DLightDirLoc, scene.sunlight.direction.x(), scene.sunlight.direction.y(), scene.sunlight.direction.z());
+	glUniform3f(DLightAColorLoc, scene.sunlight.ambientColor.x(), scene.sunlight.ambientColor.y(), scene.sunlight.ambientColor.z());
+	glUniform3f(DLightDColorLoc, scene.sunlight.diffuseColor.x(), scene.sunlight.diffuseColor.y(), scene.sunlight.diffuseColor.z()); // used? TODO
+	glUniform3f(DLightSColorLoc, scene.sunlight.specularColor.x(), scene.sunlight.specularColor.y(), scene.sunlight.specularColor.z()); // used? TODO
+	glUniform1f(DLightAIntensityLoc, scene.sunlight.ambientIntensity);
+	glUniform1f(DLightDIntensityLoc, scene.sunlight.diffuseIntensity); 
+	glUniform1f(DLightSIntensityLoc, scene.sunlight.specularIntensity); // TODO unused
 
-	// Set the light parameters
-	glUniform3f(PLightDirLoc, camera->getPosition().x(), camera->getPosition().y(), camera->getPosition().z()); // TODO currently not used, should be called position
-	glUniform3f(PLightAColorLoc, 0.5f, 0.3f, 0.0f); //
-	glUniform3f(PLightDColorLoc, 0.5f, 0.4f, 0.3f);
-	glUniform3f(PLightSColorLoc, 0.6f, 0.6f, 0.7f);
-	glUniform1f(PLightAIntensityLoc, 1.0f); // 
-	glUniform1f(PLightDIntensityLoc, 1.0f); // 
-	glUniform1f(PLightDIntensityKConstLoc, 0.0f); // used
-	glUniform1f(PLightDIntensityKLinearLoc, 0.0f); // used
-	glUniform1f(PLightDIntensityKSquareLoc, 0.5f); // used
-	glUniform1f(PLightSIntensityLoc, 1.0f); // 
+	// Set the headlight's parameters
+	glUniform3f(PLightAColorLoc, scene.headlight.ambientColor.x(), scene.headlight.ambientColor.y(), scene.headlight.ambientColor.z());// TODO used?
+	glUniform3f(PLightDColorLoc, scene.headlight.diffuseColor.x(), scene.headlight.diffuseColor.y(), scene.headlight.diffuseColor.z()); // TODO used?
+	glUniform3f(PLightSColorLoc, scene.headlight.specularColor.x(), scene.headlight.specularColor.y(), scene.headlight.specularColor.z()); // TODO used?
+	glUniform1f(PLightAIntensityLoc, scene.headlight.ambientIntensity);// TODO used?
+	glUniform1f(PLightDIntensityLoc, scene.headlight.diffuseIntensity); // TODO used?
+	glUniform1f(PLightSIntensityLoc, scene.headlight.specularIntensity); // TODO used?
+	glUniform1f(PLightDIntensityKConstLoc, scene.headlight.intensityKConst);
+	glUniform1f(PLightDIntensityKLinearLoc, scene.headlight.intensityKLinear);
+	glUniform1f(PLightDIntensityKSquareLoc, scene.headlight.intensitySquare);
 
 	// Enable the vertex attributes
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
-	// START Draw Ground -> move this to own function later
-	
-	// Set the material parameters for the ground
-	glUniform3f(MaterialAColorLoc, 0.2f, 0.2f, 0.2f); // used
-	glUniform3f(MaterialDColorLoc, 0.5f, 0.5f, 0.5f); // used
-	glUniform3f(MaterialSColorLoc, 0.3f, 0.3f, 0.3f); // used
-	glUniform1f(MaterialShineLoc, 10.0f); // used
+	// Draw the models
+	for (auto const& model : scene.models) {
+		GLuint vertexBufferObject = vertexBufferObjects[model];
+		GLuint indexBufferObject = indexBufferObjects[model];
+		
+		// Set the material parameters for the ground
+		glUniform3f(MaterialAColorLoc, model->materialAmbientColor.x(), model->materialAmbientColor.y(), model->materialAmbientColor.z());
+		glUniform3f(MaterialDColorLoc, model->materialDiffuseColor.x(), model->materialDiffuseColor.y(), model->materialDiffuseColor.z());
+		glUniform3f(MaterialSColorLoc, model->materialSpecularColor.x(), model->materialSpecularColor.y(), model->materialSpecularColor.z());
+		glUniform1f(MaterialShineLoc, model->materialShininess);
 
-	// Bind the buffers
-	glBindBuffer(GL_ARRAY_BUFFER, groundVBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, groundIBO);
+		// Bind the buffers
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
-	// Set the vertex attributes format
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(0));
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
+		// Set the vertex attributes format
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+			sizeof(ModelOBJ::Vertex),
+			reinterpret_cast<const GLvoid*>(0));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+			sizeof(ModelOBJ::Vertex),
+			reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
+			sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
 
-	// Draw the elements on the GPU
-	glDrawElements(GL_TRIANGLES, groundModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
-	
-	// END Draw Ground
+		// Draw the elements on the GPU
+		glDrawElements(GL_TRIANGLES, model->modelObj.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
 
-	
-
-	// START Draw House -> move this to own function later
-
-	// Set the material parameters for the house
-	glUniform3f(MaterialAColorLoc, 0.5f, 0.5f, 0.5f); // used
-	glUniform3f(MaterialDColorLoc, 1.0f, 0.8f, 0.8f); // used
-	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
-	glUniform1f(MaterialShineLoc, 20.0f); // used
-
-	// Bind the buffers
-	glBindBuffer(GL_ARRAY_BUFFER, houseVBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, houseIBO);
-
-	// Set the vertex attributes format
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(0));
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
-
-	// Draw the elements on the GPU
-	glDrawElements(GL_TRIANGLES, houseModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
-
-	// END Draw House
-	
+	}
 
 	// Disable the vertex attributes (not necessary but recommended)
 	glDisableVertexAttribArray(0);
@@ -271,28 +267,28 @@ void keyboard(unsigned char key, int x, int y) {
 			initCamera();
 			break;
 		case 'w':
-			camera->moveForward(0.1f);
+			scene.camera->moveForward(0.1f);
 			break;
 		case 'a':
-			camera->moveRight(-0.1f);
+			scene.camera->moveRight(-0.1f);
 			break;
 		case 's':
-			camera->moveForward(-0.1f);
+			scene.camera->moveForward(-0.1f);
 			break;
 		case 'd':
-			camera->moveRight(0.1f);
+			scene.camera->moveRight(0.1f);
 			break;
 		case 'c':
-			camera->moveUp(-0.1f);
+			scene.camera->moveUp(-0.1f);
 			break;
 		case ' ':
-			camera->moveUp(0.1f);
+			scene.camera->moveUp(0.1f);
 			break;
 		case 'n':	// Increase field of view
-			camera->increaseFieldOfView(1.f);
+			scene.camera->increaseFieldOfView(1.f);
 			break;
 		case 'm':	// Decrease field of view
-			camera->increaseFieldOfView(-1.f);
+			scene.camera->increaseFieldOfView(-1.f);
 			break;
 		case 'g': // show the current OpenGL version
 			cout << "OpenGL version " << glGetString(GL_VERSION) << endl;
@@ -301,10 +297,10 @@ void keyboard(unsigned char key, int x, int y) {
 			exit(0);
 			break;
 		case 'b':  // switch perspectiv to orth
-			camera->toggleProjection();
+			scene.camera->toggleProjection();
 			break;
 		case 'i':  // print info about camera
-			camera->printStatus();
+			scene.camera->printStatus();
 			break;
 		case 'p': // change to wireframe rendering
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -332,21 +328,21 @@ void mouse(int button, int state, int x, int y) {
 /// Called whenever the mouse is moving while a button is pressed
 void motion(int x, int y) {
 	if (MouseButton == GLUT_RIGHT_BUTTON) {
-		camera->moveRight(0.005f * (MouseX - x));
-		camera->moveForward(0.005f * (y - MouseY));
+		scene.camera->moveRight(0.005f * (MouseX - x));
+		scene.camera->moveForward(0.005f * (y - MouseY));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_MIDDLE_BUTTON) {
-		camera->zoomIn(0.003f * (y - MouseY));
+		scene.camera->zoomIn(0.003f * (y - MouseY));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_LEFT_BUTTON) {
-		camera->rotateHorizontal(0.2f * (MouseX - x));
-		camera->rotateVertical(0.2f * (MouseY - y));
+		scene.camera->rotateHorizontal(0.2f * (MouseX - x));
+		scene.camera->rotateVertical(0.2f * (MouseY - y));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
@@ -358,58 +354,40 @@ void motion(int x, int y) {
 // ************************************************************************************************
 // *** Other methods implementation ***************************************************************
 /// Initialize buffer objects
-bool initMesh(ModelOBJ& Model, string filename, bool normalize, GLuint& VBO, GLuint& IBO) {
-	// Load the OBJ model
-	if(!Model.import(filename.c_str())) {
-		cerr << "Error: cannot load model." << endl;
-		return false;
-	}
-	
-	if (normalize) {
-		Model.normalize();
+void initMesh() {
+	for (auto const& model : scene.models) {
+		// VBO
+		GLuint vertexBufferObject = 0;
+		glGenBuffers(1, &vertexBufferObject);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+		glBufferData(GL_ARRAY_BUFFER, model->modelObj.getNumberOfVertices() * sizeof(ModelOBJ::Vertex), model->modelObj.getVertexBuffer(), GL_STATIC_DRAW);
+		vertexBufferObjects.emplace(model, vertexBufferObject);
+		
+		// IBO
+		GLuint indexBufferObject = 0;
+		glGenBuffers(1, &indexBufferObject);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * model->modelObj.getNumberOfTriangles() * sizeof(int), model->modelObj.getIndexBuffer(),  GL_STATIC_DRAW);
+		indexBufferObjects.emplace(model, indexBufferObject);
 	}
 
-	// VBO
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER,
-		Model.getNumberOfVertices() * sizeof(ModelOBJ::Vertex), 
-		Model.getVertexBuffer(),
-		GL_STATIC_DRAW);
-
-	// IBO
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		3 * Model.getNumberOfTriangles() * sizeof(int),
-		Model.getIndexBuffer(),
-		GL_STATIC_DRAW);
 	
 	/*
 	const ModelOBJ::Vertex *vb = Model.getVertexBuffer();
 
 	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
-		cout << "vb[" << i << "].position: (" << vb[i].position[0] << "," << vb[i].position[1] << "," << vb[i].position[2] << ")" << endl;
+	cout << "vb[" << i << "].position: (" << vb[i].position[0] << "," << vb[i].position[1] << "," << vb[i].position[2] << ")" << endl;
 	}
 
 	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
-		cout << "vb[" << i << "].normal: (" << vb[i].normal[0] << "," << vb[i].normal[1] << "," << vb[i].normal[2] << ")" << endl;
+	cout << "vb[" << i << "].normal: (" << vb[i].normal[0] << "," << vb[i].normal[1] << "," << vb[i].normal[2] << ")" << endl;
 	}
 
 	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
-		cout << "vb[" << i << "].texCoord: (" << vb[i].texCoord[0] << "," << vb[i].texCoord[1] << ")" << endl;
+	cout << "vb[" << i << "].texCoord: (" << vb[i].texCoord[0] << "," << vb[i].texCoord[1] << ")" << endl;
 	}
 	*/
-
-
-	
-
-
-    	
-	
-	return true;
-} /* initBuffers() */
-
+}
 
 /// Initialize shaders. Return false if initialization fail
 bool initShaders() {
@@ -531,10 +509,10 @@ bool initShaders() {
 } /* initShaders() */
 
 void initCamera() {
-	delete camera;
+	delete scene.camera;
 	Vector3f position = Vector3f(-1.3f, 0.5f, 0.6f);
 	Vector3f target = Vector3f(0.8f, -0.4f, -0.4f);
-	camera = new Camera(position, target);
+	scene.camera = new Camera(position, target);
 }
 
 /// Read the specified file and return its content
