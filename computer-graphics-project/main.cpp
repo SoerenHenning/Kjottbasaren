@@ -49,7 +49,7 @@ GLint TrLocation = -1;		///< Reference to the model-view matrix uniform variable
 //GLint SamplerLocation = -1;	///< Reference to the texture sampler uniform variable
 GLint TimeLocation = -1;	///< Reference to the time uniform variable
 
-// Colors, copied from Tutorial 6
+// Locations for shader variables
 GLint CameraPositionLoc = -1;
 GLint DLightDirLoc = -1;
 GLint DLightAColorLoc = -1;
@@ -162,9 +162,6 @@ void display() {
 	Matrix4f cameraTransformation = camera->getTransformationMatrix();
 
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
-   
-	// Set the uniform variable for the texture unit (texture unit 0)
-	//glUniform1i(SamplerLocation, 0);
 
 	glUniform3fv(CameraPositionLoc, 1, camera->getPosition().get());
 
@@ -189,7 +186,10 @@ void display() {
 	glUniform1f(PLightDIntensityKSquareLoc, 0.5f); // used
 	glUniform1f(PLightSIntensityLoc, 1.0f); // 
 
-	
+	// Enable the vertex attributes
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
 	// START Draw Ground -> move this to own function later
 	
@@ -197,24 +197,19 @@ void display() {
 	glUniform3f(MaterialAColorLoc, 0.2f, 0.2f, 0.2f); // used
 	glUniform3f(MaterialDColorLoc, 0.5f, 0.5f, 0.5f); // used
 	glUniform3f(MaterialSColorLoc, 0.3f, 0.3f, 0.3f); // used
-	glUniform1f(MaterialShineLoc, 100.0f); // used
+	glUniform1f(MaterialShineLoc, 10.0f); // used
 
 	// Bind the buffers
 	glBindBuffer(GL_ARRAY_BUFFER, groundVBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, groundIBO);
 
-	// Enable the vertex attributes and set their format
-	glEnableVertexAttribArray(0);
+	// Set the vertex attributes format
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(0));
-
-	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
-
-	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
 
@@ -233,26 +228,21 @@ void display() {
 	glUniform3f(MaterialSColorLoc, 0.5f, 0.5f, 0.5f); // used
 	glUniform1f(MaterialShineLoc, 20.0f); // used
 
-										  // Bind the buffers
+	// Bind the buffers
 	glBindBuffer(GL_ARRAY_BUFFER, houseVBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, houseIBO);
 
-	// Enable the vertex attributes and set their format
-	glEnableVertexAttribArray(0);
+	// Set the vertex attributes format
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(0));
-
-	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
-
-	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
 		sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
 
-																		// Draw the elements on the GPU
+	// Draw the elements on the GPU
 	glDrawElements(GL_TRIANGLES, houseModel.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
 
 	// END Draw House
@@ -276,58 +266,57 @@ void idle() {
 
 /// Called whenever a keyboard button is pressed (only ASCII characters)
 void keyboard(unsigned char key, int x, int y) {
-	Vector3f right;
 	switch(tolower(key)) {
-	case 'r': // Reset camera status
-		initCamera();
-		break;
-	case 'w':
-		camera->moveForward(0.1f);
-		break;
-	case 'a':
-		camera->moveRight(-0.1f);
-		break;
-	case 's':
-		camera->moveForward(-0.1f);
-		break;
-	case 'd':
-		camera->moveRight(0.1f);
-		break;
-	case 'c':
-		camera->moveUp(-0.1f);
-		break;
-	case ' ':
-		camera->moveUp(0.1f);
-		break;
-	case 'n':	// Increase field of view
-		camera->increaseFieldOfView(1.f);
-		break;
-	case 'm':	// Decrease field of view
-		camera->increaseFieldOfView(-1.f);
-		break;
-	case 'g': // show the current OpenGL version
-		cout << "OpenGL version " << glGetString(GL_VERSION) << endl;
-		break;
-	case 'q':  // terminate the application
-		exit(0);
-		break;
-	case 'b':  // switch perspectiv to orth
-		camera->toggleProjection();
-		break;
-	case 'i':  // print info about camera
-		camera->printStatus();
-		break;
-	case 'p': // change to wireframe rendering
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		break;
-	case 'o': // change to polygon rendering
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		break;
-	case 'l':
-		cout << "Re-loading shaders..." << endl;
-		if(initShaders()) {
-			cout << "> done." << endl;
-		}		
+		case 'r': // Reset camera status
+			initCamera();
+			break;
+		case 'w':
+			camera->moveForward(0.1f);
+			break;
+		case 'a':
+			camera->moveRight(-0.1f);
+			break;
+		case 's':
+			camera->moveForward(-0.1f);
+			break;
+		case 'd':
+			camera->moveRight(0.1f);
+			break;
+		case 'c':
+			camera->moveUp(-0.1f);
+			break;
+		case ' ':
+			camera->moveUp(0.1f);
+			break;
+		case 'n':	// Increase field of view
+			camera->increaseFieldOfView(1.f);
+			break;
+		case 'm':	// Decrease field of view
+			camera->increaseFieldOfView(-1.f);
+			break;
+		case 'g': // show the current OpenGL version
+			cout << "OpenGL version " << glGetString(GL_VERSION) << endl;
+			break;
+		case 'q':  // terminate the application
+			exit(0);
+			break;
+		case 'b':  // switch perspectiv to orth
+			camera->toggleProjection();
+			break;
+		case 'i':  // print info about camera
+			camera->printStatus();
+			break;
+		case 'p': // change to wireframe rendering
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			break;
+		case 'o': // change to polygon rendering
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			break;
+		case 'l':
+			cout << "Re-loading shaders..." << endl;
+			if(initShaders()) {
+				cout << "> done." << endl;
+			}		
 	}
 	glutPostRedisplay();
 }
@@ -371,7 +360,7 @@ void motion(int x, int y) {
 /// Initialize buffer objects
 bool initMesh(ModelOBJ& Model, string filename, bool normalize, GLuint& VBO, GLuint& IBO) {
 	// Load the OBJ model
-	if(!Model.import(filename.c_str())) {  // "capsule\\FinalBuilding.obj" //FinalBuilding.obj // capsule.obj // cube.obj // blendercube
+	if(!Model.import(filename.c_str())) {
 		cerr << "Error: cannot load model." << endl;
 		return false;
 	}
