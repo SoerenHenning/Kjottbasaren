@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Vector3.h"
 #include "Model.h"
 #include "Camera.h"
@@ -35,4 +37,6 @@ struct Scene {
 		Scene();
 		~Scene();
 		void resetCamera();
+	private:
+			void createCamera();
 };

@@ -133,6 +133,7 @@
     <ClInclude Include="Matrix4.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelObj.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
@@ -141,6 +142,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelObj.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -148,7 +150,7 @@
     <None Include="shaders\per_vertex_illumination.v.glsl" />
     <None Include="shaders\per_fragment_illumination.f.glsl" />
     <None Include="shaders\per_fragment_illumination.v.glsl" />
-	<None Include="shaders\per_vertex_illumination_bw.f.glsl" />
+    <None Include="shaders\per_vertex_illumination_bw.f.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
