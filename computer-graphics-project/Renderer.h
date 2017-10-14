@@ -16,7 +16,14 @@
 using namespace std;
 
 class Renderer {
-	// --- Global variables ---------------------------------------------------------------------------
+
+	// OpenGL callbacks
+	void display();
+	void idle();
+	void keyboard(unsigned char, int, int);
+	void mouse(int, int, int, int);
+	void motion(int, int);
+
 	unordered_map<Model*, GLuint> vertexBufferObjects;
 	unordered_map<Model*, GLuint> indexBufferObjects;
 
@@ -34,10 +41,10 @@ class Renderer {
 	// Shaders
 	GLuint ShaderProgram = 0;	// Shader program
 	GLint TrLocation = -1;		// Reference to the model-view matrix uniform variable
-								//GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
+	//GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
 	GLint TimeLocation = -1;	// Reference to the time uniform variable
 
-								// Locations for shader variables
+	// Locations for shader variables
 	GLint CameraPositionLoc = -1;
 	GLint DLightDirLoc = -1;
 	GLint DLightAColorLoc = -1;
@@ -77,17 +84,8 @@ public:
 	static void keyboardWrapper(unsigned char, int, int);
 	static void mouseWrapper(int, int, int, int);
 	static void motionWrapper(int, int);
-
-	// --- OpenGL callbacks ---------------------------------------------------------------------------
-	void display();
-	void idle();
-	void keyboard(unsigned char, int, int);
-	void mouse(int, int, int, int);
-	void motion(int, int);
 private:
 	static Renderer *instance;
-
-	// --- Other methods ------------------------------------------------------------------------------
 	void initMesh();
 	bool initShaders();
 	string readTextFile(const string&);

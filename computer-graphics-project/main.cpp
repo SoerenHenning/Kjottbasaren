@@ -40,4 +40,4 @@ int main(int argc, char **argv) {
 
 	Renderer renderer = Renderer(scene);
 	return renderer.render(argc, argv);
-} 
+}

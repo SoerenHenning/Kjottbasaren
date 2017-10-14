@@ -10,10 +10,12 @@ Renderer::~Renderer() {
 }
 
 int Renderer::render(int argc, char **argv) {
-
-	//TODO Check if already set
+	if (Renderer::instance != NULL) {
+		// Renderer already set
+		return -1;
+	}
 	Renderer::instance = this;
-
+	
 	// Initialize glut and create a simple window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -40,7 +42,7 @@ int Renderer::render(int argc, char **argv) {
 	// OpenGL
 	glClearColor(scene->backgroundColor.x(), scene->backgroundColor.y(), scene->backgroundColor.z(), 0.0f); // background color
 	glEnable(GL_DEPTH_TEST);	        // enable depth ordering
-	glEnable(GL_CULL_FACE);		        // enable back-face culling //TODO disabled temp
+	glEnable(GL_CULL_FACE);		        // enable back-face culling
 	glFrontFace(GL_CCW);		        // vertex order for the front face
 	glCullFace(GL_BACK);		        // back-faces should be removed
 
@@ -51,14 +53,14 @@ int Renderer::render(int argc, char **argv) {
 
 	// Mesh
 	initMesh();
-
+	
 	// Shaders
 	if (!initShaders()) {
 		cout << "Press Enter to exit..." << endl;
 		getchar();
 		return -1;
 	}
-
+	
 	// Start the main event loop
 	glutMainLoop();
 
@@ -66,21 +68,23 @@ int Renderer::render(int argc, char **argv) {
 }
 
 void Renderer::display() {
+	
 	// Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	int width = glutGet(GLUT_WINDOW_WIDTH);
 	int height = glutGet(GLUT_WINDOW_HEIGHT);
 	glViewport(0, 0, width, height);
 
+	
 	// Enable the shader program
 	assert(ShaderProgram != 0);
 	glUseProgram(ShaderProgram);
 
 	scene->camera->setAspectRatio((1.0f * width) / height);
 	Matrix4f cameraTransformation = scene->camera->getTransformationMatrix();
-
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
 
+	
 	glUniform3fv(CameraPositionLoc, 1, scene->camera->getPosition().get());
 
 	// Set the sunlight's parameters
@@ -107,6 +111,8 @@ void Renderer::display() {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+
+	
 
 	// Draw the models
 	for (auto const& model : scene->models) {
@@ -136,6 +142,17 @@ void Renderer::display() {
 		// Draw the elements on the GPU
 		glDrawElements(GL_TRIANGLES, model->modelObj.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
 	}
+
+	// Disable the vertex attributes (not necessary but recommended)
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+
+	// Disable the shader program (not necessary but recommended)
+	glUseProgram(0);
+
+	// Swap the frame buffers (off-screen rendering)
+	glutSwapBuffers();
 }
 
 void Renderer::idle() {
