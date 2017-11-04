@@ -72,7 +72,7 @@ void main() {
 
 	vec3 color = directionalLight + headlight;
 	//color = normalize(cur_normal) * -1.0;
-	FragColor = vec4(color, 1.0); //TODO
+	FragColor = temp * vec4(color, 1.0); //TODO
 	
 	
 	//FragColor = temp; //TODO
