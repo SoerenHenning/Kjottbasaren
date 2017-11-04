@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "lodepng.h"
 
 Renderer *Renderer::instance = NULL;
 
@@ -74,7 +75,6 @@ void Renderer::display() {
 	int width = glutGet(GLUT_WINDOW_WIDTH);
 	int height = glutGet(GLUT_WINDOW_HEIGHT);
 	glViewport(0, 0, width, height);
-
 	
 	// Enable the shader program
 	assert(ShaderProgram != 0);
@@ -84,7 +84,6 @@ void Renderer::display() {
 	Matrix4f cameraTransformation = scene->camera->getTransformationMatrix();
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
 
-	
 	glUniform3fv(CameraPositionLoc, 1, scene->camera->getPosition().get());
 
 	// Set the sunlight's parameters
@@ -108,22 +107,28 @@ void Renderer::display() {
 	glUniform1f(PLightDIntensityKSquareLoc, scene->headlight.intensitySquare);
 
 	// Enable the vertex attributes
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(0); //position
+	glEnableVertexAttribArray(1); //tex_coords
+	glEnableVertexAttribArray(2); //normals
 
-	
+	//TODO this block is temp
+	// Set the uniform variable for the texture unit (texture unit 0)
+// 	glUniform1i(SamplerLocation, 0); //TODO necessary?
+	/* See here for nicer code:
+	GLint texLoc = glGetAttribLocation(ShaderProgram, "tex_coords");
+	glEnableVertexAttribArray(texLoc);
+	glVertexAttribPointer(texLoc, 2, GL_FLOAT, GL_FALSE,
+		sizeof(ModelOBJ::Vertex),
+		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
+	*/
+
+
 
 	// Draw the models
 	for (auto const& model : scene->models) {
+
 		GLuint vertexBufferObject = vertexBufferObjects[model];
 		GLuint indexBufferObject = indexBufferObjects[model];
-
-		// Set the material parameters for the ground
-		glUniform3f(MaterialAColorLoc, model->materialAmbientColor.x(), model->materialAmbientColor.y(), model->materialAmbientColor.z());
-		glUniform3f(MaterialDColorLoc, model->materialDiffuseColor.x(), model->materialDiffuseColor.y(), model->materialDiffuseColor.z());
-		glUniform3f(MaterialSColorLoc, model->materialSpecularColor.x(), model->materialSpecularColor.y(), model->materialSpecularColor.z());
-		glUniform1f(MaterialShineLoc, model->materialShininess);
 
 		// Bind the buffers
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
@@ -137,10 +142,37 @@ void Renderer::display() {
 			sizeof(ModelOBJ::Vertex),
 			reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
-			sizeof(ModelOBJ::Vertex), reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
+			sizeof(ModelOBJ::Vertex),
+			reinterpret_cast<const GLvoid*>((3 * sizeof(float)) + (2 * sizeof(float))));
 
-		// Draw the elements on the GPU
-		glDrawElements(GL_TRIANGLES, model->modelObj.getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+		for (int i = 0; i < model->modelObj.getNumberOfMeshes(); ++i) {
+			const ModelOBJ::Mesh *mesh = &model->modelObj.getMesh(i);
+			const ModelOBJ::Material *material = mesh->pMaterial;
+
+			glUniform1i(SamplerLocation, 0); //TODO necessary?
+
+			glUniform3f(MaterialAColorLoc, material->ambient[0], material->ambient[1], material->ambient[2]);
+			glUniform3f(MaterialDColorLoc, material->diffuse[0], material->diffuse[1], material->diffuse[2]);
+			glUniform3f(MaterialSColorLoc, material->specular[0], material->specular[1], material->specular[2]);
+			glUniform1f(MaterialShineLoc, material->shininess * 128.0f);
+		
+			string key = material->name;
+			if (textureObjects.count(key) == 1) {
+				Texture texture = textureObjects[key];
+				glActiveTexture(GL_TEXTURE0);
+				glEnable(GL_TEXTURE_2D); //TODO required?
+				glBindTexture(GL_TEXTURE_2D, texture.object); //TODO set correct texture here
+			}
+			else {
+				cout << "No texture for " << key << endl;
+			}
+			
+
+			// Draw the elements on the GPU
+			glDrawElements(GL_TRIANGLES, mesh->triangleCount * 3, GL_UNSIGNED_INT, (void*) (mesh->startIndex * sizeof(GLuint)));
+		}
+
+		
 	}
 
 	// Disable the vertex attributes (not necessary but recommended)
@@ -292,7 +324,60 @@ void Renderer::initMesh() {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * model->modelObj.getNumberOfTriangles() * sizeof(int), model->modelObj.getIndexBuffer(), GL_STATIC_DRAW);
 		indexBufferObjects.emplace(model, indexBufferObject);
+
+		// Check the materials for the texture
+		for (int i = 0; i < model->modelObj.getNumberOfMaterials(); ++i) {
+			const ModelOBJ::Material material = model->modelObj.getMaterial(i);
+
+			// if the current material has a texture
+			if (material.colorMapFilename != "") {
+				Texture texture;
+				GLuint textureObject = 0; //TODO
+
+				// Load the texture
+				if (texture.data != nullptr) {
+					free(texture.data);
+				}
+				unsigned int fail = lodepng_decode_file(&(texture.data), &(texture.width), &(texture.height),
+					("models\\" + material.colorMapFilename).c_str(),
+					LCT_RGB, 8); // Remember to check the last 2 parameters
+				if (fail != 0) {
+					cerr << "Error: cannot load texture file " << material.colorMapFilename << endl;
+					//return false;
+				}
+
+				// Create the texture object
+				if (texture.object != 0) {
+					glDeleteTextures(1, &(texture.object));
+				}
+				glGenTextures(1, &(texture.object));
+
+				// Bind it as a 2D texture (note that other types of textures are supported as well)
+				glBindTexture(GL_TEXTURE_2D, texture.object);
+
+				// Set the texture data
+				glTexImage2D(
+					GL_TEXTURE_2D,
+					0,
+					GL_RGB,			// remember to check this
+					texture.width,
+					texture.height,
+					0,
+					GL_RGB,			// remember to check this
+					GL_UNSIGNED_BYTE,
+					texture.data);
+
+				//TODO try to remove from from loop
+				// Configure texture parameter
+				
+
+
+				textureObjects.emplace(material.name, texture);
+			}
+		}
+		
 	}
+	
 
 
 	/*
@@ -311,6 +396,48 @@ void Renderer::initMesh() {
 	}
 	*/
 }
+
+/*
+// initTextures()
+bool initTextures() {
+	// Load the texture image
+	if (TextureData != nullptr)
+		free(TextureData);
+	unsigned int fail = lodepng_decode_file(&TextureData, &TextureWidth, &TextureHeight,
+		"texture.png", LCT_RGBA, 8);
+	if (fail != 0) {
+		cerr << "Error: cannot load the texture file. " << endl;
+		return false;
+	}
+
+	// Create the texture object
+	if (TextureObject != 0)
+		glDeleteTextures(1, &TextureObject);
+	glGenTextures(1, &TextureObject);
+
+	// Bind it as a 2D texture (note that other types of textures are supported as well)
+	glBindTexture(GL_TEXTURE_2D, TextureObject);
+
+	// Set the texture data
+	glTexImage2D(
+		GL_TEXTURE_2D,	// type of texture
+		0,				// level of detail (used for mip-mapping only)
+		GL_RGBA,		// color components (how the data should be interpreted)
+		TextureWidth,	// texture width (must be a power of 2 on some systems)
+		TextureHeight,	// texture height (must be a power of 2 on some systems)
+		0,				// border thickness (just set this to 0)
+		GL_RGBA,		// data format (how the data is supplied)
+		GL_UNSIGNED_BYTE, // the basic type of the data array
+		TextureData		// pointer to the data
+	);
+
+	// Configure texture parameter
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	return true;
+}
+*/
 
 bool Renderer::initShaders() {
 	// Create the shader program and check for errors
@@ -392,10 +519,10 @@ bool Renderer::initShaders() {
 
 	// Get the location of the uniform variables
 	TrLocation = glGetUniformLocation(ShaderProgram, "transformation");
-	//SamplerLocation = glGetUniformLocation(ShaderProgram, "sampler");
-	TimeLocation = glGetUniformLocation(ShaderProgram, "time");
+	SamplerLocation = glGetUniformLocation(ShaderProgram, "transformation");
+	//TimeLocation = glGetUniformLocation(ShaderProgram, "time");
 	//assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);
-	assert(TrLocation != -1);
+	assert(TrLocation != -1 && SamplerLocation != -1);
 
 	CameraPositionLoc = glGetUniformLocation(ShaderProgram, "camera_position");
 

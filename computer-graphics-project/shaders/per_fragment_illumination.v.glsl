@@ -3,6 +3,10 @@
 // model-view transformation
 uniform mat4 transformation;
 
+//TODO temp here
+// Sampler to access the texture
+//uniform vec3 sampler;
+
 // Camera position
 uniform vec3 camera_position;
 
@@ -41,7 +45,7 @@ layout (location = 1) in vec2 tex_coords;
 layout (location = 2) in vec3 normal; 
 
 // pass the texture coordinates to the fragment shader
-//out vec2 cur_tex_coords;
+out vec2 cur_tex_coords;
 
 out vec3 cur_normal;
 
@@ -63,6 +67,9 @@ void main() {
 	view_dir_nn = normalize(view_dir);
 
 	cur_normal = normal;
+
+	// pass the texture coordinates to the fragment shader
+	cur_tex_coords = tex_coords;
 
 }
 

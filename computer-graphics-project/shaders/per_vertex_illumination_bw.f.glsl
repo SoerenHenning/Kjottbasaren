@@ -1,5 +1,8 @@
 #version 330	// GLSL version
 
+// Sampler to access the texture
+uniform sampler2D sampler;
+
 // Per-fragment color coming from the vertex shader
 in vec4 fcolor;
 

@@ -24,8 +24,16 @@ class Renderer {
 	void mouse(int, int, int, int);
 	void motion(int, int);
 
+	struct Texture {
+		GLuint object = 0;				///< A texture object
+		unsigned int width = 0;			///< The width of the current texture
+		unsigned int height = 0;		///< The height of the current texture
+		unsigned char *data = nullptr;	///< the array where the texture image will be stored
+	};
+
 	unordered_map<Model*, GLuint> vertexBufferObjects;
 	unordered_map<Model*, GLuint> indexBufferObjects;
+	unordered_map<string, Texture> textureObjects;
 
 	struct Shader {
 		string vertex;
@@ -41,8 +49,8 @@ class Renderer {
 	// Shaders
 	GLuint ShaderProgram = 0;	// Shader program
 	GLint TrLocation = -1;		// Reference to the model-view matrix uniform variable
-	//GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
-	GLint TimeLocation = -1;	// Reference to the time uniform variable
+	GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
+	//GLint TimeLocation = -1;	// Reference to the time uniform variable
 
 	// Locations for shader variables
 	GLint CameraPositionLoc = -1;

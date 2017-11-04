@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 	ground->materialDiffuseColor = Vector3f(0.5f, 0.5f, 0.5f);
 	ground->materialSpecularColor = Vector3f(0.3f, 0.3f, 0.3f);
 	ground->materialShininess = 10.f;
-	scene->models.push_back(ground);
+	//scene->models.push_back(ground);
 
 	Renderer renderer = Renderer(scene);
 	return renderer.render(argc, argv);

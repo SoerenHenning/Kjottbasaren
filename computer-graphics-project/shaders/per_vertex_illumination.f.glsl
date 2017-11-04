@@ -1,7 +1,7 @@
 #version 330	// GLSL version
 
 // Sampler to access the texture
-//uniform sampler2D sampler;
+uniform sampler2D sampler;
 
 // Time
 //uniform float time;

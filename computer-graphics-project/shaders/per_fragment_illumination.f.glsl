@@ -1,7 +1,7 @@
 #version 330	// GLSL version
 
 // Sampler to access the texture
-//uniform sampler2D sampler;
+uniform sampler2D sampler;
 
 // Time
 //uniform float time;
@@ -9,6 +9,7 @@
 
 // Directional light
 uniform vec3 d_light_direction;
+uniform vec3 d_light_direction_temp;
 uniform vec3 d_light_a_color;
 uniform float d_light_a_intensity;
 uniform vec3 d_light_d_color;
@@ -33,9 +34,8 @@ uniform vec3 material_d_color;
 uniform vec3 material_s_color;
 uniform float material_shininess;
 
-
 // Per fragment texture coordinates
-//in vec2 cur_tex_coords;
+in vec2 cur_tex_coords;
 
 // Per-fragment color coming from the vertex shader
 in vec4 fcolor;
@@ -54,7 +54,11 @@ vec3 computeHeadlight();
 vec3 computeDirectionalLight();
 
 
-void main() { 
+void main() {
+
+	//vec2 a = cur_tex_coords.st;
+	vec4 temp = texture2D(sampler, cur_tex_coords.st);
+
     //FragColor = fcolor;
 
 	//view_dir = camera_position - position;
@@ -69,6 +73,9 @@ void main() {
 	vec3 color = directionalLight + headlight;
 	//color = normalize(cur_normal) * -1.0;
 	FragColor = vec4(color, 1.0); //TODO
+	
+	
+	//FragColor = temp; //TODO
 }
 
 
