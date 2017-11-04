@@ -160,8 +160,12 @@ void Renderer::display() {
 			if (textureObjects.count(key) == 1) {
 				Texture texture = textureObjects[key];
 				glActiveTexture(GL_TEXTURE0);
+				glUniform1i(MaterialTextureLoc, true);
 				glEnable(GL_TEXTURE_2D); //TODO required?
 				glBindTexture(GL_TEXTURE_2D, texture.object); //TODO set correct texture here
+			} else {
+				glDisable(GL_TEXTURE_2D); //TODO required?
+				glUniform1i(MaterialTextureLoc, false);
 			}
 			
 
@@ -547,6 +551,7 @@ bool Renderer::initShaders() {
 	MaterialDColorLoc = glGetUniformLocation(ShaderProgram, "material_d_color");
 	MaterialSColorLoc = glGetUniformLocation(ShaderProgram, "material_s_color");
 	MaterialShineLoc = glGetUniformLocation(ShaderProgram, "material_shininess");
+	MaterialTextureLoc = glGetUniformLocation(ShaderProgram, "material_texture");
 
 	// Shaders can be deleted now
 	glDeleteShader(vertexShader);

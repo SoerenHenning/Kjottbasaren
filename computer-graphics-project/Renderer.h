@@ -75,6 +75,7 @@ class Renderer {
 	GLint MaterialDColorLoc = -1;
 	GLint MaterialSColorLoc = -1;
 	GLint MaterialShineLoc = -1;
+	GLint MaterialTextureLoc = -1;
 
 	// Mouse interaction
 	int MouseX, MouseY;		// The last position of the mouse

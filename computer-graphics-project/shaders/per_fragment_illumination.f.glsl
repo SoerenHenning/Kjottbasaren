@@ -33,6 +33,7 @@ uniform vec3 material_a_color;
 uniform vec3 material_d_color;
 uniform vec3 material_s_color;
 uniform float material_shininess;
+uniform bool material_texture;
 
 // Per fragment texture coordinates
 in vec2 cur_tex_coords;
@@ -57,7 +58,7 @@ vec3 computeDirectionalLight();
 void main() {
 
 	//vec2 a = cur_tex_coords.st;
-	vec4 temp = texture2D(sampler, cur_tex_coords.st);
+	vec4 texture = texture2D(sampler, cur_tex_coords.st);
 
     //FragColor = fcolor;
 
@@ -72,8 +73,11 @@ void main() {
 
 	vec3 color = directionalLight + headlight;
 	//color = normalize(cur_normal) * -1.0;
-	FragColor = temp * vec4(color, 1.0); //TODO
-	
+	if (material_texture) {
+		FragColor = texture * vec4(color, 1.0); //TODO
+	} else {
+		FragColor = vec4(color, 1.0); //TODO
+	}
 	
 	//FragColor = temp; //TODO
 }
