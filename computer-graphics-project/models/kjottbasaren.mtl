@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\Users\Soeren\Desktop\Full Folder From Zach Computer\Blender Files\33_32_12_web.jpg
+map_Kd textures\\brick.png
 
 newmtl Cement
 Ns 96.078431
@@ -21,7 +21,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd -s 50.000000 50.000000 1.000000 textures\\lightstone.jpg
+map_Kd textures\\lightstone.png
+#map_Kd -s 50.000000 50.000000 1.000000 textures\\lightstone.jpg
 
 newmtl CopperOxide
 Ns 96.078431
@@ -32,7 +33,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd -s 10.000000 10.000000 10.000000 textures\\copperdioxide.jpg
+#map_Kd -s 10.000000 10.000000 10.000000 textures\\copperdioxide.png
+map_Kd textures\\copperdioxide.png
 
 newmtl Roof
 Ns 96.078431
@@ -43,7 +45,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\Soeren\\Desktop\\Full Folder From Zach Computer\\Blender Files\\33_32_12_web.jpg
+map_Kd textures\\roof_tiles.png
 
 newmtl Window
 Ns 96.078431
