@@ -163,9 +163,6 @@ void Renderer::display() {
 				glEnable(GL_TEXTURE_2D); //TODO required?
 				glBindTexture(GL_TEXTURE_2D, texture.object); //TODO set correct texture here
 			}
-			else {
-				cout << "No texture for " << key << endl;
-			}
 			
 
 			// Draw the elements on the GPU
@@ -369,7 +366,8 @@ void Renderer::initMesh() {
 
 				//TODO try to remove from from loop
 				// Configure texture parameter
-				
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
 				textureObjects.emplace(material.name, texture);
