@@ -8,10 +8,6 @@
 // Wrapper struct for ModelOBJ
 struct Model {
 	ModelOBJ modelObj;
-	Vector3f materialAmbientColor;
-	Vector3f materialDiffuseColor;
-	Vector3f materialSpecularColor;
-	float materialShininess;
 public:
 	Model(std::string, bool, bool);
 	~Model();

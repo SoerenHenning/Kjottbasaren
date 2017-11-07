@@ -28,7 +28,9 @@ struct Scene {
 		float intensitySquare;
 	};
 
-	Camera* camera;
+	Camera* camera; //TODO remove
+	int currentCameraId = 0;
+	std::vector<Camera*> cameras;
 	std::vector<Model*> models;
 	Vector3f backgroundColor;
 	DirectionalLight sunlight;
@@ -37,6 +39,9 @@ struct Scene {
 		Scene();
 		~Scene();
 		void resetCamera();
+		void setCamera(int cameraId);
+		void toggleCameras();
+		Camera* getCamera();
 	private:
 			void createCamera();
 };

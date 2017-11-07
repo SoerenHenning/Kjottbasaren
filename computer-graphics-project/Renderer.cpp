@@ -80,11 +80,11 @@ void Renderer::display() {
 	assert(ShaderProgram != 0);
 	glUseProgram(ShaderProgram);
 
-	scene->camera->setAspectRatio((1.0f * width) / height);
-	Matrix4f cameraTransformation = scene->camera->getTransformationMatrix();
+	scene->getCamera()->setAspectRatio((1.0f * width) / height);
+	Matrix4f cameraTransformation = scene->getCamera()->getTransformationMatrix();
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
 
-	glUniform3fv(CameraPositionLoc, 1, scene->camera->getPosition().get());
+	glUniform3fv(CameraPositionLoc, 1, scene->getCamera()->getPosition().get());
 
 	// Set the sunlight's parameters
 	glUniform3f(DLightDirLoc, scene->sunlight.direction.x(), scene->sunlight.direction.y(), scene->sunlight.direction.z());
@@ -197,28 +197,28 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		scene->resetCamera();
 		break;
 	case 'w':
-		scene->camera->moveForward(0.1f);
+		scene->getCamera()->moveForward(0.1f);
 		break;
 	case 'a':
-		scene->camera->moveRight(-0.1f);
+		scene->getCamera()->moveRight(-0.1f);
 		break;
 	case 's':
-		scene->camera->moveForward(-0.1f);
+		scene->getCamera()->moveForward(-0.1f);
 		break;
 	case 'd':
-		scene->camera->moveRight(0.1f);
+		scene->getCamera()->moveRight(0.1f);
 		break;
 	case 'c':
-		scene->camera->moveUp(-0.1f);
+		scene->getCamera()->moveUp(-0.1f);
 		break;
 	case ' ':
-		scene->camera->moveUp(0.1f);
+		scene->getCamera()->moveUp(0.1f);
 		break;
 	case 'n':	// Increase field of view
-		scene->camera->increaseFieldOfView(1.f);
+		scene->getCamera()->increaseFieldOfView(1.f);
 		break;
 	case 'm':	// Decrease field of view
-		scene->camera->increaseFieldOfView(-1.f);
+		scene->getCamera()->increaseFieldOfView(-1.f);
 		break;
 	case 'g': // show the current OpenGL version
 		cout << "OpenGL version " << glGetString(GL_VERSION) << endl;
@@ -227,10 +227,10 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	case 'b':  // switch perspectiv to orth
-		scene->camera->toggleProjection();
+		scene->getCamera()->toggleProjection();
 		break;
 	case 'i':  // print info about camera
-		scene->camera->printStatus();
+		scene->getCamera()->printStatus();
 		break;
 	case 'p': // change to wireframe rendering
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -287,21 +287,21 @@ void Renderer::mouse(int button, int state, int x, int y) {
 
 void Renderer::motion(int x, int y) {
 	if (MouseButton == GLUT_RIGHT_BUTTON) {
-		scene->camera->moveRight(0.005f * (MouseX - x));
-		scene->camera->moveForward(0.005f * (y - MouseY));
+		scene->getCamera()->moveRight(0.005f * (MouseX - x));
+		scene->getCamera()->moveForward(0.005f * (y - MouseY));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_MIDDLE_BUTTON) {
-		scene->camera->zoomIn(0.003f * (y - MouseY));
+		scene->getCamera()->zoomIn(0.003f * (y - MouseY));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
 	}
 	if (MouseButton == GLUT_LEFT_BUTTON) {
-		scene->camera->rotateHorizontal(0.2f * (MouseX - x));
-		scene->camera->rotateVertical(0.2f * (MouseY - y));
+		scene->getCamera()->rotateHorizontal(0.2f * (MouseX - x));
+		scene->getCamera()->rotateVertical(0.2f * (MouseY - y));
 
 		MouseX = x; // Store the current mouse position
 		MouseY = y;
