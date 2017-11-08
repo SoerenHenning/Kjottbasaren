@@ -3,6 +3,8 @@
 // model-view transformation
 uniform mat4 transformation;
 
+uniform mat4 world_transformation;
+
 //TODO temp here
 // Sampler to access the texture
 //uniform vec3 sampler;
@@ -53,6 +55,8 @@ out vec3 view_dir;
 
 out vec3 view_dir_nn;
 
+vec3 cur_camera_position;
+
 
 vec3 computeHeadlight(vec3);
 vec3 computeDirectionalLight(vec3);
@@ -61,9 +65,12 @@ vec3 computeDirectionalLight(vec3);
 void main() {
 
 	// transform the vertex
-    gl_Position = transformation * vec4(position, 1.);	
+    gl_Position = transformation * world_transformation * vec4(position, 1.);	
 
-	view_dir = position - camera_position;
+	vec4 temp_camera_position = world_transformation * vec4(camera_position, 1.);
+	cur_camera_position = vec3(temp_camera_position.x, temp_camera_position.y, temp_camera_position.z);
+
+	view_dir = position - cur_camera_position;
 	view_dir_nn = normalize(view_dir);
 
 	cur_normal = normal;
@@ -115,7 +122,7 @@ vec3 computeDirectionalLight(vec3 view_dir_nn) {
 vec3 computeHeadlight(vec3 view_dir_nn) {
 
 	// position minus cam position
-	vec3 p_light_dir = position - camera_position;
+	vec3 p_light_dir = position - cur_camera_position;
 	vec3 p_light_dir_nn = normalize(p_light_dir);
 
 	float dot_p_light_normal = dot(-p_light_dir_nn, normal);

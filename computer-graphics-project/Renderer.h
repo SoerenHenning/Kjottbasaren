@@ -9,6 +9,7 @@
 #include <string>
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 #include <unordered_map>
 
 #include "Scene.h"
@@ -49,6 +50,7 @@ class Renderer {
 	// Shaders
 	GLuint ShaderProgram = 0;	// Shader program
 	GLint TrLocation = -1;		// Reference to the model-view matrix uniform variable
+	GLint WorldTransformationLocation = -1;		// Reference to the model-view matrix uniform variable
 	GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
 	//GLint TimeLocation = -1;	// Reference to the time uniform variable
 
@@ -80,6 +82,9 @@ class Renderer {
 	// Mouse interaction
 	int MouseX, MouseY;		// The last position of the mouse
 	int MouseButton;		// The last mouse button pressed or released
+
+	// Clock
+	clock_t Timer;
 
 	// Scene
 	Scene* scene;

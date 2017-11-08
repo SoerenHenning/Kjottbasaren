@@ -1,10 +1,12 @@
 #include "Renderer.h"
 #include "lodepng.h"
 
+
 Renderer *Renderer::instance = NULL;
 
 Renderer::Renderer(Scene* scene) {
 	this->scene = scene;
+	Timer = clock();
 }
 
 Renderer::~Renderer() {
@@ -83,6 +85,9 @@ void Renderer::display() {
 	scene->getCamera()->setAspectRatio((1.0f * width) / height);
 	Matrix4f cameraTransformation = scene->getCamera()->getTransformationMatrix();
 	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
+
+	Matrix4f worldTransformation = scene->worldRotation;
+	glUniformMatrix4fv(WorldTransformationLocation, 1, GL_FALSE, worldTransformation.get());
 
 	glUniform3fv(CameraPositionLoc, 1, scene->getCamera()->getPosition().get());
 
@@ -167,7 +172,6 @@ void Renderer::display() {
 				glDisable(GL_TEXTURE_2D); //TODO required?
 				glUniform1i(MaterialTextureLoc, false);
 			}
-			
 
 			// Draw the elements on the GPU
 			glDrawElements(GL_TRIANGLES, mesh->triangleCount * 3, GL_UNSIGNED_INT, (void*) (mesh->startIndex * sizeof(GLuint)));
@@ -189,6 +193,12 @@ void Renderer::display() {
 }
 
 void Renderer::idle() {
+	clock_t now = clock();
+	if (scene->rotating) {
+		scene->worldRotation *= Matrix4f::createRotation(10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
+	}
+	Timer = now;
+	glutPostRedisplay();
 }
 
 void Renderer::keyboard(unsigned char key, int x, int y) {
@@ -228,6 +238,9 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'b':  // switch perspectiv to orth
 		scene->getCamera()->toggleProjection();
+		break;
+	case 'v':  // toggle rotation
+		scene->rotating = !scene->rotating;
 		break;
 	case 'i':  // print info about camera
 		scene->getCamera()->printStatus();
@@ -521,10 +534,11 @@ bool Renderer::initShaders() {
 
 	// Get the location of the uniform variables
 	TrLocation = glGetUniformLocation(ShaderProgram, "transformation");
+	WorldTransformationLocation = glGetUniformLocation(ShaderProgram, "world_transformation");
 	SamplerLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	//TimeLocation = glGetUniformLocation(ShaderProgram, "time");
 	//assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);
-	assert(TrLocation != -1 && SamplerLocation != -1);
+	//assert(TrLocation != -1 && SamplerLocation != -1);
 
 	CameraPositionLoc = glGetUniformLocation(ShaderProgram, "camera_position");
 

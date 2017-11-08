@@ -27,6 +27,9 @@ int main(int argc, char **argv) {
 	Model* house = new Model("models\\kjottbasaren.obj", true, false);
 	scene->models.push_back(house);
 
+	Model* capsule = new Model("models\\capsule.obj", false, true);
+	//scene->models.push_back(capsule);
+
 	Model* ground = new Model("models\\plane.obj", false, true);
 	scene->models.push_back(ground);
 

@@ -3,6 +3,8 @@
 // model-view transformation
 uniform mat4 transformation;
 
+uniform mat4 world_transformation;
+
 // Camera position
 uniform vec3 camera_position;
 
@@ -54,7 +56,7 @@ vec3 computeDirectionalLight(vec3);
 void main() {
 
 	// transform the vertex
-    gl_Position = transformation * vec4(position, 1.);	
+    gl_Position = transformation * world_transformation * vec4(position, 1.);	
 
 	// pass the texture coordinates to the fragment shader
 	//cur_tex_coords = tex_coords;

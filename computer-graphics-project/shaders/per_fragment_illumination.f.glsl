@@ -47,6 +47,8 @@ in vec3 view_dir;
 
 in vec3 view_dir_nn;
 
+in vec4 cur_camera_position;
+
 // Per-frgament output color
 out vec4 FragColor;
 

@@ -33,6 +33,8 @@ struct Scene {
 	std::vector<Camera*> cameras;
 	std::vector<Model*> models;
 	Vector3f backgroundColor;
+	Matrix4f worldRotation; //TODO maybe?
+	bool rotating;
 	DirectionalLight sunlight;
 	PointLight headlight;
 	public:

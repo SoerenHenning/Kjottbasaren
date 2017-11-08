@@ -2,6 +2,8 @@
 
 Scene::Scene() {
 	createCamera();
+	worldRotation.identity();
+	rotating = false;
 }
 
 Scene::~Scene(){
@@ -12,6 +14,7 @@ Scene::~Scene(){
 void Scene::resetCamera() {
 	delete this->camera;
 	createCamera();
+	//TODO do this for this->cameras.at(0)
 }
 
 //TODO rename to MainCamra
@@ -19,6 +22,7 @@ void Scene::createCamera() {
 	Vector3f position = Vector3f(-1.3f, 0.5f, 0.6f);
 	Vector3f target = Vector3f(0.8f, -0.4f, -0.4f);
 	this->camera = new Camera(position, target);
+	//TODO do this for this->cameras.at(0)
 }
 
 void Scene::setCamera(int cameraId) {
