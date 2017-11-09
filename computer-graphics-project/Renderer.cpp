@@ -87,7 +87,9 @@ void Renderer::display() {
 	glUniformMatrix4fv(CameraTransformationLocation, 1, GL_FALSE, cameraTransformation.get());
 
 	Matrix4f worldTransformation = scene->worldRotation;
+	Matrix4f worldNormalsTransformation = worldTransformation.getInverse().getTransposed();
 	glUniformMatrix4fv(WorldTransformationLocation, 1, GL_FALSE, worldTransformation.get());
+	glUniformMatrix4fv(ModelNormalsTransformationLocation, 1, GL_FALSE, worldNormalsTransformation.get());
 
 	glUniform3fv(CameraPositionLoc, 1, scene->getCamera()->getPosition().get());
 
@@ -202,6 +204,8 @@ void Renderer::idle() {
 	if (scene->rotating) {
 		scene->worldRotation *= Matrix4f::createRotation(10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
 	}
+	//TODO temp
+	//scene->models.at(0)->rotationX *= Matrix4f::createRotation(- 10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
 	Timer = now;
 	glutPostRedisplay();
 }
@@ -210,6 +214,7 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 	switch (tolower(key)) {
 	case 'r': // Reset camera status
 		scene->resetCamera();
+		scene->worldRotation.identity();
 		break;
 	case 'w':
 		scene->getCamera()->moveForward(0.1f);
@@ -542,6 +547,7 @@ bool Renderer::initShaders() {
 	ModelTransformationLocation = glGetUniformLocation(ShaderProgram, "model_transformation");
 	ModelNormalsTransformationLocation = glGetUniformLocation(ShaderProgram, "model_normals_transformation");
 	WorldTransformationLocation = glGetUniformLocation(ShaderProgram, "world_transformation");
+	WorldNormalsTransformationLocation = glGetUniformLocation(ShaderProgram, "world_normals_transformation");
 	SamplerLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	//TimeLocation = glGetUniformLocation(ShaderProgram, "time");
 	//assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);

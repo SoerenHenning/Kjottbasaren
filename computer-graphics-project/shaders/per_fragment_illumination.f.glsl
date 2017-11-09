@@ -3,10 +3,6 @@
 // Sampler to access the texture
 uniform sampler2D sampler;
 
-// Time
-//uniform float time;
-
-
 // Directional light
 uniform vec3 d_light_direction;
 uniform vec3 d_light_direction_temp;
@@ -39,7 +35,7 @@ uniform bool material_texture;
 in vec2 cur_tex_coords;
 
 // Per-fragment color coming from the vertex shader
-in vec4 fcolor;
+in vec4 fcolor; // TODO
 
 in vec3 cur_normal;
 
@@ -52,6 +48,8 @@ in vec4 cur_camera_position;
 // Per-frgament output color
 out vec4 FragColor;
 
+vec3 material_d_color_2;
+vec3 material_a_color_2;
 
 vec3 computeHeadlight();
 vec3 computeDirectionalLight();
@@ -59,30 +57,37 @@ vec3 computeDirectionalLight();
 
 void main() {
 
-	//vec2 a = cur_tex_coords.st;
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
 
-    //FragColor = fcolor;
-
-	//view_dir = camera_position - position;
-	//view_dir_nn = normalize(camera_position - position);
+	if (material_texture) {
+		float texture_intensity = 0.;
+		material_d_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_d_color);
+		material_a_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_a_color);
+		//material_d_color_2 = vec3(0.0, 1.0, 0.0);
+	} else {
+		material_d_color_2 = material_d_color;
+		material_a_color_2 = material_a_color;
+		//material_d_color_2 = vec3(0.0, 1.0, 0.0);
+	}
 
 	vec3 directionalLight = computeDirectionalLight();
-	//directionalLight = vec3(0.0,0.0,0.0);
-
 	vec3 headlight = computeHeadlight();
-	//headlight = vec3(0.0,0.0,0.0);
-
 	vec3 color = directionalLight + headlight;
+	
+	FragColor = vec4(color, 1.0); //TODO
+
 	//color = normalize(cur_normal) * -1.0;
-	if (material_texture) {
-	//if (false) {
+	//if (material_texture) {
+	/*
+	if (false) {
 		FragColor = texture * vec4(color, 1.0); //TODO
 	} else {
 		FragColor = vec4(color, 1.0); //TODO
 	}
-	
-	//FragColor = temp; //TODO
+	*/
+
+	//FragColor = fcolor;
+	//FragColor = vec4(material_d_color_2, 1.0);
 }
 
 
@@ -112,11 +117,11 @@ vec3 computeDirectionalLight() {
 	
 	// compute the color contribution	
 	vec3 amb_color = clamp(
-			material_a_color * d_light_a_color * d_light_a_intensity,
+			material_a_color_2 * d_light_a_color * d_light_a_intensity,
 			0.0, 1.0);
 	//amb_color = vec3(0.0,0.0,0.0); // TODO
 	vec3 diff_color = clamp(
-			material_d_color * d_light_d_color * dot_d_light_normal * d_light_d_intensity,
+			material_d_color_2 * d_light_d_color * dot_d_light_normal * d_light_d_intensity,
 			0.0, 1.0);
 	//diff_color = vec3(0.0,0.0,0.0);  // TODO
 	vec3 spec_color = clamp(
@@ -157,13 +162,16 @@ vec3 computeHeadlight() {
 	float distance = length(p_light_dir);
 	float distance_intensity = p_light_d_intensity_k_const + (p_light_d_intensity_k_linear * distance) + (p_light_d_intensity_k_square * distance * distance);
 
+	//return dot_p_light_normal;
+	//return vec3(distance_intensity, distance_intensity, distance_intensity);
+
 	// compute the color contribution
 	vec3 amb_color = clamp(
-			material_a_color * p_light_a_color * p_light_a_intensity,
+			material_a_color_2 * p_light_a_color * p_light_a_intensity,
 			0.0, 1.0);
 	//amb_color = vec3(0.0,0.0,0.0); // TODO
 	vec3 diff_color = clamp(
-			material_d_color * p_light_d_color * dot_p_light_normal * (p_light_d_intensity / distance_intensity),
+			material_d_color_2 * p_light_d_color * dot_p_light_normal * (p_light_d_intensity / distance_intensity),
 			0.0, 1.0);
 	//diff_color = vec3(0.0,0.0,0.0); // TODO
 	vec3 spec_color = clamp(

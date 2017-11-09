@@ -53,6 +53,7 @@ class Renderer {
 	GLint ModelTransformationLocation = -1;
 	GLint ModelNormalsTransformationLocation = -1;
 	GLint WorldTransformationLocation = -1;
+	GLint WorldNormalsTransformationLocation = -1;
 	GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
 	//GLint TimeLocation = -1;	// Reference to the time uniform variable
 

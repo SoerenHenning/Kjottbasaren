@@ -24,7 +24,8 @@ int main(int argc, char **argv) {
 	scene->headlight.intensityKLinear = 0.f;
 	scene->headlight.intensitySquare = 0.5f;
 
-	Model* house = new Model("models\\kjottbasaren.obj", true, false);
+	Model* house = new Model("models\\kjottbasaren.obj", false, false);
+	house->scaling = 0.025;
 	scene->models.push_back(house);
 
 	//Model* tree = new Model("models\\Tree1.obj", false, true);
