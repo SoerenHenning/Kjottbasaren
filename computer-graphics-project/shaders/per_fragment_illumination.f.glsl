@@ -60,7 +60,7 @@ void main() {
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
 
 	if (material_texture) {
-		float texture_intensity = 0.;
+		float texture_intensity = 1.;
 		material_d_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_d_color);
 		material_a_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_a_color);
 		//material_d_color_2 = vec3(0.0, 1.0, 0.0);
@@ -85,6 +85,37 @@ void main() {
 		FragColor = vec4(color, 1.0); //TODO
 	}
 	*/
+
+	/*
+	float offset[5] = float[]( 0.0, 1.0, 2.0, 3.0, 4.0 );
+	float weight[5] = float[]( 0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162 );
+	if (material_texture) {
+		vec4 blur_color = texture2D( sampler, cur_tex_coords.st * weight[0]);
+		for (int i=1; i<5; i++) {
+			blur_color += texture2D( sampler, ( cur_tex_coords.st+vec2(0.0, offset[i]) )) * weight[i];
+			blur_color += texture2D( sampler, ( cur_tex_coords.st-vec2(0.0, offset[i]) ) ) * weight[i];
+		}
+		blur_color = texture2D( sampler, cur_tex_coords.st * 0.1);
+		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 1.0) )) * 0.1;
+		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 2.0) )) * 0.1;
+		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 3.0) )) * 0.1;
+		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 4.0) )) * 0.1;
+		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 5.0) )) * 0.1;
+		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 1.0) )) * 0.1;
+		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 2.0) )) * 0.1;
+		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 3.0) )) * 0.1;
+		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 4.0) )) * 0.1;
+		FragColor = blur_color;
+		//FragColor = texture2D(sampler, cur_tex_coords.st);
+	} else {
+		FragColor = vec4(color, 1.0); //TODO
+	}
+	*/
+	
+	// Foggy Shader; Temp. here
+	//float distance = length(view_dir);
+	//float fog_intensity = 1 / (2.5 * distance * distance);
+	//FragColor =  (FragColor * fog_intensity) + (vec4(0.5, 0.5, 0.5, 1.0) * (1-fog_intensity));
 
 	//FragColor = fcolor;
 	//FragColor = vec4(material_d_color_2, 1.0);
