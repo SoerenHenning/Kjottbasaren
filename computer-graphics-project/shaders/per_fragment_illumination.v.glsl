@@ -32,6 +32,9 @@ uniform float p_light_d_intensity;
 uniform vec3 p_light_s_color;
 uniform float p_light_s_intensity;
 
+uniform mat4 model_transformation;
+uniform mat4 model_normals_transformation;
+
 // Object material
 uniform vec3 material_a_color;
 uniform vec3 material_d_color;
@@ -65,15 +68,16 @@ vec3 computeDirectionalLight(vec3);
 void main() {
 
 	// transform the vertex
-    gl_Position = transformation * world_transformation * vec4(position, 1.);	
+    gl_Position = transformation * model_transformation * world_transformation * vec4(position, 1.);	
 
 	vec4 temp_camera_position = world_transformation * vec4(camera_position, 1.);
-	cur_camera_position = vec3(temp_camera_position.x, temp_camera_position.y, temp_camera_position.z);
+	cur_camera_position = temp_camera_position.xyz;
 
 	view_dir = position - cur_camera_position;
 	view_dir_nn = normalize(view_dir);
 
-	cur_normal = normal;
+	vec4 world_normal = model_normals_transformation * vec4(normal, 0.); //TODO
+	cur_normal = normalize(world_normal.xyz);
 
 	// pass the texture coordinates to the fragment shader
 	cur_tex_coords = tex_coords;

@@ -84,7 +84,7 @@ void Renderer::display() {
 
 	scene->getCamera()->setAspectRatio((1.0f * width) / height);
 	Matrix4f cameraTransformation = scene->getCamera()->getTransformationMatrix();
-	glUniformMatrix4fv(TrLocation, 1, GL_FALSE, cameraTransformation.get());
+	glUniformMatrix4fv(CameraTransformationLocation, 1, GL_FALSE, cameraTransformation.get());
 
 	Matrix4f worldTransformation = scene->worldRotation;
 	glUniformMatrix4fv(WorldTransformationLocation, 1, GL_FALSE, worldTransformation.get());
@@ -131,6 +131,11 @@ void Renderer::display() {
 
 	// Draw the models
 	for (auto const& model : scene->models) {
+
+		Matrix4f modelTransformation = model->getTransformation();
+		Matrix4f modelNormalsTransformation =  modelTransformation.getInverse().getTransposed();
+		glUniformMatrix4fv(ModelTransformationLocation, 1, GL_FALSE, modelTransformation.get());
+		glUniformMatrix4fv(ModelNormalsTransformationLocation, 1, GL_FALSE, modelNormalsTransformation.get());
 
 		GLuint vertexBufferObject = vertexBufferObjects[model];
 		GLuint indexBufferObject = indexBufferObjects[model];
@@ -533,7 +538,9 @@ bool Renderer::initShaders() {
 	}
 
 	// Get the location of the uniform variables
-	TrLocation = glGetUniformLocation(ShaderProgram, "transformation");
+	CameraTransformationLocation = glGetUniformLocation(ShaderProgram, "transformation");
+	ModelTransformationLocation = glGetUniformLocation(ShaderProgram, "model_transformation");
+	ModelNormalsTransformationLocation = glGetUniformLocation(ShaderProgram, "model_normals_transformation");
 	WorldTransformationLocation = glGetUniformLocation(ShaderProgram, "world_transformation");
 	SamplerLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	//TimeLocation = glGetUniformLocation(ShaderProgram, "time");

@@ -49,8 +49,10 @@ class Renderer {
 
 	// Shaders
 	GLuint ShaderProgram = 0;	// Shader program
-	GLint TrLocation = -1;		// Reference to the model-view matrix uniform variable
-	GLint WorldTransformationLocation = -1;		// Reference to the model-view matrix uniform variable
+	GLint CameraTransformationLocation = -1;		// Reference to the model-view matrix uniform variable
+	GLint ModelTransformationLocation = -1;
+	GLint ModelNormalsTransformationLocation = -1;
+	GLint WorldTransformationLocation = -1;
 	GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
 	//GLint TimeLocation = -1;	// Reference to the time uniform variable
 

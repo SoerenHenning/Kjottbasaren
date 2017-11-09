@@ -11,7 +11,15 @@ Model::Model(std::string filename, bool normalize, bool reverseWinding) {
 	if (reverseWinding) {
 		modelObj.reverseWinding();
 	}
+	rotationX.identity();
+	rotationY.identity();
+	translation.set(0.0f, 0.0f, 0.0f);
+	scaling = 1.0f;
 }
 
 Model::~Model() {
+}
+
+Matrix4f Model::getTransformation() {
+	return Matrix4f::createTranslation(translation) * rotationX * rotationY * Matrix4f::createScaling(scaling, scaling, scaling);
 }

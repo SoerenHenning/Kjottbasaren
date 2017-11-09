@@ -75,7 +75,8 @@ void main() {
 
 	vec3 color = directionalLight + headlight;
 	//color = normalize(cur_normal) * -1.0;
-	if (material_texture) {
+	//if (material_texture) {
+	if (false) {
 		FragColor = texture * vec4(color, 1.0); //TODO
 	} else {
 		FragColor = vec4(color, 1.0); //TODO
@@ -171,7 +172,7 @@ vec3 computeHeadlight() {
 			pow(dot(p_reflected_dir_nn, -view_dir_nn), material_shininess) *
 			(p_light_s_intensity / distance_intensity),
 			0.0, 1.0);
-	//spec_color = vec3(0.0,0.0,0.0); // TODO
+	spec_color = vec3(0.0,0.0,0.0); // TODO
 
 	return clamp(amb_color + diff_color + spec_color, 0.0, 1.0);
 }
