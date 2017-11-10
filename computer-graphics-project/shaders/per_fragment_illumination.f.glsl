@@ -129,20 +129,16 @@ void main() {
 		// Discretizer Shader
 		FragColor = discretize(FragColor, 2);
 	} else if (shading_effect == 4) {
-		// ___ Shader
-		float distance = length(view_dir);
-		float intensity = 1 / (2.5 * distance * distance);
-		float x = rand(texture.xy) / intensity;
-		float y = rand(texture.xy);
-		vec4 noise = vec4(y,y,y,1);
-		//FragColor = (FragColor * intensity) + (noise * FragColor * vec4(0.5, 0.5, 0.5, 1.0) * (1-intensity));
-		FragColor = (vec4(1.0,1.0,1.0,1.0) - (noise * noise)) * FragColor;
+		// Noise Shader
+		float random = rand(texture.xy);
+		vec4 noise = vec4(random,random,random,1.0) / 2;
+		FragColor = (vec4(1.0,1.0,1.0,1.0) - noise) * FragColor;
 	} else if (shading_effect == 5) {
 		// Vignette Shader
 		float relative_width = (gl_FragCoord.x/window_width);
 		float relative_height = (gl_FragCoord.y/window_height);
-		float i = (-4.0 * relative_width * relative_width) + (4 * relative_width);
-		float j = (-4.0 * relative_height * relative_height) + (4 * relative_height);
+		float i = (-4.0 * relative_width * relative_width) + (4.0 * relative_width);
+		float j = (-4.0 * relative_height * relative_height) + (4.0 * relative_height);
 		FragColor = FragColor * vec4(i,i,i,1.0) * vec4(j,j,j,1.0);
 	} else if (shading_effect == 6) {
 		// Normal Highlight Shader

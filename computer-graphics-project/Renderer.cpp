@@ -282,7 +282,7 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		shadingEffect = 3;
 		break;
 	case '5':
-		//cout << "Switch to ___ shading" << endl;
+		cout << "Switch to noise shading" << endl;
 		shadingEffect = 4;
 		break;
 	case '6':
