@@ -48,6 +48,8 @@ class Renderer {
 	// Shaders
 	GLuint ShaderProgram = 0;	// Shader program
 	GLint ShadingEffectLocation = -1;
+	GLint WindowWidthLocation = -1;
+	GLint WindowHeightLocation = -1;
 	GLint CameraTransformationLocation = -1; // Reference to the model-view matrix uniform variable
 	GLint ModelTransformationLocation = -1;
 	GLint ModelNormalsTransformationLocation = -1;

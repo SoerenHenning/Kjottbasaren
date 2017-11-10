@@ -3,10 +3,6 @@
 // model-view transformation
 uniform mat4 transformation; //TODO rename to camera_transformation
 
-//TODO temp here
-// Sampler to access the texture
-//uniform vec3 sampler;
-
 // Camera position
 uniform vec3 camera_position;
 
@@ -45,6 +41,7 @@ layout (location = 0) in vec3 position;
 // vertex texture coordinates
 layout (location = 1) in vec2 tex_coords;
 
+// vertex normals
 layout (location = 2) in vec3 normal; 
 
 // pass the texture coordinates to the fragment shader
@@ -59,12 +56,7 @@ out vec3 view_dir_nn;
 vec3 cur_camera_position;
 
 
-
-//TODO temp
-out vec4 fcolor;
-
 void main() {
-
 	// transform the vertex
 	vec4 world_position = model_transformation * vec4(position, 1.);
     gl_Position = transformation * world_position;
@@ -75,17 +67,9 @@ void main() {
 	view_dir = world_position.xyz - world_camera_position.xyz;
 	view_dir_nn = normalize(view_dir);
 
-	//TODO Temp
-	float distance = length(view_dir);
-	float x = 1 / (distance * distance);
-	fcolor = vec4(x, x, x, 1.0);
-	//fcolor = vec4(0., 0., 1., 1.);
-
-
-	vec4 world_normal = model_normals_transformation * vec4(normal, 0.); //TODO
+	vec4 world_normal = model_normals_transformation * vec4(normal, 0.);
 	cur_normal = normalize(world_normal.xyz);
 
 	// pass the texture coordinates to the fragment shader
 	cur_tex_coords = tex_coords;
-
 }

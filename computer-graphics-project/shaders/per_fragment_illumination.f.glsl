@@ -2,8 +2,14 @@
 
 uniform int shading_effect;
 
+uniform int window_width;
+uniform int window_height;
+
 // Sampler to access the texture
 uniform sampler2D sampler;
+
+// Time
+//uniform float time;
 
 // Directional light
 uniform vec3 d_light_direction;
@@ -36,9 +42,6 @@ uniform float material_texture_intensity;
 // Per fragment texture coordinates
 in vec2 cur_tex_coords;
 
-// Per-fragment color coming from the vertex shader
-in vec4 fcolor; // TODO
-
 in vec3 cur_normal;
 
 in vec3 view_dir;
@@ -65,15 +68,16 @@ vec4 discretize(vec4 v, float d) {
     return vec4(discretize(v.x, d), discretize(v.y, d), discretize(v.z, d), discretize(v.w, d));
 }
 
-void main() {
+float rand(vec2 seed) {
+    return fract(sin(dot(seed, vec2(12.9898,78.233))) * 43758.5453);
+}
 
-	vec4 endColor;
+void main() {
 
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
 
-	float texture_intensity = material_texture_intensity;
-	material_d_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_d_color);
-	material_a_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_a_color);
+	material_d_color_2 = (material_texture_intensity * texture.xyz) + ((1-material_texture_intensity) * material_d_color);
+	material_a_color_2 = (material_texture_intensity * texture.xyz) + ((1-material_texture_intensity) * material_a_color);
 
 	vec3 directionalLight = computeDirectionalLight();
 	vec3 headlight = computeHeadlight();
@@ -81,19 +85,7 @@ void main() {
 	
 	FragColor = vec4(color, 1.0);
 
-	//FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
 
-	//color = normalize(cur_normal) * -1.0;
-	//if (material_texture_intensity) {
-	/*
-	if (false) {
-		FragColor = texture * vec4(color, 1.0); //TODO
-		FragColor = vec4(1.0, 0.0, 1.0, 1.0); //TODO
-	} else {
-		FragColor = vec4(color, 1.0); //TODO
-		FragColor = vec4(1.0, 0.0, 0.0, 1.0); //TODO
-	}
-	*/
 
 	/*
 	float offset[5] = float[]( 0.0, 1.0, 2.0, 3.0, 4.0 );
@@ -123,41 +115,12 @@ void main() {
 	}
 	*/
 	
-
-	//FragColor = vec4(((cur_normal/2) + vec3(1.0, 1.0, 1.0)), 1.0);
-	
-
-	/*
-	float intensity = dot(-view_dir_nn,cur_normal);
-	if (intensity > 1.0) {
-		FragColor = vec4(1.0, 0.0, 1.0, 1.0);
-	} else {
-	FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-	}
-	//FragColor = vec4(intensity,intensity,intensity,1.0);
-	
-	if (intensity > 0.95) {
-		FragColor = vec4(1.0,0.5,0.5,1.0);
-	} else if (intensity > 0.5) {
-		FragColor = vec4(0.6,0.3,0.3,1.0);
-	} else if (intensity > 0.25) {
-		FragColor = vec4(0.4,0.2,0.2,1.0);
-	} else {
-		FragColor = vec4(0.2,0.1,0.1,1.0);
-	}
-
-	if (intensity < 0.0) {
-		FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-	}
-	*/
-	
-	//FragColor = vec4(0.0, 1.0, shading_effect, 1.0); 
 	
 	if (shading_effect == 1) {
 		// Foggy Shader
 		float distance = length(view_dir);
 		float fog_intensity = 1 / (2.5 * distance * distance);
-		FragColor =  (FragColor * fog_intensity) + (vec4(0.5, 0.5, 0.5, 1.0) * (1-fog_intensity));
+		FragColor = (FragColor * fog_intensity) + (vec4(0.5, 0.5, 0.5, 1.0) * (1-fog_intensity));
 	} else if (shading_effect == 2) {
 		// Black and White Shader
 		float avg = 0.21 * FragColor.r + 0.72 * FragColor.g + 0.07 * FragColor.b;
@@ -165,13 +128,27 @@ void main() {
 	} else if (shading_effect == 3) {
 		// Discretizer Shader
 		FragColor = discretize(FragColor, 2);
+	} else if (shading_effect == 4) {
+		// ___ Shader
+		float distance = length(view_dir);
+		float intensity = 1 / (2.5 * distance * distance);
+		float x = rand(texture.xy) / intensity;
+		float y = rand(texture.xy);
+		vec4 noise = vec4(y,y,y,1);
+		//FragColor = (FragColor * intensity) + (noise * FragColor * vec4(0.5, 0.5, 0.5, 1.0) * (1-intensity));
+		FragColor = (vec4(1.0,1.0,1.0,1.0) - (noise * noise)) * FragColor;
+	} else if (shading_effect == 5) {
+		// Vignette Shader
+		float relative_width = (gl_FragCoord.x/window_width);
+		float relative_height = (gl_FragCoord.y/window_height);
+		float i = (-4.0 * relative_width * relative_width) + (4 * relative_width);
+		float j = (-4.0 * relative_height * relative_height) + (4 * relative_height);
+		FragColor = FragColor * vec4(i,i,i,1.0) * vec4(j,j,j,1.0);
+	} else if (shading_effect == 6) {
+		// Normal Highlight Shader
+		FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
 	}
 
-
-	//FragColor = fcolor;
-	//FragColor = normalize(cur_normal)
-
-	//FragColor = endColor;
 }
 
 

@@ -83,6 +83,9 @@ void Renderer::display() {
 	// Set Shading Effect
 	glUniform1i(ShadingEffectLocation, shadingEffect);
 
+	glUniform1i(WindowWidthLocation, glutGet(GLUT_WINDOW_WIDTH));
+	glUniform1i(WindowHeightLocation, glutGet(GLUT_WINDOW_HEIGHT));
+
 	// Set camera parameters
 	scene->getCamera()->setAspectRatio((1.0f * width) / height);
 	Matrix4f cameraTransformation = scene->getCamera()->getTransformationMatrix();
@@ -277,6 +280,18 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 	case '4':
 		cout << "Switch to linocut shading" << endl;
 		shadingEffect = 3;
+		break;
+	case '5':
+		//cout << "Switch to ___ shading" << endl;
+		shadingEffect = 4;
+		break;
+	case '6':
+		cout << "Switch to vignette shading" << endl;
+		shadingEffect = 5;
+		break;
+	case '7':
+		cout << "Switch to normal highlight shading" << endl;
+		shadingEffect = 6;
 		break;
 	case 'l':
 		cout << "Re-loading shaders..." << endl;
@@ -508,6 +523,10 @@ bool Renderer::initShaders() {
 
 	// Get the location of the uniform variables
 	ShadingEffectLocation = glGetUniformLocation(ShaderProgram, "shading_effect");
+
+	WindowWidthLocation = glGetUniformLocation(ShaderProgram, "window_width");
+	WindowHeightLocation = glGetUniformLocation(ShaderProgram, "window_height");
+
 	CameraTransformationLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	ModelTransformationLocation = glGetUniformLocation(ShaderProgram, "model_transformation");
 	ModelNormalsTransformationLocation = glGetUniformLocation(ShaderProgram, "model_normals_transformation");
@@ -544,8 +563,6 @@ bool Renderer::initShaders() {
 	// Shaders can be deleted now
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
-
-	glUniform1i(ShadingEffectLocation, 0);
 
 	return true;
 }
