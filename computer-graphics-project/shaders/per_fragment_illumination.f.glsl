@@ -55,6 +55,14 @@ vec3 computeHeadlight();
 vec3 computeDirectionalLight();
 
 
+float discretize(float f, float d) {
+    return floor(f*d)/d;
+}
+
+vec4 discretize(vec4 v, float d) {
+    return vec4(discretize(v.x, d), discretize(v.y, d), discretize(v.z, d), discretize(v.w, d));
+}
+
 void main() {
 
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
@@ -95,6 +103,7 @@ void main() {
 			blur_color += texture2D( sampler, ( cur_tex_coords.st+vec2(0.0, offset[i]) )) * weight[i];
 			blur_color += texture2D( sampler, ( cur_tex_coords.st-vec2(0.0, offset[i]) ) ) * weight[i];
 		}
+		
 		blur_color = texture2D( sampler, cur_tex_coords.st * 0.1);
 		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 1.0) )) * 0.1;
 		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 2.0) )) * 0.1;
@@ -105,6 +114,7 @@ void main() {
 		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 2.0) )) * 0.1;
 		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 3.0) )) * 0.1;
 		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 4.0) )) * 0.1;
+		
 		FragColor = blur_color;
 		//FragColor = texture2D(sampler, cur_tex_coords.st);
 	} else {
@@ -112,14 +122,50 @@ void main() {
 	}
 	*/
 	
+
+	//FragColor = vec4(((cur_normal/2) + vec3(1.0, 1.0, 1.0)), 1.0);
+	//FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
+
+	/*
+	float intensity = dot(-view_dir_nn,cur_normal);
+	if (intensity > 1.0) {
+		FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+	} else {
+	FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+	}
+	//FragColor = vec4(intensity,intensity,intensity,1.0);
+	
+	if (intensity > 0.95) {
+		FragColor = vec4(1.0,0.5,0.5,1.0);
+	} else if (intensity > 0.5) {
+		FragColor = vec4(0.6,0.3,0.3,1.0);
+	} else if (intensity > 0.25) {
+		FragColor = vec4(0.4,0.2,0.2,1.0);
+	} else {
+		FragColor = vec4(0.2,0.1,0.1,1.0);
+	}
+
+	if (intensity < 0.0) {
+		FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+	}
+	*/
+	
+	// Discretizer Shader
+	//FragColor = discretize(FragColor, 2);
+
+
+
 	// Foggy Shader; Temp. here
 	//float distance = length(view_dir);
 	//float fog_intensity = 1 / (2.5 * distance * distance);
 	//FragColor =  (FragColor * fog_intensity) + (vec4(0.5, 0.5, 0.5, 1.0) * (1-fog_intensity));
 
+
 	//FragColor = fcolor;
 	//FragColor = vec4(material_d_color_2, 1.0);
 }
+
+
 
 
 vec3 computeDirectionalLight() {

@@ -86,7 +86,7 @@ void main() {
 
 
 	//vec4 world_normal = world_normals_transformation * model_normals_transformation * vec4(normal, 0.); //TODO
-	vec4 world_normal = model_normals_transformation * vec4(normal, 0.); //TODO
+	vec4 world_normal = vec4(normal, 0.) * model_normals_transformation; //TODO
 	cur_normal = normalize(world_normal.xyz);
 
 	// pass the texture coordinates to the fragment shader
