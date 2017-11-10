@@ -35,17 +35,29 @@ Dragging with right mouse button: Move forward, right, left and backwards
 
 `r`: Reset camera
 
+`v`: Toggle automatic rotation of models
+
+`k`: Change texture intensity (0% - 100%)
+
 `i`: Print info about camera status
 
 `y`: Toggle sunlight
 
 `x` :Toggle headlight
 
-`1`: Switch to per vertex illumination shading
+`1`: Switch to realistic shading (*per vertex illumination*)
 
-`2`: Switch to per fragment illumination shading
+`2`: Switch to foggy shading (*per vertex illumination*)
 
-`3`: Switch to black and white per vertex illumination
+`3`: Switch to black and white shading (*per vertex illumination*)
+
+`4`: Switch to linocut shading (*per vertex illumination*)
+
+`5`: Switch to noise shading (*per vertex illumination*)
+
+`6`: Switch to vignette shading (*per vertex illumination*)
+
+`7`: Switch to normal highlight shading (useful for debugging) (*per vertex illumination*)
 
 `l`: Reload shaders
 
