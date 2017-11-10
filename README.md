@@ -9,6 +9,7 @@ Developed by Sören Henning and Zach Litzinger
 * Changeable mix of material properties and textures
 * Various shading methods and effects (fog, black and white, linocut (similiar to toon), noise, vignette, normal highlighting)
 foggy shading (*per vertex illumination*)
+* **Important:** Project has to be compiled for **x64**. Otherwise not all textures are loaded properly.
 
 ## Features
 
