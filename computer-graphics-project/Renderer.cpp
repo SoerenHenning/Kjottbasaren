@@ -161,7 +161,7 @@ void Renderer::display() {
 				glUniform1f(MaterialTextureIntensityLoc, scene->textureIntensity);
 				glBindTexture(GL_TEXTURE_2D, texture.object);
 			} else {
-				glUniform1f(MaterialTextureIntensityLoc, 0.0);
+				glUniform1f(MaterialTextureIntensityLoc, 0.0f);
 			}
 
 			// Draw the elements on the GPU
@@ -241,9 +241,9 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		scene->getCamera()->printStatus();
 		break;
 	case 'k':  // change texture intensity
-		scene->textureIntensity = roundf((scene->textureIntensity - 0.1) * 10) / 10; // handle precision
-		if (scene->textureIntensity < 0) {
-				scene->textureIntensity = 1.0;
+		scene->textureIntensity = roundf((scene->textureIntensity - 0.1f) * 10.f) / 10.f; // handle precision
+		if (scene->textureIntensity < 0.f) {
+				scene->textureIntensity = 1.f;
 		}
 		cout << "Set texture intesity to " << scene->textureIntensity * 100 << "%" << endl;
 		break;

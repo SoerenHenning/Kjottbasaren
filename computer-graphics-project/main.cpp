@@ -25,12 +25,12 @@ int main(int argc, char **argv) {
 	scene->headlight.intensitySquare = 0.5f;
 
 	Model* house = new Model("models\\kjottbasaren.obj", false, false);
-	house->scaling = 0.025;
+	house->scaling = 0.025f;
 	house->translation.set(0.0f, 0.0f, 0.0f);
 	scene->models.push_back(house);
 
 	Model* ground = new Model("models\\ground.obj", false, false);
-	ground->scaling = 0.5;
+	ground->scaling = 0.5f;
 	ground->translation.set(0.0f, -0.23f, 0.0f);
 	scene->models.push_back(ground);
 
