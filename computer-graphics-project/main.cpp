@@ -7,8 +7,8 @@ int main(int argc, char **argv) {
 	scene->backgroundColor = Vector3f(0.0f, 0.8f, 1.0f);
 
 	scene->sunlight.direction = Vector3f(0.5f, -1.5f, -1.0f);
-	scene->sunlight.ambientColor = Vector3f(0.3f, 0.2f, 0.2f);
-	scene->sunlight.diffuseColor = Vector3f(0.5f, 0.4f, 0.3f);
+	scene->sunlight.ambientColor = Vector3f(0.3f, 0.3f, 0.3f);
+	scene->sunlight.diffuseColor = Vector3f(0.7f, 0.7f, 0.7f);
 	scene->sunlight.specularColor = Vector3f(0.4f, 0.4f, 0.4f);
 	scene->sunlight.ambientIntensity = 1.f;
 	scene->sunlight.diffuseIntensity = 1.f;

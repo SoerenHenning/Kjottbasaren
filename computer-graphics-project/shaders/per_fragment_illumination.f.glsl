@@ -70,7 +70,7 @@ void main() {
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
 
 	if (material_texture) {
-		float texture_intensity = 0.5;
+		float texture_intensity = 1.0;
 		material_d_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_d_color);
 		material_a_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_a_color);
 		
