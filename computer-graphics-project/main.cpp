@@ -7,7 +7,7 @@ int main(int argc, char **argv) {
 	scene->backgroundColor = Vector3f(0.0f, 0.8f, 1.0f);
 
 	scene->sunlight.direction = Vector3f(0.5f, -1.5f, -1.0f);
-	scene->sunlight.ambientColor = Vector3f(0.4f, 0.3f, 0.2f);
+	scene->sunlight.ambientColor = Vector3f(0.3f, 0.2f, 0.2f);
 	scene->sunlight.diffuseColor = Vector3f(0.5f, 0.4f, 0.3f);
 	scene->sunlight.specularColor = Vector3f(0.4f, 0.4f, 0.4f);
 	scene->sunlight.ambientIntensity = 1.f;
@@ -26,6 +26,7 @@ int main(int argc, char **argv) {
 
 	Model* house = new Model("models\\kjottbasaren.obj", false, false);
 	house->scaling = 0.025;
+	house->translation.set(0.0f, 0.0f, 0.0f);
 	scene->models.push_back(house);
 
 	//Model* tree = new Model("models\\Tree1.obj", false, true);
@@ -34,10 +35,17 @@ int main(int argc, char **argv) {
 	//Model* capsule = new Model("models\\capsule.obj", false, true);
 	//scene->models.push_back(capsule);
 
-	//Model* cottage = new Model("models\\Snow covered CottageOBJ.obj", true, false);
+	//Model* cottage = new Model("models\\Snow covered CottageOBJ.obj", false, false);
+	//cottage->scaling = 0.005;
+	//cottage->translation.set(3.0f, 0.0f, 3.0f);
 	//scene->models.push_back(cottage);
 
-	Model* ground = new Model("models\\plane.obj", false, true);
+	//Model* ground = new Model("models\\plane.obj", false, false);
+	//scene->models.push_back(ground);
+
+	Model* ground = new Model("models\\ground.obj", false, false);
+	ground->scaling = 0.5;
+	ground->translation.set(0.0f, -0.23f, 0.0f);
 	scene->models.push_back(ground);
 
 	Renderer renderer = Renderer(scene);

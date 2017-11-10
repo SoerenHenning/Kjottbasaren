@@ -65,17 +65,19 @@ vec4 discretize(vec4 v, float d) {
 
 void main() {
 
+	vec4 endColor;
+
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
 
 	if (material_texture) {
-		float texture_intensity = 1.;
+		float texture_intensity = 0.5;
 		material_d_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_d_color);
 		material_a_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_a_color);
-		//material_d_color_2 = vec3(0.0, 1.0, 0.0);
+		
+		//endColor = vec4(texture.xyz, 1.0);
 	} else {
 		material_d_color_2 = material_d_color;
 		material_a_color_2 = material_a_color;
-		//material_d_color_2 = vec3(0.0, 1.0, 0.0);
 	}
 
 	vec3 directionalLight = computeDirectionalLight();
@@ -89,8 +91,10 @@ void main() {
 	/*
 	if (false) {
 		FragColor = texture * vec4(color, 1.0); //TODO
+		FragColor = vec4(1.0, 0.0, 1.0, 1.0); //TODO
 	} else {
 		FragColor = vec4(color, 1.0); //TODO
+		FragColor = vec4(1.0, 0.0, 0.0, 1.0); //TODO
 	}
 	*/
 
@@ -163,6 +167,8 @@ void main() {
 
 	//FragColor = fcolor;
 	//FragColor = vec4(material_d_color_2, 1.0);
+
+	//FragColor = endColor;
 }
 
 
