@@ -254,7 +254,7 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
 	case 'y': // Toggle Sunlight
-		cout << ((scene->headlight.ambientIntensity == 0.f) ? "Enable" : "Disable") << " sunlight" << endl;
+		cout << ((scene->sunlight.ambientIntensity == 0.f) ? "Enable" : "Disable") << " sunlight" << endl;
 		scene->sunlight.ambientIntensity = (scene->sunlight.ambientIntensity == 0.f) ? 1.f : 0.f;
 		scene->sunlight.diffuseIntensity = (scene->sunlight.diffuseIntensity == 0.f) ? 1.f : 0.f;
 		scene->sunlight.specularIntensity = (scene->sunlight.specularIntensity == 0.f) ? 1.f : 0.f;
