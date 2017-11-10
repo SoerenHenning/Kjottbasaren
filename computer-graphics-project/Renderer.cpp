@@ -144,7 +144,7 @@ void Renderer::display() {
 			const ModelOBJ::Mesh *mesh = &model->modelObj.getMesh(i);
 			const ModelOBJ::Material *material = mesh->pMaterial;
 
-			glUniform1i(SamplerLocation, 0); //TODO necessary?
+			//glUniform1i(SamplerLocation, 0);
 
 			glUniform3f(MaterialAColorLoc, material->ambient[0], material->ambient[1], material->ambient[2]);
 			glUniform3f(MaterialDColorLoc, material->diffuse[0], material->diffuse[1], material->diffuse[2]);
@@ -156,10 +156,8 @@ void Renderer::display() {
 				Texture texture = textureObjects[key];
 				glActiveTexture(GL_TEXTURE0);
 				glUniform1f(MaterialTextureIntensityLoc, scene->textureIntensity);
-				glEnable(GL_TEXTURE_2D); //TODO required?
 				glBindTexture(GL_TEXTURE_2D, texture.object);
 			} else {
-				glDisable(GL_TEXTURE_2D); //TODO required?
 				glUniform1f(MaterialTextureIntensityLoc, 0.0);
 			}
 
@@ -344,18 +342,15 @@ void Renderer::initMesh() {
 			// if the current material has a texture
 			if (material.colorMapFilename != "") {
 				Texture texture;
-				GLuint textureObject = 0; //TODO
 
 				// Load the texture
 				if (texture.data != nullptr) {
 					free(texture.data);
 				}
 				unsigned int fail = lodepng_decode_file(&(texture.data), &(texture.width), &(texture.height),
-					("models\\" + material.colorMapFilename).c_str(),
-					LCT_RGB, 8); // Remember to check the last 2 parameters
+					("models\\" + material.colorMapFilename).c_str(), LCT_RGB, 8);
 				if (fail != 0) {
 					cerr << "Error: cannot load texture file " << material.colorMapFilename << endl;
-					//return false;
 				}
 
 				// Create the texture object
@@ -379,11 +374,9 @@ void Renderer::initMesh() {
 					GL_UNSIGNED_BYTE,
 					texture.data);
 
-				//TODO try to remove from from loop
 				// Configure texture parameter
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 
 				textureObjects.emplace(material.name, texture);
 			}
@@ -391,23 +384,6 @@ void Renderer::initMesh() {
 		
 	}
 	
-
-
-	/*
-	const ModelOBJ::Vertex *vb = Model.getVertexBuffer();
-
-	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
-	cout << "vb[" << i << "].position: (" << vb[i].position[0] << "," << vb[i].position[1] << "," << vb[i].position[2] << ")" << endl;
-	}
-
-	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
-	cout << "vb[" << i << "].normal: (" << vb[i].normal[0] << "," << vb[i].normal[1] << "," << vb[i].normal[2] << ")" << endl;
-	}
-
-	for (int i = 0; i < Model.getNumberOfVertices(); i++) {
-	cout << "vb[" << i << "].texCoord: (" << vb[i].texCoord[0] << "," << vb[i].texCoord[1] << ")" << endl;
-	}
-	*/
 }
 
 /*
