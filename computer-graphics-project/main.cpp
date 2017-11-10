@@ -32,16 +32,10 @@ int main(int argc, char **argv) {
 	//Model* tree = new Model("models\\Tree1.obj", false, true);
 	//scene->models.push_back(tree);
 
-	//Model* capsule = new Model("models\\capsule.obj", false, true);
-	//scene->models.push_back(capsule);
-
 	//Model* cottage = new Model("models\\Snow covered CottageOBJ.obj", false, false);
 	//cottage->scaling = 0.005;
 	//cottage->translation.set(3.0f, 0.0f, 3.0f);
 	//scene->models.push_back(cottage);
-
-	//Model* ground = new Model("models\\plane.obj", false, false);
-	//scene->models.push_back(ground);
 
 	Model* ground = new Model("models\\ground.obj", false, false);
 	ground->scaling = 0.5;
