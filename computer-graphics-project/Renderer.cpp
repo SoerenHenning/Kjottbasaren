@@ -86,11 +86,6 @@ void Renderer::display() {
 	Matrix4f cameraTransformation = scene->getCamera()->getTransformationMatrix();
 	glUniformMatrix4fv(CameraTransformationLocation, 1, GL_FALSE, cameraTransformation.get());
 
-	Matrix4f worldTransformation = scene->worldRotation;
-	Matrix4f worldNormalsTransformation = worldTransformation.getInverse().getTransposed();
-	glUniformMatrix4fv(WorldTransformationLocation, 1, GL_FALSE, worldTransformation.get());
-	glUniformMatrix4fv(ModelNormalsTransformationLocation, 1, GL_FALSE, worldNormalsTransformation.get());
-
 	glUniform3fv(CameraPositionLoc, 1, scene->getCamera()->getPosition().get());
 
 	// Set the sunlight's parameters
@@ -202,10 +197,14 @@ void Renderer::display() {
 void Renderer::idle() {
 	clock_t now = clock();
 	if (scene->rotating) {
-		scene->worldRotation *= Matrix4f::createRotation(10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
+		//scene->worldRotation *= Matrix4f::createRotation(10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
+		for (auto const& model : scene->models) {
+			model->rotationX *= Matrix4f::createRotation(-10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
+		}
 	}
 	//TODO temp
 	//scene->models.at(0)->rotationX *= Matrix4f::createRotation(- 10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
+	//scene->camera->drive(0.1f * (now - Timer) / CLOCKS_PER_SEC);
 	Timer = now;
 	glutPostRedisplay();
 }
@@ -557,8 +556,6 @@ bool Renderer::initShaders() {
 	CameraTransformationLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	ModelTransformationLocation = glGetUniformLocation(ShaderProgram, "model_transformation");
 	ModelNormalsTransformationLocation = glGetUniformLocation(ShaderProgram, "model_normals_transformation");
-	WorldTransformationLocation = glGetUniformLocation(ShaderProgram, "world_transformation");
-	WorldNormalsTransformationLocation = glGetUniformLocation(ShaderProgram, "world_normals_transformation");
 	SamplerLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	//TimeLocation = glGetUniformLocation(ShaderProgram, "time");
 	//assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);

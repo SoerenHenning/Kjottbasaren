@@ -79,6 +79,8 @@ void main() {
 	
 	FragColor = vec4(color, 1.0); //TODO
 
+	//FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
+
 	//color = normalize(cur_normal) * -1.0;
 	//if (material_texture_intensity) {
 	/*
@@ -121,7 +123,7 @@ void main() {
 	
 
 	//FragColor = vec4(((cur_normal/2) + vec3(1.0, 1.0, 1.0)), 1.0);
-	//FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
+	
 
 	/*
 	float intensity = dot(-view_dir_nn,cur_normal);
@@ -159,7 +161,7 @@ void main() {
 
 
 	//FragColor = fcolor;
-	//FragColor = vec4(material_d_color_2, 1.0);
+	//FragColor = normalize(cur_normal)
 
 	//FragColor = endColor;
 }
@@ -230,16 +232,13 @@ vec3 computeHeadlight() {
 	
 	vec3 normal_nn = normalize(cur_normal);
 
-	float dot_p_light_normal = dot(-p_light_dir_nn, cur_normal);   // notice the minus!
-	vec3 p_reflected_dir_nn = p_light_dir_nn + 2. * dot_p_light_normal * cur_normal;
+	float dot_p_light_normal = dot(-p_light_dir_nn, normal_nn);   // notice the minus!
+	vec3 p_reflected_dir_nn = p_light_dir_nn + 2. * dot_p_light_normal * normal_nn;
 	// should be already normalized, but we "need" to correct numerical errors
 	p_reflected_dir_nn = normalize(p_reflected_dir_nn); 
 
 	float distance = length(p_light_dir);
 	float distance_intensity = p_light_d_intensity_k_const + (p_light_d_intensity_k_linear * distance) + (p_light_d_intensity_k_square * distance * distance);
-
-	//return dot_p_light_normal;
-	//return vec3(distance_intensity, distance_intensity, distance_intensity);
 
 	// compute the color contribution
 	vec3 amb_color = clamp(

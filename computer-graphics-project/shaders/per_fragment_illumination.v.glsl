@@ -3,9 +3,6 @@
 // model-view transformation
 uniform mat4 transformation; //TODO rename to camera_transformation
 
-uniform mat4 world_transformation;
-uniform mat4 world_normals_transformation;
-
 //TODO temp here
 // Sampler to access the texture
 //uniform vec3 sampler;
@@ -69,7 +66,7 @@ out vec4 fcolor;
 void main() {
 
 	// transform the vertex
-	vec4 world_position = world_transformation * model_transformation * vec4(position, 1.);
+	vec4 world_position = model_transformation * vec4(position, 1.);
     gl_Position = transformation * world_position;
 
 	vec4 world_camera_position = vec4(camera_position, 1.);
@@ -85,8 +82,7 @@ void main() {
 	//fcolor = vec4(0., 0., 1., 1.);
 
 
-	//vec4 world_normal = world_normals_transformation * model_normals_transformation * vec4(normal, 0.); //TODO
-	vec4 world_normal = vec4(normal, 0.) * model_normals_transformation; //TODO
+	vec4 world_normal = model_normals_transformation * vec4(normal, 0.); //TODO
 	cur_normal = normalize(world_normal.xyz);
 
 	// pass the texture coordinates to the fragment shader

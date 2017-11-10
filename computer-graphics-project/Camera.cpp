@@ -147,3 +147,10 @@ void Camera::printStatus() {
 	cout << "Depth of the far plane: " << this->farPlane << endl;
 	cout << "Zoom: " << this->zoom << endl;
 }
+
+void Camera::drive(float delta) {
+	alpha = fmod((alpha + delta), 360.0);
+	float x = cos(alpha + delta) * distance;
+	float z = sin(alpha + delta) * distance;
+	position = Vector3f(x, 0.5f, z);
+}

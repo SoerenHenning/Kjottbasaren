@@ -19,6 +19,9 @@ class Camera {
 	float zoom;					// an additional scaling parameter
 	Camera::Projection projectionType;
 
+	float alpha = 0.0; //TODO temp
+	float distance = 2.0; //TODO temp
+
 	public:
 		Camera(Vector3f, Vector3f);
 		~Camera();
@@ -43,5 +46,7 @@ class Camera {
 		void toggleProjection();
 		Matrix4f getTransformationMatrix();
 		void printStatus();
+
+		void drive(float); //TODO temp here
 };
 
