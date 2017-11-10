@@ -29,14 +29,6 @@ int main(int argc, char **argv) {
 	house->translation.set(0.0f, 0.0f, 0.0f);
 	scene->models.push_back(house);
 
-	//Model* tree = new Model("models\\Tree1.obj", false, true);
-	//scene->models.push_back(tree);
-
-	//Model* cottage = new Model("models\\Snow covered CottageOBJ.obj", false, false);
-	//cottage->scaling = 0.005;
-	//cottage->translation.set(3.0f, 0.0f, 3.0f);
-	//scene->models.push_back(cottage);
-
 	Model* ground = new Model("models\\ground.obj", false, false);
 	ground->scaling = 0.5;
 	ground->translation.set(0.0f, -0.23f, 0.0f);

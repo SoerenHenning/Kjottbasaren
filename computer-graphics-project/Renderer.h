@@ -42,14 +42,13 @@ class Renderer {
 	};
 
 	// Shaders
-	Shader perVertexIlluminationShader = { "shaders/per_vertex_illumination.v.glsl", "shaders/per_vertex_illumination.f.glsl" };
 	Shader perFragmentIlluminationShader = { "shaders/per_fragment_illumination.v.glsl", "shaders/per_fragment_illumination.f.glsl" };
-	Shader perVertexIlluminationBWShader = { "shaders/per_vertex_illumination.v.glsl", "shaders/per_vertex_illumination_bw.f.glsl" };
 	Shader shader = perFragmentIlluminationShader;
 
 	// Shaders
 	GLuint ShaderProgram = 0;	// Shader program
-	GLint CameraTransformationLocation = -1;		// Reference to the model-view matrix uniform variable
+	GLint ShadingEffectLocation = -1;
+	GLint CameraTransformationLocation = -1; // Reference to the model-view matrix uniform variable
 	GLint ModelTransformationLocation = -1;
 	GLint ModelNormalsTransformationLocation = -1;
 	GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
@@ -86,6 +85,9 @@ class Renderer {
 
 	// Clock
 	clock_t Timer;
+
+	// Shading effect
+	int shadingEffect = 0;
 
 	// Scene
 	Scene* scene;

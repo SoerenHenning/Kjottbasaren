@@ -52,8 +52,6 @@ int Renderer::render(int argc, char **argv) {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   // draw polygons as wireframe
 	glPolygonMode(GL_FRONT, GL_FILL);   // draw polygons as solid
 
-	// Initialize program variables
-
 	// Mesh
 	initMesh();
 	
@@ -82,10 +80,13 @@ void Renderer::display() {
 	assert(ShaderProgram != 0);
 	glUseProgram(ShaderProgram);
 
+	// Set Shading Effect
+	glUniform1i(ShadingEffectLocation, shadingEffect);
+
+	// Set camera parameters
 	scene->getCamera()->setAspectRatio((1.0f * width) / height);
 	Matrix4f cameraTransformation = scene->getCamera()->getTransformationMatrix();
 	glUniformMatrix4fv(CameraTransformationLocation, 1, GL_FALSE, cameraTransformation.get());
-
 	glUniform3fv(CameraPositionLoc, 1, scene->getCamera()->getPosition().get());
 
 	// Set the sunlight's parameters
@@ -112,19 +113,6 @@ void Renderer::display() {
 	glEnableVertexAttribArray(0); //position
 	glEnableVertexAttribArray(1); //tex_coords
 	glEnableVertexAttribArray(2); //normals
-
-	//TODO this block is temp
-	// Set the uniform variable for the texture unit (texture unit 0)
-// 	glUniform1i(SamplerLocation, 0); //TODO necessary?
-	/* See here for nicer code:
-	GLint texLoc = glGetAttribLocation(ShaderProgram, "tex_coords");
-	glEnableVertexAttribArray(texLoc);
-	glVertexAttribPointer(texLoc, 2, GL_FLOAT, GL_FALSE,
-		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
-	*/
-
-
 
 	// Draw the models
 	for (auto const& model : scene->models) {
@@ -169,7 +157,7 @@ void Renderer::display() {
 				glActiveTexture(GL_TEXTURE0);
 				glUniform1f(MaterialTextureIntensityLoc, scene->textureIntensity);
 				glEnable(GL_TEXTURE_2D); //TODO required?
-				glBindTexture(GL_TEXTURE_2D, texture.object); //TODO set correct texture here
+				glBindTexture(GL_TEXTURE_2D, texture.object);
 			} else {
 				glDisable(GL_TEXTURE_2D); //TODO required?
 				glUniform1f(MaterialTextureIntensityLoc, 0.0);
@@ -179,7 +167,6 @@ void Renderer::display() {
 			glDrawElements(GL_TRIANGLES, mesh->triangleCount * 3, GL_UNSIGNED_INT, (void*) (mesh->startIndex * sizeof(GLuint)));
 		}
 
-		
 	}
 
 	// Disable the vertex attributes (not necessary but recommended)
@@ -197,13 +184,11 @@ void Renderer::display() {
 void Renderer::idle() {
 	clock_t now = clock();
 	if (scene->rotating) {
-		//scene->worldRotation *= Matrix4f::createRotation(10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
 		for (auto const& model : scene->models) {
 			model->rotationX *= Matrix4f::createRotation(-10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
 		}
 	}
-	//TODO temp
-	//scene->models.at(0)->rotationX *= Matrix4f::createRotation(- 10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
+	//TODO preparation for new assignment
 	//scene->camera->drive(0.1f * (now - Timer) / CLOCKS_PER_SEC);
 	Timer = now;
 	glutPostRedisplay();
@@ -255,15 +240,11 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		scene->getCamera()->printStatus();
 		break;
 	case 'k':  // change texture intensity
-		scene->textureIntensity -= 0.1;
+		scene->textureIntensity = roundf((scene->textureIntensity - 0.1) * 10) / 10; // handle precision
 		if (scene->textureIntensity < 0) {
-			if (scene->textureIntensity > -0.05) {
-				// handle precision
-				scene->textureIntensity = 0.0;
-			} else {
 				scene->textureIntensity = 1.0;
-			}
 		}
+		cout << "Set texture intesity to " << scene->textureIntensity * 100 << "%" << endl;
 		break;
 	case 'p': // change to wireframe rendering
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -272,35 +253,32 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
 	case 'y': // Toggle Sunlight
+		cout << ((scene->headlight.ambientIntensity == 0.f) ? "Enable" : "Disable") << " sunlight" << endl;
 		scene->sunlight.ambientIntensity = (scene->sunlight.ambientIntensity == 0.f) ? 1.f : 0.f;
 		scene->sunlight.diffuseIntensity = (scene->sunlight.diffuseIntensity == 0.f) ? 1.f : 0.f;
 		scene->sunlight.specularIntensity = (scene->sunlight.specularIntensity == 0.f) ? 1.f : 0.f;
 		break;
 	case 'x': // Toggle Headlight
+		cout << ((scene->headlight.ambientIntensity == 0.f) ? "Enable" : "Disable") << " headlight" << endl;
 		scene->headlight.ambientIntensity = (scene->headlight.ambientIntensity == 0.f) ? 1.f : 0.f;
 		scene->headlight.diffuseIntensity = (scene->headlight.diffuseIntensity == 0.f) ? 1.f : 0.f;
 		scene->headlight.specularIntensity = (scene->headlight.specularIntensity == 0.f) ? 1.f : 0.f;
 		break;
 	case '1':
-		cout << "Switch to per vertex illumination shaders..." << endl;
-		shader = perVertexIlluminationShader;
-		if (initShaders()) {
-			cout << "> done." << endl;
-		}
+		cout << "Switch to normal shading" << endl;
+		shadingEffect = 0;
 		break;
 	case '2':
-		cout << "Switch to per fragment illumination shaders..." << endl;
-		shader = perFragmentIlluminationShader;
-		if (initShaders()) {
-			cout << "> done." << endl;
-		}
+		cout << "Switch to foggy shading" << endl;
+		shadingEffect = 1;
 		break;
 	case '3':
-		cout << "Switch to black and white per vertex illumination shaders..." << endl;
-		shader = perVertexIlluminationBWShader;
-		if (initShaders()) {
-			cout << "> done." << endl;
-		}
+		cout << "Switch to black and white shading" << endl;
+		shadingEffect = 2;
+		break;
+	case '4':
+		cout << "Switch to linocut shading" << endl;
+		shadingEffect = 3;
 		break;
 	case 'l':
 		cout << "Re-loading shaders..." << endl;
@@ -553,13 +531,12 @@ bool Renderer::initShaders() {
 	}
 
 	// Get the location of the uniform variables
+	ShadingEffectLocation = glGetUniformLocation(ShaderProgram, "shading_effect");
 	CameraTransformationLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	ModelTransformationLocation = glGetUniformLocation(ShaderProgram, "model_transformation");
 	ModelNormalsTransformationLocation = glGetUniformLocation(ShaderProgram, "model_normals_transformation");
 	SamplerLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	//TimeLocation = glGetUniformLocation(ShaderProgram, "time");
-	//assert(TrLocation != -1 && SamplerLocation != -1 && TimeLocation != -1);
-	//assert(TrLocation != -1 && SamplerLocation != -1);
 
 	CameraPositionLoc = glGetUniformLocation(ShaderProgram, "camera_position");
 
@@ -591,6 +568,8 @@ bool Renderer::initShaders() {
 	// Shaders can be deleted now
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+
+	glUniform1i(ShadingEffectLocation, 0);
 
 	return true;
 }

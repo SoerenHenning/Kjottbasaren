@@ -1,5 +1,7 @@
 #version 330	// GLSL version
 
+uniform int shading_effect;
+
 // Sampler to access the texture
 uniform sampler2D sampler;
 
@@ -77,7 +79,7 @@ void main() {
 	vec3 headlight = computeHeadlight();
 	vec3 color = directionalLight + headlight;
 	
-	FragColor = vec4(color, 1.0); //TODO
+	FragColor = vec4(color, 1.0);
 
 	//FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
 
@@ -149,15 +151,21 @@ void main() {
 	}
 	*/
 	
-	// Discretizer Shader
-	//FragColor = discretize(FragColor, 2);
-
-
-
-	// Foggy Shader; Temp. here
-	//float distance = length(view_dir);
-	//float fog_intensity = 1 / (2.5 * distance * distance);
-	//FragColor =  (FragColor * fog_intensity) + (vec4(0.5, 0.5, 0.5, 1.0) * (1-fog_intensity));
+	//FragColor = vec4(0.0, 1.0, shading_effect, 1.0); 
+	
+	if (shading_effect == 1) {
+		// Foggy Shader
+		float distance = length(view_dir);
+		float fog_intensity = 1 / (2.5 * distance * distance);
+		FragColor =  (FragColor * fog_intensity) + (vec4(0.5, 0.5, 0.5, 1.0) * (1-fog_intensity));
+	} else if (shading_effect == 2) {
+		// Black and White Shader
+		float avg = 0.21 * FragColor.r + 0.72 * FragColor.g + 0.07 * FragColor.b;
+		FragColor = vec4(avg, avg, avg, FragColor.a);
+	} else if (shading_effect == 3) {
+		// Discretizer Shader
+		FragColor = discretize(FragColor, 2);
+	}
 
 
 	//FragColor = fcolor;
