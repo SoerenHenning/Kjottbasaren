@@ -2,6 +2,14 @@
 
 Developed by Sören Henning and Zach Litzinger
 
+## New Features
+
+* Textures and material properties imported from .mtl files
+* Automatical rotation of models
+* Changeable mix of material properties and textures
+* Various shading methods and effects (fog, black and white, linocut (similiar to toon), noise, vignette, normal highlighting)
+foggy shading (*per vertex illumination*)
+
 ## Features
 
 * Moving in x, y and z direction
@@ -9,7 +17,7 @@ Developed by Sören Henning and Zach Litzinger
 * Direction sunlight
 * Headlight on top of the camera, modelled as a point light source with decreasing intensity
 * Perspective and orthographic projection (no depth information in orthographic projection due to fact how orthographic projection is)
-* Per fragment, per vertex and black and white shading
+* Per fragment shading with various effects
 
 ## Navigation
 
@@ -45,19 +53,19 @@ Dragging with right mouse button: Move forward, right, left and backwards
 
 `x` :Toggle headlight
 
-`1`: Switch to realistic shading (*per vertex illumination*)
+`1`: Switch to realistic shading (*per fragment illumination*)
 
-`2`: Switch to foggy shading (*per vertex illumination*)
+`2`: Switch to foggy shading (*per fragment illumination*)
 
-`3`: Switch to black and white shading (*per vertex illumination*)
+`3`: Switch to black and white shading (*per fragment illumination*)
 
-`4`: Switch to linocut shading (*per vertex illumination*)
+`4`: Switch to linocut shading (*per fragment illumination*)
 
-`5`: Switch to noise shading (*per vertex illumination*)
+`5`: Switch to noise shading (*per fragment illumination*)
 
-`6`: Switch to vignette shading (*per vertex illumination*)
+`6`: Switch to vignette shading (*per fragment illumination*)
 
-`7`: Switch to normal highlight shading (useful for debugging) (*per vertex illumination*)
+`7`: Switch to normal highlight shading (face normals are mapped to colors, useful for debugging) (*per fragment illumination*)
 
 `l`: Reload shaders
 
