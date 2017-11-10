@@ -172,12 +172,12 @@ void Renderer::display() {
 			if (textureObjects.count(key) == 1) {
 				Texture texture = textureObjects[key];
 				glActiveTexture(GL_TEXTURE0);
-				glUniform1i(MaterialTextureLoc, true);
+				glUniform1f(MaterialTextureIntensityLoc, scene->textureIntensity);
 				glEnable(GL_TEXTURE_2D); //TODO required?
 				glBindTexture(GL_TEXTURE_2D, texture.object); //TODO set correct texture here
 			} else {
 				glDisable(GL_TEXTURE_2D); //TODO required?
-				glUniform1i(MaterialTextureLoc, false);
+				glUniform1f(MaterialTextureIntensityLoc, 0.0);
 			}
 
 			// Draw the elements on the GPU
@@ -254,6 +254,17 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'i':  // print info about camera
 		scene->getCamera()->printStatus();
+		break;
+	case 'k':  // change texture intensity
+		scene->textureIntensity -= 0.1;
+		if (scene->textureIntensity < 0) {
+			if (scene->textureIntensity > -0.05) {
+				// handle precision
+				scene->textureIntensity = 0.0;
+			} else {
+				scene->textureIntensity = 1.0;
+			}
+		}
 		break;
 	case 'p': // change to wireframe rendering
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -578,7 +589,7 @@ bool Renderer::initShaders() {
 	MaterialDColorLoc = glGetUniformLocation(ShaderProgram, "material_d_color");
 	MaterialSColorLoc = glGetUniformLocation(ShaderProgram, "material_s_color");
 	MaterialShineLoc = glGetUniformLocation(ShaderProgram, "material_shininess");
-	MaterialTextureLoc = glGetUniformLocation(ShaderProgram, "material_texture");
+	MaterialTextureIntensityLoc = glGetUniformLocation(ShaderProgram, "material_texture_intensity");
 
 	// Shaders can be deleted now
 	glDeleteShader(vertexShader);

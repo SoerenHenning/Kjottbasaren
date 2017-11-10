@@ -4,6 +4,7 @@ Scene::Scene() {
 	createCamera();
 	worldRotation.identity();
 	rotating = false;
+	textureIntensity = 1.0;
 }
 
 Scene::~Scene(){

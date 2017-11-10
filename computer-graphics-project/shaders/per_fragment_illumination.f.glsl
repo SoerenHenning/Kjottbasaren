@@ -29,7 +29,7 @@ uniform vec3 material_a_color;
 uniform vec3 material_d_color;
 uniform vec3 material_s_color;
 uniform float material_shininess;
-uniform bool material_texture;
+uniform float material_texture_intensity;
 
 // Per fragment texture coordinates
 in vec2 cur_tex_coords;
@@ -69,16 +69,9 @@ void main() {
 
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
 
-	if (material_texture) {
-		float texture_intensity = 1.0;
-		material_d_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_d_color);
-		material_a_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_a_color);
-		
-		//endColor = vec4(texture.xyz, 1.0);
-	} else {
-		material_d_color_2 = material_d_color;
-		material_a_color_2 = material_a_color;
-	}
+	float texture_intensity = material_texture_intensity;
+	material_d_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_d_color);
+	material_a_color_2 = (texture_intensity * texture.xyz) + ((1-texture_intensity) * material_a_color);
 
 	vec3 directionalLight = computeDirectionalLight();
 	vec3 headlight = computeHeadlight();
@@ -87,7 +80,7 @@ void main() {
 	FragColor = vec4(color, 1.0); //TODO
 
 	//color = normalize(cur_normal) * -1.0;
-	//if (material_texture) {
+	//if (material_texture_intensity) {
 	/*
 	if (false) {
 		FragColor = texture * vec4(color, 1.0); //TODO
@@ -101,7 +94,7 @@ void main() {
 	/*
 	float offset[5] = float[]( 0.0, 1.0, 2.0, 3.0, 4.0 );
 	float weight[5] = float[]( 0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162 );
-	if (material_texture) {
+	if (material_texture_intensity) {
 		vec4 blur_color = texture2D( sampler, cur_tex_coords.st * weight[0]);
 		for (int i=1; i<5; i++) {
 			blur_color += texture2D( sampler, ( cur_tex_coords.st+vec2(0.0, offset[i]) )) * weight[i];

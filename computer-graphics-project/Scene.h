@@ -35,6 +35,7 @@ struct Scene {
 	Vector3f backgroundColor;
 	Matrix4f worldRotation; //TODO maybe?
 	bool rotating;
+	float textureIntensity;
 	DirectionalLight sunlight;
 	PointLight headlight;
 	public:
