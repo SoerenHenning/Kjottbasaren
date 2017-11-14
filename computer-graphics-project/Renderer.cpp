@@ -53,7 +53,7 @@ int Renderer::render(int argc, char **argv) {
 	glPolygonMode(GL_FRONT, GL_FILL);   // draw polygons as solid
 
 	// Mesh
-	initMesh();
+	//initMesh();
 	
 	// Shaders
 	if (!initShaders()) {
@@ -75,7 +75,7 @@ void Renderer::display() {
 	int width = glutGet(GLUT_WINDOW_WIDTH);
 	int height = glutGet(GLUT_WINDOW_HEIGHT);
 	glViewport(0, 0, width, height);
-	
+
 	// Enable the shader program
 	assert(ShaderProgram != 0);
 	glUseProgram(ShaderProgram);
@@ -83,8 +83,8 @@ void Renderer::display() {
 	// Set Shading Effect
 	glUniform1i(ShadingEffectLocation, shadingEffect);
 
-	glUniform1i(WindowWidthLocation, glutGet(GLUT_WINDOW_WIDTH));
-	glUniform1i(WindowHeightLocation, glutGet(GLUT_WINDOW_HEIGHT));
+	glUniform1i(WindowWidthLocation, width);
+	glUniform1i(WindowHeightLocation, height);
 
 	// Set camera parameters
 	scene->getCamera()->setAspectRatio((1.0f * width) / height);
