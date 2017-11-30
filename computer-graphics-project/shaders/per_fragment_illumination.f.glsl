@@ -48,6 +48,9 @@ in vec3 view_dir;
 
 in vec3 view_dir_nn;
 
+//TODO
+in vec4 temp_world_pos;
+
 in vec4 cur_camera_position;
 
 // Per-frgament output color
@@ -74,7 +77,19 @@ float rand(vec2 seed) {
 
 void main() {
 
+	//vec4 texture = vec4(0.8,0.8,0.8,1.0);
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
+
+	FragColor = vec4(cur_tex_coords.s, cur_tex_coords.t,0.0,0.0);
+	FragColor = texture;
+
+	//FragColor = vec4(cur_tex_coords.s, cur_tex_coords.t, 0.0, 0.0);
+	if (cur_tex_coords.s > 0.9) {
+		//FragColor = vec4(0.0,0.0,1.0, 0.0);
+	}
+	//FragColor = temp_world_pos;
+
+	return;
 
 	material_d_color_2 = (material_texture_intensity * texture.xyz) + ((1-material_texture_intensity) * material_d_color);
 	material_a_color_2 = (material_texture_intensity * texture.xyz) + ((1-material_texture_intensity) * material_a_color);
@@ -82,7 +97,7 @@ void main() {
 	vec3 directionalLight = computeDirectionalLight();
 	vec3 headlight = computeHeadlight();
 	vec3 color = directionalLight + headlight;
-	
+
 	FragColor = vec4(color, 1.0);
 
 
@@ -145,6 +160,19 @@ void main() {
 		// Normal Highlight Shader
 		FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
 	}
+
+	if (temp_world_pos.x > 0) {
+		//FragColor = FragColor + vec4(0.0,1.0,0.0,0.0); // green
+	} 
+
+	if (temp_world_pos.z > 0) {
+		//FragColor = FragColor + vec4(0.0,0.0,1.0,0.0); // blue
+	}
+
+	if (temp_world_pos.y > 0) {
+		//FragColor = FragColor + vec4(1.0,0.0,0.0,0.0); // red
+	}
+	//FragColor = 
 
 }
 

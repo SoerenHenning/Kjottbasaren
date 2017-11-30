@@ -22,6 +22,8 @@ void Scene::resetCamera() {
 void Scene::createCamera() {
 	Vector3f position = Vector3f(-1.3f, 0.5f, 0.6f);
 	Vector3f target = Vector3f(0.8f, -0.4f, -0.4f);
+	//Vector3f position = Vector3f(-1000.3f, 1000.5f, 1000.6f);
+	//Vector3f target = Vector3f(0.8f, -0.4f, -0.4f);
 	this->camera = new Camera(position, target);
 	//TODO do this for this->cameras.at(0)
 }
