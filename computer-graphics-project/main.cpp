@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 	//house->translation.set(0.0f, 0.0f, 0.0f);
 	//scene->models.push_back(house);
 
-	Model* ground = new Model("models\\ground2.obj", false, false);
+	Model* ground = new Model("models\\ground.obj", false, false);
 	ground->scaling = 0.5f;
 	ground->translation.set(0.0f, -0.23f, 0.0f);
 	//scene->models.push_back(ground);
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 	//terrain->scaling = 0.0000886328417f;
 	//terrain->translation.set(-297873.469f, -336.940491f, -6700385.00f); //292811 //6694732
 	//offset: -297873.469 -336.940491 -6700385.00
-	// scaling factor: 8.86328417e-05
+	//scaling factor: 8.86328417e-05
 	//scene->models.push_back(terrain);
 
 	Model* skybox = new Model("models\\skybox.obj", false, false);
