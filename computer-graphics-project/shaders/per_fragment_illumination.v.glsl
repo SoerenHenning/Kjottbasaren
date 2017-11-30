@@ -60,17 +60,12 @@ vec3 cur_camera_position;
 
 void main() {
 	// transform the vertex
-	vec4 world_position = model_transformation * vec4(position, 1.);
-    gl_Position = transformation * world_position;
+	vec4 world_position = model_transformation * vec4(position.x, position.y, position.z, 1.);
+    world_position = vec4(-world_position.x ,world_position.y,world_position.z,world_position.w);
+	gl_Position = transformation * world_position;
 	//gl_Position = vec4(1.0,1.0,1.0,0.0);
-	//gl_Position = gl_Position - vec4(292811.0,1.0,6694732.0,0.0);
-	//gl_Position = gl_Position * 0.001;
-
-	if (gl_Position.x > 10000) {
-		temp_world_pos = vec4(1.0,0.0,0.0,0.0);
-	} else {
-		temp_world_pos = vec4(0.0,1.0,0.0,0.0);
-	}
+	//gl_Position = gl_Position - vec4(1.0,0.0,0.0,0.0);
+	//gl_Position = gl_Position * vec4(0.01,0.01,0.01,0.0);
 
 	//TODO
 	temp_world_pos = world_position;

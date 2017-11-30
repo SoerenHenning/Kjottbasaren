@@ -83,10 +83,7 @@ void main() {
 	FragColor = vec4(cur_tex_coords.s, cur_tex_coords.t,0.0,0.0);
 	FragColor = texture;
 
-	//FragColor = vec4(cur_tex_coords.s, cur_tex_coords.t, 0.0, 0.0);
-	if (cur_tex_coords.s > 0.9) {
-		//FragColor = vec4(0.0,0.0,1.0, 0.0);
-	}
+
 	//FragColor = temp_world_pos;
 
 	return;

@@ -40,16 +40,18 @@ int main(int argc, char **argv) {
 	//scene->models.push_back(ground);
 
 	//Model* terrain = new Model("models\\terrain_mod.obj", false, false);
-	//Model* terrain = new Model("models\\terrain_mod.obj", false, false);
+	Model* terrain = new Model("models\\terrain_mod.obj", true, false);
+	terrain->scaling = 20.0f;
+	//terrain->rotationX = Matrix4f::createRotation(90.0f, Vector3f(0.f, 1.f, 0.f));
 	//terrain->scaling = 0.0000886328417f;
 	//terrain->translation.set(-297873.469f, -336.940491f, -6700385.00f); //292811 //6694732
 	//offset: -297873.469 -336.940491 -6700385.00
 	//scaling factor: 8.86328417e-05
-	//scene->models.push_back(terrain);
+	scene->models.push_back(terrain);
 
 	Model* skybox = new Model("models\\skybox.obj", false, false);
 	skybox->scaling = 10.0f;
-	//skybox->translation.set(0.0f, -0.23f, 0.0f);
+	skybox->translation.set(0.0f, -5.0f, 0.0f);
 	scene->models.push_back(skybox);
 
 	Renderer renderer = Renderer(scene);

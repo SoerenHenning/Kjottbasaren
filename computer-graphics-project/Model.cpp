@@ -21,5 +21,9 @@ Model::~Model() {
 }
 
 Matrix4f Model::getTransformation() {
+	Matrix4f ref = Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, -1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
 	return Matrix4f::createTranslation(translation) * rotationX * rotationY * Matrix4f::createScaling(scaling, scaling, scaling);
 }
