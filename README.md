@@ -9,7 +9,7 @@ Developed by Sören Henning and Zach Litzinger
 * Optional fog
 * Colors per height
 * **Important:** Project has to be compiled for **x64**. Otherwise not all textures are loaded properly.
-* Starting takes some time due to the 
+* Starting takes some time due to the large terrain file
 
 ## Features
 
