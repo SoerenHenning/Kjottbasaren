@@ -209,31 +209,30 @@ void Renderer::idle() {
 		cout << "delta " << delta << endl;
 		Vector3f bez;
 		
-		if (curve == 1) {
+		if (curve == 0) {
 			bez = bezier(delta,
-				Vector3f(6.0f, 1.0f, -2.0f),
-				Vector3f(6.5f, 1.0f, -12.0f),
-				Vector3f(-8.0f, 1.0f, -12.0f),
-				Vector3f(-6.0f, 1.0f, 4.0f));
-		}
-		else if (curve == 0) {
-			bez = bezier(delta,
-				Vector3f(1.0f, 1.0f, -2.0f),
+				Vector3f(1.0f, 0.0f, -2.0f),
 				Vector3f(1.0f, -1.5f, 6.5f),
 				Vector3f(4.5f, -1.5f, 8.5f),
 				Vector3f(6.0f, 1.0f, -2.0f));
+		} else if (curve == 1) {
+			bez = bezier(delta,
+				Vector3f(6.0f, 1.0f, -2.0f),
+				Vector3f(6.5f, 2.5f, -12.0f),
+				Vector3f(-10.0f, 2.0f, -12.0f),
+				Vector3f(-10.0f, 2.0f, 4.0f));
 		} else if (curve == 2) {
 			bez = bezier(delta,
-				Vector3f(-6.0f, 1.0f, 4.0f),
-				Vector3f(-5.0f, 1.0f, 12.0f),
-				Vector3f(8.0f, 1.0f, 6.0f),
-				Vector3f(8.0f, 1.0f, -2.0f));
+				Vector3f(-10.0f, 2.0f, 4.0f),
+				Vector3f(-10.0f, 2.0f, 14.0f),
+				Vector3f(8.0f, 1.5f, 10.0f),
+				Vector3f(8.0f, 1.5f, -2.0f));
 		} else if (curve == 3) {
 			bez = bezier(delta,
-				Vector3f(8.0f, 1.0f, -2.0f),
-				Vector3f(8.0f, 1.0f, -14.0f),
-				Vector3f(1.0f, 1.0f, -6.0f),
-				Vector3f(1.0f, 1.0f, -2.0f));
+				Vector3f(8.0f, 1.5f, -2.0f),
+				Vector3f(8.0f, 1.5f, -14.0f),
+				Vector3f(1.0f, 1.5f, -10.5f),
+				Vector3f(1.0f, 0.0f, -2.0f));
 		}
 		//House: (3.22128,-1.09454,4.39865)
 		scene->camera->position = bez;
