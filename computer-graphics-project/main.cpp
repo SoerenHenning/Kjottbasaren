@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 	
 	Model* skybox = new Model("models\\skybox.obj", false, false);
 	skybox->translation.set(0.0f, -2.5f, 0.0f); //TODO
-	skybox->scaling = 40.0f;
+	skybox->scaling = 20.0f;
 	scene->models.push_back(skybox);
 
 	Renderer renderer = Renderer(scene);

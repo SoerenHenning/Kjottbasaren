@@ -248,22 +248,22 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 		scene->worldRotation.identity();
 		break;
 	case 'w':
-		scene->getCamera()->moveForward(0.1f);
+		scene->getCamera()->moveForward(0.05f);
 		break;
 	case 'a':
-		scene->getCamera()->moveRight(-0.1f);
+		scene->getCamera()->moveRight(-0.05f);
 		break;
 	case 's':
-		scene->getCamera()->moveForward(-0.1f);
+		scene->getCamera()->moveForward(-0.05f);
 		break;
 	case 'd':
-		scene->getCamera()->moveRight(0.1f);
+		scene->getCamera()->moveRight(0.05f);
 		break;
 	case 'c':
-		scene->getCamera()->moveUp(-0.1f);
+		scene->getCamera()->moveUp(-0.05f);
 		break;
 	case ' ':
-		scene->getCamera()->moveUp(0.1f);
+		scene->getCamera()->moveUp(0.05f);
 		break;
 	case 'n':	// Increase field of view
 		scene->getCamera()->increaseFieldOfView(1.f);

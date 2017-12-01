@@ -39,6 +39,8 @@ uniform vec3 material_s_color;
 uniform float material_shininess;
 uniform float material_texture_intensity;
 
+uniform int model_id;
+
 // Per fragment texture coordinates
 in vec2 cur_tex_coords;
 
@@ -79,25 +81,61 @@ void main() {
 
 	//vec4 texture = vec4(0.8,0.8,0.8,1.0);
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
-
-	FragColor = vec4(cur_tex_coords.s, cur_tex_coords.t,0.0,0.0);
-	FragColor = texture;
+	
+	//FragColor = texture;
 
 	//
-	/*
+	
 	//temp_world_pos
-	if (temp_world_pos.y > 1.0) {
-		//vec4(0.5, 0.8, 0.0, 0.5) //133, 218, 1
+	if (model_id == 2) {
+		texture = vec4(0.2, 0.6, 0.9, 0.0);
+		if (temp_world_pos.y > -1.18) {
+			texture = vec4(0.5, 0.85, 0.0, 0.0);
+		}
+		if (temp_world_pos.y > -1.0) {
+			texture = vec4(0.8, 0.95, 0.2, 0.0);
+		}
+		if (temp_world_pos.y > -0.8) {
+			texture = vec4(0.9, 1.0, 0.4, 0.0);
+		}
+		if (temp_world_pos.y > -0.6) {
+			texture = vec4(1.0, 1.0, 0.5, 0.0);
+		}
+		if (temp_world_pos.y > -0.4) {
+			texture = vec4(1.0, 0.9, 0.3, 0.0);
+		}
+		if (temp_world_pos.y > -0.2) {
+			texture = vec4(1.0, 0.7, 0.0, 0.0);
+		}
+		if (temp_world_pos.y > 0.0) {
+			texture = vec4(0.9, 0.6, 0.0, 0.0);
+		}
+		if (temp_world_pos.y > 0.2) {
+			texture = vec4(0.8, 0.4, 0.0, 0.0);
+		}
+		if (temp_world_pos.y > 0.4) {
+			texture = vec4(0.65, 0.35, 0.0, 0.0);
+		}
+		if (temp_world_pos.y > 0.6) {
+			texture = vec4(0.5, 0.3, 0.0, 0.0);
+		}
+		if (temp_world_pos.y > 0.8) {
+			texture = vec4(0.4, 0.25, 0.0, 0.0);
+		}
+		if (temp_world_pos.y > 1.0) {
+			texture = vec4(0.3, 0.2, 0.0, 0.0);
+		}
 	}
+	
 	//vec4(0.9, 1.0, 0.4) //231 255 100
 	//253 224 100
 	//240 142 0
-	*/
+	
 
 
 	//FragColor = temp_world_pos;
 
-	return;
+	//return;
 
 	material_d_color_2 = (material_texture_intensity * texture.xyz) + ((1-material_texture_intensity) * material_d_color);
 	material_a_color_2 = (material_texture_intensity * texture.xyz) + ((1-material_texture_intensity) * material_a_color);
@@ -107,38 +145,6 @@ void main() {
 	vec3 color = directionalLight + headlight;
 
 	FragColor = vec4(color, 1.0);
-
-
-
-	/*
-	// Some temporary code for gausisan blur
-	float offset[5] = float[]( 0.0, 1.0, 2.0, 3.0, 4.0 );
-	float weight[5] = float[]( 0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162 );
-	if (material_texture_intensity) {
-		vec4 blur_color = texture2D( sampler, cur_tex_coords.st * weight[0]);
-		for (int i=1; i<5; i++) {
-			blur_color += texture2D( sampler, ( cur_tex_coords.st+vec2(0.0, offset[i]) )) * weight[i];
-			blur_color += texture2D( sampler, ( cur_tex_coords.st-vec2(0.0, offset[i]) ) ) * weight[i];
-		}
-		
-		blur_color = texture2D( sampler, cur_tex_coords.st * 0.1);
-		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 1.0) )) * 0.1;
-		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 2.0) )) * 0.1;
-		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 3.0) )) * 0.1;
-		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 4.0) )) * 0.1;
-		blur_color += texture2D( sampler, (cur_tex_coords.st + vec2(0.0, 5.0) )) * 0.1;
-		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 1.0) )) * 0.1;
-		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 2.0) )) * 0.1;
-		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 3.0) )) * 0.1;
-		blur_color += texture2D( sampler, (cur_tex_coords.st - vec2(0.0, 4.0) )) * 0.1;
-		
-		FragColor = blur_color;
-		//FragColor = texture2D(sampler, cur_tex_coords.st);
-	} else {
-		FragColor = vec4(color, 1.0); //TODO
-	}
-	*/
-	
 	
 	if (shading_effect == 1) {
 		// Foggy Shader
