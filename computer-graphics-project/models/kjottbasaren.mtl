@@ -1,4 +1,3 @@
-# Blender MTL File: 'FinalBuilding.blend'
 # Material Count: 5
 
 newmtl Brick
@@ -11,6 +10,7 @@ Ke 0.000000 0.000000 0.000000
 d 1.000000
 illum 2
 map_Kd textures\\brick.png
+#map_Kd textures\\brick_orig.png
 
 newmtl Cement
 Ns 96.078431
@@ -22,6 +22,7 @@ Ke 0.000000 0.000000 0.000000
 d 1.000000
 illum 2
 map_Kd textures\\lightstone.png
+#map_Kd textures\\lightstone_orig.png
 #map_Kd -s 50.000000 50.000000 1.000000 textures\\lightstone.jpg
 
 newmtl CopperOxide
@@ -46,6 +47,7 @@ Ke 0.000000 0.000000 0.000000
 d 1.000000
 illum 2
 map_Kd textures\\roof_tiles.png
+#map_Kd textures\\roof_tiles_orig.png
 
 newmtl Window
 Ns 96.078431

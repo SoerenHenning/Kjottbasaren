@@ -29,36 +29,28 @@ int main(int argc, char **argv) {
 	scene->headlight.intensityKLinear = 0.f;
 	scene->headlight.intensitySquare = 0.5f;
 
-	//Model* house = new Model("models\\kjottbasaren.obj", false, false);
-	//house->scaling = 0.01f;
-	//house->translation.set(0.0f, 0.0f, 0.0f);
-	//scene->models.push_back(house);
+	Model* house = new Model("models\\kjottbasaren.obj", false, false);
+	house->scaling = 0.008f;
+	house->translation.set(-3.15f, -1.15f, 4.1f);
+	house->rotationX = Matrix4f::createRotation(27.5f, Vector3f(0.f, 1.f, 0.f));
+	scene->models.push_back(house);
 
 	Model* ground = new Model("models\\ground.obj", false, false);
-	ground->scaling = 0.04f; //TODO 0.5 before
+	ground->scaling = 0.04f;
 	//ground->translation.set(-3.0f, -1.18f, 4.0f); //good
 	ground->translation.set(-3.15f, -1.18f, 4.1f); //better
 	ground->rotationX = Matrix4f::createRotation(27.5f, Vector3f(0.f, 1.f, 0.f));
 	scene->models.push_back(ground);
-
-	//Model* terrain = new Model("models\\terrain_mod.obj", false, false);
-	//terrain->scaling = 0.0000886328417f;
-	//terrain->translation.set(-297873.469f, -336.940491f, -6700385.00f); //292811 //6694732
-	//offset: -297873.469 -336.940491 -6700385.00
-	//scaling factor: 8.86328417e-05
-
 	
 	Model* terrain = new Model("models\\terrain_mod.obj", true, false);
 	terrain->scaling = 40.0f;
 	terrain->rotationX = Matrix4f::createRotation(90.0f, Vector3f(0.f, 1.f, 0.f));
 	scene->models.push_back(terrain);
 	
-	/*
 	Model* skybox = new Model("models\\skybox.obj", false, false);
 	skybox->translation.set(0.0f, -2.5f, 0.0f); //TODO
 	skybox->scaling = 40.0f;
 	scene->models.push_back(skybox);
-	*/
 
 	Renderer renderer = Renderer(scene);
 	return renderer.render(argc, argv);
