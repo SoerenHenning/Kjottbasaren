@@ -29,6 +29,8 @@ uniform float p_light_s_intensity;
 uniform mat4 model_transformation;
 uniform mat4 model_normals_transformation;
 
+uniform int model_id;
+
 // Object material
 uniform vec3 material_a_color;
 uniform vec3 material_d_color;
@@ -61,6 +63,9 @@ vec3 cur_camera_position;
 void main() {
 	// transform the vertex
 	vec4 world_position = model_transformation * vec4(position.x, position.y, position.z, 1.);
+	if (model_id == 1) {
+		//world_position += vec4(-3.0,-0.97,3.5,0.0);
+	}
     world_position = vec4(-world_position.x ,world_position.y,world_position.z,world_position.w); // Reflect on x-axis
 
 	gl_Position = transformation * world_position;

@@ -53,6 +53,7 @@ class Renderer {
 	GLint CameraTransformationLocation = -1; // Reference to the model-view matrix uniform variable
 	GLint ModelTransformationLocation = -1;
 	GLint ModelNormalsTransformationLocation = -1;
+	GLint ModelIdLocation = -1;
 	GLint SamplerLocation = -1;	// Reference to the texture sampler uniform variable
 	//GLint TimeLocation = -1;	// Reference to the time uniform variable
 
@@ -87,6 +88,10 @@ class Renderer {
 
 	// Clock
 	clock_t Timer;
+
+	//TODO
+	float delta = 0.0f;
+	int curve = 0;
 
 	// Shading effect
 	int shadingEffect = 0;

@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "lodepng.h"
+#include <math.h> 
 
 
 Renderer *Renderer::instance = NULL;
@@ -118,12 +119,14 @@ void Renderer::display() {
 	glEnableVertexAttribArray(2); //normals
 
 	// Draw the models
+	int index = 0;
 	for (auto const& model : scene->models) {
 
 		Matrix4f modelTransformation = model->getTransformation();
 		Matrix4f modelNormalsTransformation =  modelTransformation.getInverse().getTransposed();
 		glUniformMatrix4fv(ModelTransformationLocation, 1, GL_FALSE, modelTransformation.get());
 		glUniformMatrix4fv(ModelNormalsTransformationLocation, 1, GL_FALSE, modelNormalsTransformation.get());
+		glUniform1i(ModelIdLocation, index);
 
 		GLuint vertexBufferObject = vertexBufferObjects[model];
 		GLuint indexBufferObject = indexBufferObjects[model];
@@ -148,7 +151,7 @@ void Renderer::display() {
 			const ModelOBJ::Material *material = mesh->pMaterial;
 
 			//glUniform1i(SamplerLocation, 0);
-
+			
 			glUniform3f(MaterialAColorLoc, material->ambient[0], material->ambient[1], material->ambient[2]);
 			glUniform3f(MaterialDColorLoc, material->diffuse[0], material->diffuse[1], material->diffuse[2]);
 			glUniform3f(MaterialSColorLoc, material->specular[0], material->specular[1], material->specular[2]);
@@ -167,7 +170,7 @@ void Renderer::display() {
 			// Draw the elements on the GPU
 			glDrawElements(GL_TRIANGLES, mesh->triangleCount * 3, GL_UNSIGNED_INT, (void*) (mesh->startIndex * sizeof(GLuint)));
 		}
-
+		index++;
 	}
 
 	// Disable the vertex attributes (not necessary but recommended)
@@ -182,15 +185,59 @@ void Renderer::display() {
 	glutSwapBuffers();
 }
 
+Vector3f bezier(float u, Vector3f p0, Vector3f p1, Vector3f p2, Vector3f p3) {
+	float oneMinusU3 = (1 - u) * (1 - u) * (1 - u);
+	float oneMinusU2 = (1 - u) * (1 - u);
+	float oneMinusU = (1 - u);
+	float u2 = u * u;
+	float u3 = u * u * u;
+	return (p0 * oneMinusU3) + (p1 * 3 * u * oneMinusU2) + (p2 * 3 * u2 * oneMinusU) + (p3 * u3);
+}
+
 void Renderer::idle() {
 	clock_t now = clock();
 	if (scene->rotating) {
-		for (auto const& model : scene->models) {
-			model->rotationX *= Matrix4f::createRotation(-10.f * (now - Timer) / CLOCKS_PER_SEC, Vector3f(0.f, 1.f, 0.f));
+		float velocity = 0.1;
+		delta += velocity * (now - Timer) / CLOCKS_PER_SEC;
+		if (delta > 1) {
+			int offset = delta / 1;
+			curve += offset;
+			delta = delta - (float) offset;
 		}
+		curve = curve % 4;
+		cout << "curve " << curve << endl;
+		cout << "delta " << delta << endl;
+		Vector3f bez;
+		
+		if (curve == 1) {
+			bez = bezier(delta,
+				Vector3f(6.0f, 1.0f, -2.0f),
+				Vector3f(6.5f, 1.0f, -12.0f),
+				Vector3f(-8.0f, 1.0f, -12.0f),
+				Vector3f(-6.0f, 1.0f, 4.0f));
+		}
+		else if (curve == 0) {
+			bez = bezier(delta,
+				Vector3f(1.0f, 1.0f, -2.0f),
+				Vector3f(1.0f, -1.5f, 6.5f),
+				Vector3f(4.5f, -1.5f, 8.5f),
+				Vector3f(6.0f, 1.0f, -2.0f));
+		} else if (curve == 2) {
+			bez = bezier(delta,
+				Vector3f(-6.0f, 1.0f, 4.0f),
+				Vector3f(-5.0f, 1.0f, 12.0f),
+				Vector3f(8.0f, 1.0f, 6.0f),
+				Vector3f(8.0f, 1.0f, -2.0f));
+		} else if (curve == 3) {
+			bez = bezier(delta,
+				Vector3f(8.0f, 1.0f, -2.0f),
+				Vector3f(8.0f, 1.0f, -14.0f),
+				Vector3f(1.0f, 1.0f, -6.0f),
+				Vector3f(1.0f, 1.0f, -2.0f));
+		}
+		//House: (3.22128,-1.09454,4.39865)
+		scene->camera->position = bez;
 	}
-	//TODO preparation for new assignment
-	//scene->camera->drive(0.1f * (now - Timer) / CLOCKS_PER_SEC);
 	Timer = now;
 	glutPostRedisplay();
 }
@@ -530,6 +577,7 @@ bool Renderer::initShaders() {
 	CameraTransformationLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	ModelTransformationLocation = glGetUniformLocation(ShaderProgram, "model_transformation");
 	ModelNormalsTransformationLocation = glGetUniformLocation(ShaderProgram, "model_normals_transformation");
+	ModelIdLocation = glGetUniformLocation(ShaderProgram, "model_id");
 	SamplerLocation = glGetUniformLocation(ShaderProgram, "transformation");
 	//TimeLocation = glGetUniformLocation(ShaderProgram, "time");
 

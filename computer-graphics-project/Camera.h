@@ -24,7 +24,7 @@ class Camera {
 	float distance = 2.0; //TODO temp
 
 	public:
-		Camera(Vector3f, Vector3f);
+		Camera(Vector3f, Vector3f, Vector3f);
 		~Camera();
 		Vector3f getPosition();
 		void moveForward(float);

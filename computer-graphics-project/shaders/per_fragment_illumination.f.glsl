@@ -83,6 +83,17 @@ void main() {
 	FragColor = vec4(cur_tex_coords.s, cur_tex_coords.t,0.0,0.0);
 	FragColor = texture;
 
+	//
+	/*
+	//temp_world_pos
+	if (temp_world_pos.y > 1.0) {
+		//vec4(0.5, 0.8, 0.0, 0.5) //133, 218, 1
+	}
+	//vec4(0.9, 1.0, 0.4) //231 255 100
+	//253 224 100
+	//240 142 0
+	*/
+
 
 	//FragColor = temp_world_pos;
 
@@ -156,6 +167,11 @@ void main() {
 	} else if (shading_effect == 6) {
 		// Normal Highlight Shader
 		FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
+	} else if (shading_effect == 7) {
+		//temp_world_pos
+		if (temp_world_pos.y > 1.0) {
+			//vec4()
+		}
 	}
 
 	if (temp_world_pos.x > 0) {

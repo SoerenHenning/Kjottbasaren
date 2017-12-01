@@ -2,10 +2,11 @@
 #include <algorithm>
 #include <cmath>
 
-Camera::Camera(Vector3f position, Vector3f target) {
+Camera::Camera(Vector3f position, Vector3f target, Vector3f up) {
 	this->position = position;
 	this->target = target;
-	this->up = target.cross(Vector3f(0.0, 1.0, 0.0)).cross(target);
+	//this->up = target.cross(Vector3f(0.0, 1.0, 0.0)).cross(target);
+	this->up = up;
 
 	this->fieldOfView = 30.f;
 	this->aspectRatio = 1.f;
