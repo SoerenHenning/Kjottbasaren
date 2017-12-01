@@ -3,13 +3,13 @@
 Developed by Sören Henning and Zach Litzinger
 
 ## New Features
-
-* Textures and material properties imported from .mtl files
-* Automatical rotation of models
-* Changeable mix of material properties and textures
-* Various shading methods and effects (fog, black and white, linocut (similiar to toon), noise, vignette, normal highlighting)
-foggy shading (*per vertex illumination*)
+* Terrain of Bergen, transformed to an .obj file (`terrain-importer/main.kt`)
+* Automatic navigation using composite Bezier curves
+* Skybox
+* Optional fog
+* Colors per height
 * **Important:** Project has to be compiled for **x64**. Otherwise not all textures are loaded properly.
+* Starting takes some time due to the 
 
 ## Features
 
@@ -18,7 +18,10 @@ foggy shading (*per vertex illumination*)
 * Direction sunlight
 * Headlight on top of the camera, modelled as a point light source with decreasing intensity
 * Perspective and orthographic projection (no depth information in orthographic projection due to fact how orthographic projection is)
-* Per fragment shading with various effects
+* Per fragment shading with various effects (fog, black and white, linocut (similiar to toon), noise, vignette, normal highlighting, colors per height)
+* Adjustable mix of material properties and textures
+* Objects imported as .obj files
+* Textures and material properties imported from .mtl files
 
 ## Navigation
 
