@@ -47,7 +47,7 @@ Dragging with right mouse button: Move forward, right, left and backwards
 
 `r`: Reset camera
 
-`v`: Toggle automatic rotation of models
+`v`: Toggle automatic camera movement
 
 `k`: Change texture intensity (0% - 100%)
 
@@ -70,6 +70,8 @@ Dragging with right mouse button: Move forward, right, left and backwards
 `6`: Switch to vignette shading (*per fragment illumination*)
 
 `7`: Switch to normal highlight shading (face normals are mapped to colors, useful for debugging) (*per fragment illumination*)
+
+`8`: Switch to height colors shading (*per fragment illumination*)
 
 `l`: Reload shaders
 
