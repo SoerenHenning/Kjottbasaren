@@ -23,9 +23,9 @@ void Scene::createCamera() {
 	//Vector3f position = Vector3f(2.53905f, 4.28667f, 2.92679f);
 	//Vector3f target = Vector3f(0.0240572f, -0.976084f, 0.0122761f);
 	//Vector3f up = Vector3f(-0.778f, -0.024f, -0.397f);
-	Vector3f position = Vector3f(2.37184f, -0.914339f, 4.34706f);
-	Vector3f target = Vector3f(0.901244f, -0.227319f, -0.257842f);
-	Vector3f up = Vector3f(0.195412f, 0.838858f, -0.0559066f);
+	Vector3f position = Vector3f(2.67681f, -1.03519f, 4.25476f);
+	Vector3f target = Vector3f(0.91423f, -0.0919894f, -0.292922f);
+	Vector3f up = Vector3f(0.0782333f, 0.859065f, -0.0250662f);
 	this->camera = new Camera(position, target, up);
 }
 

@@ -34,7 +34,7 @@ struct Scene {
 	std::vector<Model*> models;
 	Vector3f backgroundColor;
 	Matrix4f worldRotation; //TODO remove
-	bool rotating; // camera movement
+	bool rotating = true; // camera movement
 	float textureIntensity;
 	DirectionalLight sunlight;
 	PointLight headlight;

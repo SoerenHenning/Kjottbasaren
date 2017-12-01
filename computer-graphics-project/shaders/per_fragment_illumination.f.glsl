@@ -140,7 +140,11 @@ void main() {
 	if (model_id != 3) {
 		FragColor = vec4(color, 1.0);
 	} else {
-		FragColor = texture;
+		if (d_light_a_intensity == 0) {
+			FragColor = texture * vec4(0.3, 0.25, 0.2, 0.0);
+		} else {
+			FragColor = texture;
+		}
 	}
 	
 	if (shading_effect == 1) {
@@ -248,7 +252,8 @@ vec3 computeHeadlight() {
 	p_reflected_dir_nn = normalize(p_reflected_dir_nn); 
 
 	float distance = length(p_light_dir);
-	float distance_intensity = p_light_d_intensity_k_const + (p_light_d_intensity_k_linear * distance) + (p_light_d_intensity_k_square * distance * distance);
+	float sunlightReducer = (d_light_a_intensity != 0) ? 3 : 1;
+	float distance_intensity = sunlightReducer * (p_light_d_intensity_k_const + (p_light_d_intensity_k_linear * distance) + (p_light_d_intensity_k_square * distance * distance));
 
 	// compute the color contribution
 	vec3 amb_color = clamp(

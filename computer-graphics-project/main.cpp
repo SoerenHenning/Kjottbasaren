@@ -26,8 +26,8 @@ int main(int argc, char **argv) {
 	scene->headlight.diffuseIntensity = 1.f;
 	scene->headlight.specularIntensity = 1.f;
 	scene->headlight.intensityKConst = 0.f;
-	scene->headlight.intensityKLinear = 0.2f;
-	scene->headlight.intensitySquare = 0.2f;
+	scene->headlight.intensityKLinear = 0.4f;
+	scene->headlight.intensitySquare = 0.4f;
 
 	Model* house = new Model("models\\kjottbasaren.obj", false, false);
 	house->scaling = 0.008f;
