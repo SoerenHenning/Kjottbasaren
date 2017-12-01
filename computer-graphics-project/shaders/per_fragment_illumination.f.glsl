@@ -136,8 +136,12 @@ void main() {
 	vec3 directionalLight = computeDirectionalLight();
 	vec3 headlight = computeHeadlight();
 	vec3 color = directionalLight + headlight;
-
-	FragColor = vec4(color, 1.0);
+	
+	if (model_id != 3) {
+		FragColor = vec4(color, 1.0);
+	} else {
+		FragColor = texture;
+	}
 	
 	if (shading_effect == 1) {
 		// Foggy Shader

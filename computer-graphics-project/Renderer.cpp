@@ -193,6 +193,16 @@ Vector3f bezier(float u, Vector3f p0, Vector3f p1, Vector3f p2, Vector3f p3) {
 	float u3 = u * u * u;
 	return (p0 * oneMinusU3) + (p1 * 3 * u * oneMinusU2) + (p2 * 3 * u2 * oneMinusU) + (p3 * u3);
 }
+Vector3f bezierDir(float u, Vector3f p0, Vector3f p1, Vector3f p2, Vector3f p3) {
+	float oneMinusU3 = (1 - u) * (1 - u) * (1 - u);
+	float oneMinusU2 = (1 - u) * (1 - u);
+	float oneMinusU = (1 - u);
+	float u2 = u * u;
+	float u3 = u * u * u;
+	return (p0 * oneMinusU2 * -3) + (p1 * 3 * oneMinusU2) + (p2 * 3 * u * oneMinusU) + (p3 * u3);
+}
+//dP(t) / dt = -3(1 - t) ^ 2 * P0 + 3(1 - t) ^ 2 * P1 - 6t(1 - t) * P1 - 3t ^ 2 * P2 + 6t(1 - t) * P2 + 3t ^ 2 * P3
+
 
 void Renderer::idle() {
 	clock_t now = clock();
@@ -206,6 +216,7 @@ void Renderer::idle() {
 		}
 		curve = curve % 4;
 		Vector3f bez;
+		Vector3f target = Vector3f(1.0f, 0.3f, 1.0f);
 		
 		if (curve == 0) {
 			bez = bezier(delta,
@@ -213,6 +224,7 @@ void Renderer::idle() {
 				Vector3f(1.0f, -1.5f, 6.5f),
 				Vector3f(4.5f, -1.5f, 8.5f),
 				Vector3f(6.0f, 1.0f, -2.0f));
+			target = Vector3f(3.12f, -1.12f, -4.09f) - bez;
 		} else if (curve == 1) {
 			bez = bezier(delta,
 				Vector3f(6.0f, 1.0f, -2.0f),
@@ -234,6 +246,8 @@ void Renderer::idle() {
 		}
 		//House: (3.22128,-1.09454,4.39865)
 		scene->camera->position = bez;
+		//scene->camera->target = target;
+		//scene->camera->up = target.cross(Vector3f(0.0, 1.0, 0.0)).cross(target);
 	}
 	Timer = now;
 	glutPostRedisplay();
@@ -243,6 +257,8 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 	switch (tolower(key)) {
 	case 'r': // Reset camera status
 		scene->resetCamera();
+		delta = 0.0f;
+		curve = 0;
 		scene->worldRotation.identity();
 		break;
 	case 'w':

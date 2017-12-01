@@ -89,7 +89,7 @@ class Renderer {
 	// Clock
 	clock_t Timer;
 
-	//TODO
+	// Camera Path
 	float delta = 0.0f;
 	int curve = 0;
 

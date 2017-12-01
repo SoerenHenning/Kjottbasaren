@@ -12,8 +12,8 @@ int main(int argc, char **argv) {
 	//scene->sunlight.ambientColor = Vector3f(0.3f, 0.3f, 0.3f);
 	//scene->sunlight.diffuseColor = Vector3f(0.7f, 0.7f, 0.7f);
 	//scene->sunlight.specularColor = Vector3f(0.4f, 0.4f, 0.4f);
-	scene->sunlight.ambientColor = Vector3f(0.8f, 0.8f, 0.8f);
-	scene->sunlight.diffuseColor = Vector3f(0.1f, 0.1f, 0.1f);
+	scene->sunlight.ambientColor = Vector3f(0.6f, 0.6f, 0.5f);
+	scene->sunlight.diffuseColor = Vector3f(0.3f, 0.3f, 0.3f);
 	scene->sunlight.specularColor = Vector3f(0.1f, 0.1f, 0.1f);
 	scene->sunlight.ambientIntensity = 1.f;
 	scene->sunlight.diffuseIntensity = 1.f;
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 	terrain->scaling = 40.0f;
 	terrain->rotationX = Matrix4f::createRotation(90.0f, Vector3f(0.f, 1.f, 0.f));
 	scene->models.push_back(terrain);
-	
+
 	Model* skybox = new Model("models\\skybox.obj", false, false);
 	skybox->translation.set(0.0f, -2.5f, 0.0f); //TODO
 	skybox->scaling = 20.0f;
