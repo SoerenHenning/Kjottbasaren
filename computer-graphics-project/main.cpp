@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 
 	Model* skybox = new Model("models\\skybox.obj", false, false);
 	skybox->scaling = 10.0f;
-	skybox->translation.set(0.0f, -5.0f, 0.0f);
+	skybox->translation.set(0.0f, -2.5f, 0.0f); //TODO
 	scene->models.push_back(skybox);
 
 	Renderer renderer = Renderer(scene);

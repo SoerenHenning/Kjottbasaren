@@ -44,11 +44,10 @@ int Renderer::render(int argc, char **argv) {
 	// Initialize program variables
 	// OpenGL
 	glClearColor(scene->backgroundColor.x(), scene->backgroundColor.y(), scene->backgroundColor.z(), 0.0f); // background color
-	//TODO uncommented all
-	glEnable(GL_DEPTH_TEST);	        // enable depth ordering
-	glEnable(GL_CULL_FACE);		        // enable back-face culling
-	glFrontFace(GL_CW);		        // vertex order for the front face
-	glCullFace(GL_BACK);		        // back-faces should be removed
+	glEnable(GL_DEPTH_TEST); // enable depth ordering
+	glEnable(GL_CULL_FACE); // enable back-face culling
+	glFrontFace(GL_CW); // vertex order for the front face (because of x-axis reflection in shader)
+	glCullFace(GL_BACK); // back-faces should be removed
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   // draw polygons as wireframe
 	glPolygonMode(GL_FRONT, GL_FILL);   // draw polygons as solid

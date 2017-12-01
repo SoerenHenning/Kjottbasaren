@@ -61,7 +61,8 @@ vec3 cur_camera_position;
 void main() {
 	// transform the vertex
 	vec4 world_position = model_transformation * vec4(position.x, position.y, position.z, 1.);
-    world_position = vec4(-world_position.x ,world_position.y,world_position.z,world_position.w);
+    world_position = vec4(-world_position.x ,world_position.y,world_position.z,world_position.w); // Reflect on x-axis
+
 	gl_Position = transformation * world_position;
 	//gl_Position = vec4(1.0,1.0,1.0,0.0);
 	//gl_Position = gl_Position - vec4(1.0,0.0,0.0,0.0);
