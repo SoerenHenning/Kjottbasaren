@@ -205,8 +205,6 @@ void Renderer::idle() {
 			delta = delta - (float) offset;
 		}
 		curve = curve % 4;
-		cout << "curve " << curve << endl;
-		cout << "delta " << delta << endl;
 		Vector3f bez;
 		
 		if (curve == 0) {
@@ -338,6 +336,10 @@ void Renderer::keyboard(unsigned char key, int x, int y) {
 	case '7':
 		cout << "Switch to normal highlight shading" << endl;
 		shadingEffect = 6;
+		break;
+	case '8':
+		cout << "Switch to height color shading" << endl;
+		shadingEffect = 7;
 		break;
 	case 'l':
 		cout << "Re-loading shaders..." << endl;

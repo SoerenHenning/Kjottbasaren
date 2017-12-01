@@ -50,8 +50,7 @@ in vec3 view_dir;
 
 in vec3 view_dir_nn;
 
-//TODO
-in vec4 temp_world_pos;
+in vec4 cur_world_pos;
 
 in vec4 cur_camera_position;
 
@@ -77,65 +76,59 @@ float rand(vec2 seed) {
     return fract(sin(dot(seed, vec2(12.9898,78.233))) * 43758.5453);
 }
 
+
+vec4 heightColor(float height) {
+	vec4 color = vec4(0.2, 0.6, 0.9, 0.0);
+	if (height > -1.18) {
+		color = vec4(0.5, 0.85, 0.0, 0.0);
+	}
+	if (height > -1.0) {
+		color = vec4(0.8, 0.95, 0.2, 0.0);
+	}
+	if (height > -0.8) {
+		color = vec4(0.9, 1.0, 0.4, 0.0);
+	}
+	if (height > -0.6) {
+		color = vec4(1.0, 1.0, 0.5, 0.0);
+	}
+	if (height > -0.4) {
+		color = vec4(1.0, 0.9, 0.3, 0.0);
+	}
+	if (height > -0.2) {
+		color = vec4(1.0, 0.7, 0.0, 0.0);
+	}
+	if (height > 0.0) {
+		color = vec4(0.9, 0.6, 0.0, 0.0);
+	}
+	if (height > 0.2) {
+		color = vec4(0.8, 0.4, 0.0, 0.0);
+	}
+	if (height > 0.4) {
+		color = vec4(0.65, 0.35, 0.0, 0.0);
+	}
+	if (height > 0.6) {
+		color = vec4(0.5, 0.3, 0.0, 0.0);
+	}
+	if (height > 0.8) {
+		color = vec4(0.4, 0.25, 0.0, 0.0);
+	}
+	if (height > 1.0) {
+		color = vec4(0.3, 0.2, 0.0, 0.0);
+	}
+	return color;
+}
+
 void main() {
 
-	//vec4 texture = vec4(0.8,0.8,0.8,1.0);
 	vec4 texture = texture2D(sampler, cur_tex_coords.st);
 	
-	//FragColor = texture;
-
-	//
-	
-	//temp_world_pos
-	if (model_id == 2) {
-		texture = vec4(0.2, 0.6, 0.9, 0.0);
-		if (temp_world_pos.y > -1.18) {
-			texture = vec4(0.5, 0.85, 0.0, 0.0);
-		}
-		if (temp_world_pos.y > -1.0) {
-			texture = vec4(0.8, 0.95, 0.2, 0.0);
-		}
-		if (temp_world_pos.y > -0.8) {
-			texture = vec4(0.9, 1.0, 0.4, 0.0);
-		}
-		if (temp_world_pos.y > -0.6) {
-			texture = vec4(1.0, 1.0, 0.5, 0.0);
-		}
-		if (temp_world_pos.y > -0.4) {
-			texture = vec4(1.0, 0.9, 0.3, 0.0);
-		}
-		if (temp_world_pos.y > -0.2) {
-			texture = vec4(1.0, 0.7, 0.0, 0.0);
-		}
-		if (temp_world_pos.y > 0.0) {
-			texture = vec4(0.9, 0.6, 0.0, 0.0);
-		}
-		if (temp_world_pos.y > 0.2) {
-			texture = vec4(0.8, 0.4, 0.0, 0.0);
-		}
-		if (temp_world_pos.y > 0.4) {
-			texture = vec4(0.65, 0.35, 0.0, 0.0);
-		}
-		if (temp_world_pos.y > 0.6) {
-			texture = vec4(0.5, 0.3, 0.0, 0.0);
-		}
-		if (temp_world_pos.y > 0.8) {
-			texture = vec4(0.4, 0.25, 0.0, 0.0);
-		}
-		if (temp_world_pos.y > 1.0) {
-			texture = vec4(0.3, 0.2, 0.0, 0.0);
+	if (shading_effect == 7) {
+		// Colors by height
+		if (model_id == 2) {
+			// Only for terrain
+			texture = heightColor(cur_world_pos.y);
 		}
 	}
-	
-	//vec4(0.9, 1.0, 0.4) //231 255 100
-	//253 224 100
-	//240 142 0
-	
-
-
-	//FragColor = temp_world_pos;
-
-	//return;
 
 	material_d_color_2 = (material_texture_intensity * texture.xyz) + ((1-material_texture_intensity) * material_d_color);
 	material_a_color_2 = (material_texture_intensity * texture.xyz) + ((1-material_texture_intensity) * material_a_color);
@@ -174,24 +167,8 @@ void main() {
 		// Normal Highlight Shader
 		FragColor = vec4(((cur_normal/2) + vec3(0.5, 0.5, 0.5)), 1.0);
 	} else if (shading_effect == 7) {
-		//temp_world_pos
-		if (temp_world_pos.y > 1.0) {
-			//vec4()
-		}
+		
 	}
-
-	if (temp_world_pos.x > 0) {
-		//FragColor = FragColor + vec4(0.0,1.0,0.0,0.0); // green
-	} 
-
-	if (temp_world_pos.z > 0) {
-		//FragColor = FragColor + vec4(0.0,0.0,1.0,0.0); // blue
-	}
-
-	if (temp_world_pos.y > 0) {
-		//FragColor = FragColor + vec4(1.0,0.0,0.0,0.0); // red
-	}
-	//FragColor = 
 
 }
 

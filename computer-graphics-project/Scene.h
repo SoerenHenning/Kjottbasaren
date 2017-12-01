@@ -28,12 +28,12 @@ struct Scene {
 		float intensitySquare;
 	};
 
-	Camera* camera; //TODO remove
-	int currentCameraId = 0;
-	std::vector<Camera*> cameras;
+	Camera* camera;
+	int currentCameraId = 0; //TODO remove
+	std::vector<Camera*> cameras; //TODO remove
 	std::vector<Model*> models;
 	Vector3f backgroundColor;
-	Matrix4f worldRotation; //TODO maybe?
+	Matrix4f worldRotation; //TODO remove
 	bool rotating;
 	float textureIntensity;
 	DirectionalLight sunlight;

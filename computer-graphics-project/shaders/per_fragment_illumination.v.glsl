@@ -55,7 +55,7 @@ out vec3 view_dir;
 
 out vec3 view_dir_nn;
 
-out vec4 temp_world_pos;
+out vec4 cur_world_pos;
 
 vec3 cur_camera_position;
 
@@ -67,8 +67,7 @@ void main() {
 
 	gl_Position = transformation * world_position;
 
-	//TODO
-	temp_world_pos = world_position;
+	cur_world_pos = world_position;
 
 	vec4 world_camera_position = vec4(camera_position, 1.);
 	cur_camera_position = world_camera_position.xyz;
@@ -77,6 +76,7 @@ void main() {
 	view_dir_nn = normalize(view_dir);
 
 	vec4 world_normal = model_normals_transformation * vec4(normal, 0.);
+	world_normal = vec4(-world_normal.x ,world_normal.y,world_normal.z,world_normal.w); // Reflect on x-axis
 	cur_normal = normalize(world_normal.xyz);
 
 	// pass the texture coordinates to the fragment shader

@@ -151,8 +151,5 @@ void Camera::printStatus() {
 
 //TODO preparation for new assignment
 void Camera::drive(float delta) {
-	alpha = fmod((alpha + delta), 360.0);
-	float x = cos(alpha + delta) * distance;
-	float z = sin(alpha + delta) * distance;
-	position = Vector3f(x, 0.5f, z);
+	
 }

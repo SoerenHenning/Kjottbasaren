@@ -12,22 +12,22 @@ int main(int argc, char **argv) {
 	//scene->sunlight.ambientColor = Vector3f(0.3f, 0.3f, 0.3f);
 	//scene->sunlight.diffuseColor = Vector3f(0.7f, 0.7f, 0.7f);
 	//scene->sunlight.specularColor = Vector3f(0.4f, 0.4f, 0.4f);
-	scene->sunlight.ambientColor = Vector3f(0.5f, 0.5f, 0.5f);
+	scene->sunlight.ambientColor = Vector3f(0.8f, 0.8f, 0.8f);
 	scene->sunlight.diffuseColor = Vector3f(0.1f, 0.1f, 0.1f);
 	scene->sunlight.specularColor = Vector3f(0.1f, 0.1f, 0.1f);
 	scene->sunlight.ambientIntensity = 1.f;
 	scene->sunlight.diffuseIntensity = 1.f;
 	scene->sunlight.specularIntensity = 1.f;
 
-	scene->headlight.ambientColor = Vector3f(0.2f, 0.1f, 0.0f);
-	scene->headlight.diffuseColor = Vector3f(0.5f, 0.4f, 0.2f);
-	scene->headlight.specularColor = Vector3f(0.6f, 0.6f, 0.7f);
+	scene->headlight.ambientColor = Vector3f(0.2f, 0.2f, 0.2f);
+	scene->headlight.diffuseColor = Vector3f(0.5f, 0.5f, 0.2f);
+	scene->headlight.specularColor = Vector3f(0.4f, 0.4f, 0.4f);
 	scene->headlight.ambientIntensity = 1.f;
 	scene->headlight.diffuseIntensity = 1.f;
 	scene->headlight.specularIntensity = 1.f;
 	scene->headlight.intensityKConst = 0.f;
-	scene->headlight.intensityKLinear = 0.f;
-	scene->headlight.intensitySquare = 0.5f;
+	scene->headlight.intensityKLinear = 0.2f;
+	scene->headlight.intensitySquare = 0.2f;
 
 	Model* house = new Model("models\\kjottbasaren.obj", false, false);
 	house->scaling = 0.008f;
@@ -37,8 +37,7 @@ int main(int argc, char **argv) {
 
 	Model* ground = new Model("models\\ground.obj", false, false);
 	ground->scaling = 0.04f;
-	//ground->translation.set(-3.0f, -1.18f, 4.0f); //good
-	ground->translation.set(-3.15f, -1.18f, 4.1f); //better
+	ground->translation.set(-3.15f, -1.18f, 4.1f);
 	ground->rotationX = Matrix4f::createRotation(27.5f, Vector3f(0.f, 1.f, 0.f));
 	scene->models.push_back(ground);
 	
