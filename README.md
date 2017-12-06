@@ -1,6 +1,6 @@
 # Kjøttbasaren
 
-A simple 3D scene of Bergen, Norway and the Kjøttbasaren with free and automatic navigation. Starting takes some time due to the large terrain file.
+A simple 3D scene of Bergen, Norway and the Kjøttbasaren with manual and automatic navigation and various shading effects. Starting takes some time due to the large terrain file.
 
 Developed by Sören Henning and Zach Litzinger
 
@@ -11,8 +11,8 @@ Developed by Sören Henning and Zach Litzinger
 * Manual navigaton in x, y and z direction
 * Automatic navigation using composite Bezier curves
 * Horizontal and vertical rotation
-* Directional sunlight (on/off switch)
-* Headlight on top of the camera, modelled as a point light source with decreasing intensity (on/off switch)
+* Directional sunlight (on/off switch, night mode)
+* Headlight on top of the camera, point light with decreasing intensity (on/off switch)
 * Perspective and orthographic projection
 * Per fragment shading with various effects (fog, black and white, linocut (similiar to toon), noise, vignette, normal highlighting, terrain colors per height)
 * Adjustable mix of material properties and textures
@@ -46,11 +46,11 @@ Dragging with right mouse button: Move forward, right, left and backwards
 
 `v`: Toggle automatic camera movement
 
+`i`: Print info about current camera status
+
 `k`: Change texture intensity (0% - 100%)
 
-`i`: Print info about camera status
-
-`y`: Toggle sunlight
+`y`: Toggle sunlight (night mode)
 
 `x` :Toggle headlight
 
