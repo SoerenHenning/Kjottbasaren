@@ -1,27 +1,24 @@
-# Computer Graphics Project
+# Kjøttbasaren
+
+A simple 3D scene of Bergen, Norway and the Kjøttbasaren with free and automatic navigation. Starting takes some time due to the large terrain file.
 
 Developed by Sören Henning and Zach Litzinger
 
-## New Features
-* Terrain of Bergen, transformed to an .obj file (`terrain-importer/main.kt`)
-* Automatic navigation using composite Bezier curves
-* Skybox
-* Optional fog
-* Colors per height
-* **Important:** Project has to be compiled for **x64**. Otherwise not all textures are loaded properly.
-* Starting takes some time due to the large terrain file
-
 ## Features
 
-* Moving in x, y and z direction
+* 3D Terrain of the city Bergen
+* Model of the Kjøttbasaren building
+* Manual navigaton in x, y and z direction
+* Automatic navigation using composite Bezier curves
 * Horizontal and vertical rotation
-* Direction sunlight
-* Headlight on top of the camera, modelled as a point light source with decreasing intensity
-* Perspective and orthographic projection (no depth information in orthographic projection due to fact how orthographic projection is)
-* Per fragment shading with various effects (fog, black and white, linocut (similiar to toon), noise, vignette, normal highlighting, colors per height)
+* Directional sunlight (on/off switch)
+* Headlight on top of the camera, modelled as a point light source with decreasing intensity (on/off switch)
+* Perspective and orthographic projection
+* Per fragment shading with various effects (fog, black and white, linocut (similiar to toon), noise, vignette, normal highlighting, terrain colors per height)
 * Adjustable mix of material properties and textures
 * Objects imported as .obj files
 * Textures and material properties imported from .mtl files
+* Skybox included
 
 ## Navigation
 
@@ -71,7 +68,7 @@ Dragging with right mouse button: Move forward, right, left and backwards
 
 `7`: Switch to normal highlight shading (face normals are mapped to colors, useful for debugging) (*per fragment illumination*)
 
-`8`: Switch to height colors shading (*per fragment illumination*)
+`8`: Switch to terrain height colors shading (*per fragment illumination*)
 
 `l`: Reload shaders
 
@@ -80,3 +77,9 @@ Dragging with right mouse button: Move forward, right, left and backwards
 `o`: Set drawing to solid faces
 
 `q`: Quit
+
+## Building it
+ * Visual Studio 2017 solution included
+ * **Important:** Project has to be compiled for **x64** to load all objects properly
+ * FreeGLUT and Glew for Windows included
+ * Terrain Importer (transform to .obj file) located in `terrain-importer/main.kt`
