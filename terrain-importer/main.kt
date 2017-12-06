@@ -6,7 +6,10 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 fun main(args: Array<String>) {
-    val inputStream = FileInputStream("C:\\Users\\Soeren\\Desktop\\bergen_terrain\\bergen_1024x918.bin")
+    if (args.isEmpty()) {
+        throw IllegalArgumentException("No binary file given.")
+    }
+    val inputStream = FileInputStream(args[0])
 
     val numberOfColumns = inputStream.readInt()
     val numberOfRows = inputStream.readInt()
@@ -39,7 +42,6 @@ fun main(args: Array<String>) {
             val v2 = vertices[i2]
             val i3 = coordinatesToIndex(column + 1, row + 1)
             val v3 = vertices[i3]
-            //TODO hier kann ein Fehler liegen
             if (v0.distanceTo(v3) < v1.distanceTo(v2)) {
                 listOf(Triple(i0, i1, i3), Triple(i0, i3, i2))
             } else {
@@ -65,22 +67,6 @@ fun main(args: Array<String>) {
     }
 
     val textureCoordinates = vertices.indices.map {
-        val column = (it % numberOfRows)
-        val row = (it / numberOfRows)
-        val s = column / (numberOfColumns - 1.0)
-        val t = row / (numberOfRows - 1.0)
-        Pair(s,t)
-    }
-
-    val textureCoordinates2 = vertices.indices.map {
-        val row = (it % numberOfRows)
-        val column = (it / numberOfRows)
-        val s = column / (numberOfColumns - 1.0)
-        val t = row / (numberOfRows - 1.0)
-        Pair(s,t)
-    }
-
-    val textureCoordinates3 = vertices.indices.map {
         val column = (it / numberOfRows)
         val row = (it % numberOfRows)
         val s = column / (numberOfColumns - 1.0)
@@ -110,7 +96,7 @@ fun main(args: Array<String>) {
         printWriter.println("vn ${normal.x} ${normal.y} ${normal.z}")
     }
 
-    for (coord in textureCoordinates3) {
+    for (coord in textureCoordinates) {
         printWriter.println("vt ${coord.first} ${coord.second}")
     }
 
@@ -118,8 +104,6 @@ fun main(args: Array<String>) {
 
     for (triangle in trianglesWithoutNoData) {
         printWriter.println("f ${triangle.first + 1}/${triangle.first + 1}/${triangle.first + 1} ${triangle.second + 1}/${triangle.second + 1}/${triangle.second + 1} ${triangle.third + 1}/${triangle.third + 1}/${triangle.third + 1}")
-        //printWriter.println("f ${triangle.first + 1}/${triangle.first + 1} ${triangle.second + 1}/${triangle.second + 1} ${triangle.third + 1}/${triangle.third + 1}")
-        //printWriter.println("f ${triangle.first + 1} ${triangle.second + 1} ${triangle.third + 1}")
     }
 
     printWriter.close()
