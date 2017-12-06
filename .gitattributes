@@ -61,3 +61,8 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+freeglut-2.8-x64/* linguist-vendored
+freeglut-2.8-x86/* linguist-vendored
+glew-1.9.0-x64/* linguist-vendored
+glew-1.9.0-x86/* linguist-vendored
